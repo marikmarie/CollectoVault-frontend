@@ -1,20 +1,20 @@
-import React from 'react';
+import React from 'react'
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  label: string;
-  variant?: 'primary' | 'secondary';
+  label: string
+  variant?: 'primary' | 'secondary'
 }
 
 const Button: React.FC<ButtonProps> = ({ label, variant = 'primary', className = '', ...props }) => {
-  const baseClasses = 'px-4 py-2 font-semibold rounded shadow transition-colors';
-  const variantClasses = variant === 'primary'
-    ? 'bg-primary text-white hover:bg-primary/80'
-    : 'bg-secondary text-white hover:bg-secondary/80';
+  const base = 'px-4 py-2 rounded-lg font-semibold transition-all'
+  const styles = variant === 'primary'
+    ? 'bg-accent text-black hover:brightness-95'
+    : 'bg-primary text-white hover:opacity-90'
   return (
-    <button className={`${baseClasses} ${variantClasses} ${className}`} {...props}>
+    <button className={`${base} ${styles} ${className}`} {...props}>
       {label}
     </button>
-  );
-};
+  )
+}
 
-export default Button;
+export default Button

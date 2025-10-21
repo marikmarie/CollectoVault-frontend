@@ -9,9 +9,9 @@ import { Link } from 'react-router-dom'
 const CustomerDashboard: React.FC = () => {
   const user = customers[0]
 
-  const handleRedeem = (id: string) => {
-    alert('Redeem clicked: ' + id)
-  }
+  // const handleRedeem = (id: string) => {
+  //   alert('Redeem clicked: ' + id)
+  // }
 
   return (
     <div className="min-h-screen">

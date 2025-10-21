@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react'
-import { customers as initialCustomers, rewards as initialRewards, transactions as initialTransactions, Customer, Reward } from '../data/dummy'
+import React, { createContext, useContext, useState, type ReactNode, useEffect } from 'react'
+import { customers as initialCustomers, rewards as initialRewards, transactions as initialTransactions, type Customer, type Reward } from '../data/dummy'
 
 type DataContextType = {
   customers: Customer[]

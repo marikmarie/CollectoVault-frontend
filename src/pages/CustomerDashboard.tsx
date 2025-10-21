@@ -42,7 +42,7 @@ const CustomerDashboard: React.FC = () => {
             <Link to="/rewards" className="text-neutral">Browse all</Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {rewards.map(r => <RewardCard key={r.id} reward={r} onRedeem={handleRedeem} />)}
+            {rewards.map(r => <RewardCard key={r.id} reward={r} />)}
           </div>
         </section>
       </main>

@@ -1,6 +1,18 @@
+/** tailwind.config.cjs */
 module.exports = {
   darkMode: 'class',
   content: ['./index.html', './src/**/*.{ts,tsx,js,jsx}'],
+  // Safelist makes sure Tailwind generates these utility classes for @apply usage
+  safelist: [
+    'bg-surface',
+    'bg-background',
+    'bg-primary',
+    'bg-secondary',
+    'bg-accent',
+    'text-neutral',
+    'rounded-2xl',
+    'shadow-lg'
+  ],
   theme: {
     extend: {
       colors: {

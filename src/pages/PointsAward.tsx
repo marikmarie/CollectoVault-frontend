@@ -2,11 +2,13 @@ import React from 'react'
 import Navbar from '../components/Navbar'
 import Card from '../components/Card'
 import { useForm } from 'react-hook-form'
-import { customers } from '../data/dummy'
+import { useData } from '../context/DataContext'
 
 const PointsAward: React.FC = () => {
   const { register, handleSubmit } = useForm<{customerId: string, points: number}>()
+  const { customers, awardPoints } = useData()
   const onSubmit = (data: any) => {
+    awardPoints(data.customerId, Number(data.points), 'Manual award via staff UI')
     alert('Awarded ' + data.points + ' to ' + data.customerId)
   }
 

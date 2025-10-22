@@ -50,9 +50,9 @@ const Navbar: React.FC = () => {
         <div className="flex items-center gap-3">
           <Link
             to="/"
-            className="flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 rounded"
+            className="flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 rounded"
           >
-            <div className="w-10 h-10 rounded-lg bg-linear-to-br from-green-400 to-emerald-600 flex items-center justify-center font-extrabold text-white">
+            <div className="w-10 h-10 rounded-lg bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center font-extrabold text-white">
               CV
             </div>
             <div className="hidden md:block">
@@ -66,13 +66,13 @@ const Navbar: React.FC = () => {
 
         <div className="hidden md:flex items-center gap-6">
           <Link
-            to="/rewards"
+            to="/"
             className="text-slate-300 hover:text-white transition"
           >
             Home
           </Link>
           <Link
-            to="/features"
+            to="/services"
             className="text-slate-300 hover:text-white transition"
           >
             Services
@@ -84,7 +84,7 @@ const Navbar: React.FC = () => {
             See Rewards
           </Link>
           <Link
-            to="/docs"
+            to="/"
             className="text-slate-300 hover:text-white transition"
           >
             CollectoVault
@@ -96,7 +96,7 @@ const Navbar: React.FC = () => {
           {!user && (
             <Link
               to="/customer/register"
-              className="hidden md:inline-block px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium shadow"
+              className="hidden md:inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium shadow"
             >
               Get Started
             </Link>
@@ -146,18 +146,7 @@ const Navbar: React.FC = () => {
 
               {profileOpen && (
                 <div className="absolute right-0 mt-3 w-44 bg-slate-800 rounded-md shadow-lg border border-slate-700 overflow-hidden z-50">
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-700"
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    to="/settings"
-                    className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-700"
-                  >
-                    Settings
-                  </Link>
+                
                   <button
                     onClick={() => logout()}
                     className="w-full text-left px-4 py-2 text-sm text-rose-400 hover:bg-slate-700"
@@ -263,20 +252,7 @@ const Navbar: React.FC = () => {
               </>
             ) : (
               <>
-                <Link
-                  to="/profile"
-                  onClick={() => setMobileOpen(false)}
-                  className="block text-slate-200"
-                >
-                  Profile
-                </Link>
-                <Link
-                  to="/settings"
-                  onClick={() => setMobileOpen(false)}
-                  className="block text-slate-200"
-                >
-                  Settings
-                </Link>
+                
                 <button
                   onClick={() => {
                     setMobileOpen(false);

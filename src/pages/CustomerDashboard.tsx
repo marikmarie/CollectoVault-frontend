@@ -88,15 +88,15 @@ const CustomerDashboard: React.FC = () => {
               <h2 className="text-2xl font-bold">Available Rewards</h2>
               <p className="text-sm text-slate-400 mt-1">Use your points to claim exclusive rewards and discounts.</p>
             </div>
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <Link to="/rewards" className="text-sm text-slate-400 hover:underline">Browse all</Link>
-            </div>
+            </div> */}
           </div>
 
           {/* Featured reward */}
           {rewards[0] && (
             <div className="rounded-xl overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center bg-linear-to-r from-slate-800/70 to-slate-700/40 p-4 rounded-xl">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-linear-to-r from-slate-800/70 to-slate-700/40 p-4 rounded-xl">
                 <div className="md:col-span-1 flex items-center justify-center h-36 bg-linear-to-br from-green-500/30 to-emerald-400/10 rounded-lg">
                   {rewards[0].image ? (
                     <img src={rewards[0].image} alt={rewards[0].title} className="object-cover w-full h-full rounded" />
@@ -105,13 +105,13 @@ const CustomerDashboard: React.FC = () => {
                   )}
                 </div>
 
-                <div className="md:col-span-2 p-3">
+                <div className="md:col-span- p-3">
                   <h3 className="text-xl font-bold">{rewards[0].title}</h3>
                   <p className="text-slate-300 mt-2">{rewards[0].description}</p>
                   <div className="mt-4 flex items-center gap-4">
                     <div className="text-2xl font-extrabold text-emerald-300">{rewards[0].points} pts</div>
                     <Link to="/rewards" className="px-4 py-2 bg-emerald-500 rounded-md font-semibold hover:bg-emerald-600">Redeem</Link>
-                    <Link to="/rewards" className="text-sm text-slate-400 hover:underline">View details</Link>
+                    {/* <Link to="/rewards" className="text-sm text-slate-400 hover:underline">View details</Link> */}
                   </div>
                 </div>
               </div>

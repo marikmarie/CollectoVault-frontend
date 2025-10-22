@@ -9,7 +9,7 @@ const RedeemReward: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+    <div className="min-h-screen bg-linear-to-br from-black-900 via-slate-800 to-slate-900 text-white">
       <Navbar />
 
       <main className="max-w-3xl mx-auto p-6">
@@ -32,7 +32,7 @@ const RedeemReward: React.FC = () => {
                 e.g. “Free Coffee Coupon” — 500 pts required
               </p>
               <div className="flex items-center justify-between text-sm text-slate-300">
-                <span>Customer: <strong className="text-white">John Doe</strong></span>
+                <span>Customer: <strong className="text-white">Tukas Mari</strong></span>
                 <span>Balance: <strong className="text-accent">1240 pts</strong></span>
               </div>
             </div>

@@ -10,8 +10,8 @@ const CustomerDashboard: React.FC = () => {
   const user = customers[0]
 
   return (
-    // <div className="min-h-screen  bg-slate-900 text-white">
-      <div className="min-h-screen bg-linear-60  text-white">
+    <div className="min-h-screen  bg-slate-900 text-white">
+      {/* <div className="min-h-screen bg-linear-60  text-white"> */}
       <Navbar />
 
       <main className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -19,7 +19,7 @@ const CustomerDashboard: React.FC = () => {
         <aside className="lg:col-span-1 space-y-4 sticky top-6">
           <Card className="p-5">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-linear-to-tr from-green-400 to-emerald-500 flex items-center justify-center text-xl font-bold text-white">{(user.firstName || 'U').slice(0,1).toUpperCase()}</div>
+              <div className="w-16 h-16 rounded-full bg-linear-to-tr from-slate-800 to-slate-700 flex items-center justify-center text-xl font-bold text-white">{(user.firstName || 'U').slice(0,1).toUpperCase()}</div>
               <div>
                 <div className="text-sm text-slate-300">Welcome back</div>
                 <div className="text-lg font-semibold">{user.firstName} {user.lastName}</div>

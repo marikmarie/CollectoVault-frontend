@@ -69,7 +69,7 @@ const Navbar: React.FC = () => {
             to="/rewards"
             className="text-slate-300 hover:text-white transition"
           >
-            See Rewards
+            Home
           </Link>
           <Link
             to="/features"
@@ -81,13 +81,13 @@ const Navbar: React.FC = () => {
             to="/pricing"
             className="text-slate-300 hover:text-white transition"
           >
-            Explore
+            See Rewards
           </Link>
           <Link
             to="/docs"
             className="text-slate-300 hover:text-white transition"
           >
-            Docs
+            CollectoVault
           </Link>
         </div>
 

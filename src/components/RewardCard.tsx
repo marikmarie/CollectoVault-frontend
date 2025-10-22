@@ -44,7 +44,7 @@ const RewardCard: React.FC<Props> = ({ reward }) => {
 
   return (
     <article className="bg-slate-800/60 border border-slate-700 rounded-xl p-4 flex flex-col shadow-md hover:shadow-lg transition">
-      <div className="relative rounded-md overflow-hidden h-40 mb-4 bg-gradient-to-br from-green-500/30 to-emerald-400/10 flex items-center justify-center">
+      <div className="relative rounded-md overflow-hidden h-40 mb-4 bg-linear-to-br from-green-500/30 to-emerald-400/10 flex items-center justify-center">
         {/* Placeholder image area */}
         {reward.image ? (
           <img src={reward.image} alt={reward.title} className="object-cover w-full h-full" />

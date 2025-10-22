@@ -12,6 +12,8 @@ import AdminRewards from './pages/AdminRewards'
 import TransactionHistory from './pages/TransactionHistory'
 import { AuthProvider } from './context/AuthContext'
 import { DataProvider } from './context/DataContext'
+import './index.css'
+import Register from './pages/Register'
 
 const App: React.FC = () => {
   return (
@@ -20,6 +22,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/customer/login" element={<CustomerLogin />} />
+          <Route path="/customer/register" element={<Register />} />
           <Route path="/staff/login" element={<StaffLogin />} />
           <Route path="/customer/dashboard" element={<CustomerDashboard />} />
           <Route path="/staff/dashboard" element={<StaffDashboard />} />
@@ -33,5 +36,13 @@ const App: React.FC = () => {
     </AuthProvider>
   )
 }
+
+// export default function App() {
+//   return (
+//     <div className="min-h-screen bg-blue-600 flex items-center justify-center">
+//       <h1 className="text-5xl font-bold text-white">Tailwind is working 🎉</h1>
+//     </div>
+//   );
+// }
 
 export default App

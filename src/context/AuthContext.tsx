@@ -1,7 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react'
+import React, { createContext, useContext, useState, type ReactNode, useEffect } from 'react'
 import { customers as initialCustomers, staff as initialStaff, rewards as initialRewards, transactions as initialTransactions } from '../data/dummy'
 
-type User = { id: string; name: string; email?: string; role: 'customer' | 'staff' | null }
+type User = {
+  points: number;
+  firstName?: string; id: string; name: string; email?: string; role: 'customer' | 'staff' | null 
+}
 
 type AuthContextType = {
   user: User | null
@@ -33,14 +36,14 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({ children }) => {
 
   const loginCustomer = (email: string) => {
     const c = initialCustomers.find(x => x.email === email) || initialCustomers[0]
-    setUser({ id: c.id, name: c.name, email: c.email, role: 'customer' })
+    setUser({ id: c.id, name: c.name, email: c.email, role: 'customer', points: c.points ?? 0 })
   }
 
   const loginStaff = (email: string) => {
     const s = initialStaff.find(x => x.email === email) || initialStaff[0]
-    setUser({ id: s.id, name: s.name, email: s.email, role: 'staff' })
+    setUser({ id: s.id, name: s.name, email: s.email, role: 'staff', points: s.points ?? 0 })
   }
-
+ 
   const logout = () => setUser(null)
 
   return <AuthContext.Provider value={{ user, loginCustomer, loginStaff, logout }}>{children}</AuthContext.Provider>

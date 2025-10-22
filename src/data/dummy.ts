@@ -1,12 +1,22 @@
+import type { ReactNode } from "react";
+
 export type Customer = {
+  firstName: string;
+  lastName: ReactNode;
+  joined: string;
+  nextTierAt: number;
+  rank: string;
+  recent: any;
   id: string;
   name: string;
   email: string;
   points: number;
-  tier: 'Bronze' | 'Silver' | 'Gold';
+  tier: 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
 }
 
 export type Reward = {
+  popular: any;
+  subtitle: ReactNode;
   id: string;
   title: string;
   description: string;
@@ -15,12 +25,37 @@ export type Reward = {
 }
 
 export const customers: Customer[] = [
-  { id: 'C001', name: 'Alice Johnson', email: 'alice@example.com', points: 1240, tier: 'Silver' },
-  { id: 'C002', name: 'Bob Smith', email: 'bob@example.com', points: 430, tier: 'Bronze' },
-  { id: 'C003', name: 'Carol Mills', email: 'carol@example.com', points: 3400, tier: 'Gold' },
+  {
+    id: 'C001', name: 'Tukas Mariam', email: 'tukas@gmail.com', points: 1240, tier: 'Silver',
+    firstName: "",
+    lastName: undefined,
+    joined: "",
+    nextTierAt: 0,
+    rank: "",
+    recent: undefined
+  },
+  {
+    id: 'C002', name: 'Sam Son', email: 'sam@gmail.com', points: 430, tier: 'Bronze',
+    firstName: "",
+    lastName: undefined,
+    joined: "",
+    nextTierAt: 0,
+    rank: "",
+    recent: undefined
+  },
+  {
+    id: 'C003', name: 'Carol Kwi', email: 'carol@gmail.com', points: 3400, tier: 'Gold',
+    firstName: "",
+    lastName: undefined,
+    joined: "",
+    nextTierAt: 0,
+    rank: "",
+    recent: undefined
+  },
 ]
 
 export type Staff = {
+  points: number;
   id: string;
   name: string;
   email: string;
@@ -28,14 +63,29 @@ export type Staff = {
 }
 
 export const staff: Staff[] = [
-  { id: 'S001', name: 'Dana Lewis', email: 'dana@example.com', role: 'manager' },
-  { id: 'S002', name: 'Evan Parker', email: 'evan@example.com', role: 'clerk' },
+  {
+    id: 'S001', name: 'Dana Mark', email: 'dana@gmail.com', role: 'manager',
+    points: 0 
+  },
+  { id: 'S002', name: 'Evan Martin', email: 'evan@gmail.com', role: 'clerk', points: 0 },
 ]
 
 export const rewards: Reward[] = [
-  { id: 'R001', title: '10% Off Voucher', description: 'Get 10% off your next purchase', points: 500 },
-  { id: 'R002', title: 'Free Coffee', description: 'Redeem for a free coffee', points: 150 },
-  { id: 'R003', title: 'Voucher: Hotel Stay', description: 'One-night stay voucher', points: 2500 },
+  {
+    id: 'R001', title: '10% Off Voucher', description: 'Get 10% off your next purchase', points: 500,
+    popular: undefined,
+    subtitle: undefined
+  },
+  {
+    id: 'R002', title: 'Free Coffee', description: 'Redeem for a free coffee', points: 150,
+    popular: undefined,
+    subtitle: undefined
+  },
+  {
+    id: 'R003', title: 'Voucher: Hotel Stay', description: 'One-night stay voucher', points: 2500,
+    popular: undefined,
+    subtitle: undefined
+  },
 ]
 
 export const transactions = [

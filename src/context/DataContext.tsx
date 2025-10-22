@@ -24,7 +24,8 @@ export const DataProvider: React.FC<{children: ReactNode}> = ({ children }) => {
       return raw ? JSON.parse(raw) : initialCustomers
     } catch { return initialCustomers }
   })
-  const [rewards, setRewards] = useState<Reward[]>(() => {
+  //const [rewards, setRewards] = useState<Reward[]>(() => {
+     const [rewards] = useState<Reward[]>(() => {
     try {
       const raw = localStorage.getItem('cv_rewards')
       return raw ? JSON.parse(raw) : initialRewards

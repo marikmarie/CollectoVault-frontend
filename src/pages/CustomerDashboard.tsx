@@ -1,10 +1,21 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
 import Card from '../components/Card'
-import TierProgress from '../components/TierProgress'
 import { customers, rewards } from '../data/dummy'
 import RewardCard from '../components/RewardCard'
 import { Link } from 'react-router-dom'
+import TierProgressNice from '../components/TierProgress'
+
+/**
+ * Define tier steps used by TierProgress/TierProgressNice.
+ * Adjust names and point thresholds to match your app's logic.
+ */
+const TIERS = [
+  { id: 'bronze', name: 'Bronze', minPoints: 0 },
+  { id: 'silver', name: 'Silver', minPoints: 1000 },
+  { id: 'gold', name: 'Gold', minPoints: 2500 },
+  { id: 'platinum', name: 'Platinum', minPoints: 5000 },
+]
 
 const CustomerDashboard: React.FC = () => {
   const user = customers[0]
@@ -32,7 +43,8 @@ const CustomerDashboard: React.FC = () => {
               <div className="text-3xl font-extrabold text-emerald-300">{user.points} <span className="text-sm text-slate-400">pts</span></div>
 
               <div className="mt-4">
-                <TierProgress points={user.points} />
+                {/* <TierProgress points={user.points} /> */}
+                <TierProgressNice points={1240} tiers={TIERS} dotsPerSegment={3} />
                 <div className="text-sm text-slate-400 mt-2">{user.tier} • {Math.max(0, (user.nextTierAt ?? 0) - user.points)} pts to next tier</div>
               </div>
 

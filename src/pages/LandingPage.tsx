@@ -5,73 +5,58 @@ import Navbar from "../components/Navbar";
 const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-500">
-      <svg
-        className="absolute left-0 top-0 w-[140%] h-full -translate-x-6 opacity-25 pointer-events-none mix-blend-screen animate-wave"
-        viewBox="0 0 1600 600"
-        preserveAspectRatio="xMidYMid slice"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <defs>
-          <linearGradient id="g" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stopColor="#8b5cf6" />
-            <stop offset="100%" stopColor="#3b82f6" />
-          </linearGradient>
-          <filter id="blurGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="8" result="b" />
-            <feMerge>
-              <feMergeNode in="b" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
+     <svg
+  className="absolute left-0 top-0 w-[140%] h-full -translate-x-6 opacity-25 pointer-events-none mix-blend-screen animate-wave"
+  viewBox="0 0 1600 600"
+  preserveAspectRatio="xMidYMid slice"
+  xmlns="http://www.w3.org/2000/svg"
+  aria-hidden="true"
+>
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stopColor="#8b5cf6" />
+      <stop offset="100%" stopColor="#3b82f6" />
+    </linearGradient>
+    <filter id="blurGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="b" />
+      <feMerge>
+        <feMergeNode in="b" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
 
-        {/* slow, large glowing lines (furthest back) */}
-        <g
-          className="wave-layer layer-1"
-          stroke="url(#g)"
-          strokeWidth="2.5"
-          fill="none"
-          strokeLinecap="round"
-          filter="url(#blurGlow)"
-        >
-          <path
-            d="M0 260 C300 150 600 150 900 260 S1500 370 1600 260"
-            opacity="0.12"
-          />
-          <path
-            d="M0 300 C250 200 550 200 900 300 S1500 400 1600 300"
-            opacity="0.18"
-          />
-        </g>
+  {/* slow, large glowing lines (furthest back) */}
+  <g
+    className="wave-layer layer-1"
+    stroke="url(#g)"
+    strokeWidth="2.5"
+    fill="none"
+    strokeLinecap="round"
+    filter="url(#blurGlow)"
+  >
+    <path d="M0 260 C300 150 600 150 900 260 S1500 370 1600 260" opacity="0.12" />
+    <path d="M0 300 C250 200 550 200 900 300 S1500 400 1600 300" opacity="0.18" />
+  </g>
 
-        {/* mid lines (move a bit faster) */}
-        <g
-          className="wave-layer layer-2"
-          stroke="url(#g)"
-          strokeWidth="2"
-          fill="none"
-          strokeLinecap="round"
-        >
-          <path
-            d="M0 340 C200 250 500 250 900 340 S1500 430 1600 340"
-            opacity="0.10"
-          />
-        </g>
+  {/* mid lines (move a bit faster) */}
+  <g
+    className="wave-layer layer-2"
+    stroke="url(#g)"
+    strokeWidth="2"
+    fill="none"
+    strokeLinecap="round"
+  >
+    <path d="M0 340 C200 250 500 250 900 340 S1500 430 1600 340" opacity="0.10" />
+  </g>
 
-       
-        <g
-          className="wave-layer layer-3"
-          stroke="url(#g)"
-          strokeWidth="1"
-          fill="none"
-          opacity="0.22"
-        >
-          <path d="M0 230 C200 140 400 140 600 230 S1000 320 1200 230 S1600 140 1600 230" />
-          <path d="M0 200 C200 120 400 120 600 200 S1000 280 1200 200 S1600 120 1600 200" />
-          <path d="M0 380 C300 280 600 280 900 380 S1500 480 1600 380" />
-        </g>
-      </svg>
+  {/* finer grid — subtle slow horizontal drift */}
+  <g className="wave-layer layer-3" stroke="url(#g)" strokeWidth="1" fill="none" opacity="0.22">
+    <path d="M0 230 C200 140 400 140 600 230 S1000 320 1200 230 S1600 140 1600 230" />
+    <path d="M0 200 C200 120 400 120 600 200 S1000 280 1200 200 S1600 120 1600 200" />
+    <path d="M0 380 C300 280 600 280 900 380 S1500 480 1600 380" />
+  </g>
+</svg>
 
       <Navbar />
       <main className="relative max-w-5xl mx-auto px-6 py-16 flex flex-col md:flex-row items-center gap-12">
@@ -109,7 +94,7 @@ const LandingPage: React.FC = () => {
             <div className="aspect-video">
               <iframe
                 className="w-full h-full"
-                src={`https://www.youtube.com/watch?v=_7Ay4jIHIhU`}
+                src={`https://www.youtube.com/watch?v=_7Ay4jIHIiyewaew8er6ew8ehU`}
                 title="Member preview video"
                 frameBorder="0"
                 allow="autoplay; encrypted-media; picture-in-picture"
@@ -135,6 +120,8 @@ const LandingPage: React.FC = () => {
             </a>
           </div>
         </aside>
+
+
       </main>
       <section className="mt-16 max-w-3xl mx-auto px-6">
         <h2 className="text-3xl font-bold text-center mb-6">How It Works</h2>

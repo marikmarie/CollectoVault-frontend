@@ -68,7 +68,7 @@ const CustomerDashboard: React.FC = () => {
                       <div className="font-medium">{it.title}</div>
                       <div className="text-xs text-slate-400">{it.when}</div>
                     </div>
-                    <div className="text-sm text-emerald-300">{it.points > 0 ? `+${it.points}` : it.points}</div>
+                   <div className="text-sm text-emerald-300">{it.points > 0 ? `+${it.points}` : it.points}</div>
                   </li>
                 ))
               ) : (
@@ -92,6 +92,7 @@ const CustomerDashboard: React.FC = () => {
               <Link to="/rewards" className="text-sm text-slate-400 hover:underline">Browse all</Link>
             </div> */}
           </div>
+
 
           {/* Featured reward */}
           {rewards[0] && (

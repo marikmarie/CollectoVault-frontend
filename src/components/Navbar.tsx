@@ -102,7 +102,6 @@ const Navbar: React.FC = () => {
             </Link>
           )}
 
-          {/* Auth links / profile */}
           {!user ? (
             <div className="hidden md:flex items-center gap-3">
               <Link
@@ -196,32 +195,32 @@ const Navbar: React.FC = () => {
         <div className="md:hidden bg-slate-900/95 border-t border-slate-800">
           <div className="px-4 py-4 space-y-3">
             <Link
+              to="/"
+              onClick={() => setMobileOpen(false)}
+              className="block text-slate-300"
+            >
+              Home
+            </Link>
+            <Link
               to="/rewards"
               onClick={() => setMobileOpen(false)}
               className="block text-slate-300"
             >
-              Rewards
+              Services
             </Link>
             <Link
-              to="/features"
+              to="/services"
               onClick={() => setMobileOpen(false)}
               className="block text-slate-300"
             >
-              Features
+              See Rewards
             </Link>
             <Link
-              to="/pricing"
+              to="/vault"
               onClick={() => setMobileOpen(false)}
               className="block text-slate-300"
             >
-              Pricing
-            </Link>
-            <Link
-              to="/docs"
-              onClick={() => setMobileOpen(false)}
-              className="block text-slate-300"
-            >
-              Docs
+              CollectoVault
             </Link>
 
             <div className="pt-2 border-t border-slate-800" />

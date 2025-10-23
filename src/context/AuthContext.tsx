@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, type ReactNode, useEffect } from 'react'
-import { customers as initialCustomers, staff as initialStaff, rewards as initialRewards, transactions as initialTransactions } from '../data/dummy'
+import { customers as initialCustomers, staff as initialStaff } from '../data/dummy'
 
 type User = {
   points: number;

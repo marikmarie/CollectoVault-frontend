@@ -1,5 +1,5 @@
 import React, { useEffect, useState, type JSX } from 'react'
-import { CheckCircle2, AlertCircle, Info, XCircle } from 'lucide-react'
+import { CheckCircle2,  Info, XCircle } from 'lucide-react'
 
 type ToastType = 'success' | 'error' | 'info'
 

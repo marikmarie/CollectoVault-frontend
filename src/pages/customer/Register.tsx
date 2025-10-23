@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import Navbar from '../components/Navbar'
-import { useAuth } from '../context/AuthContext'
+import Navbar from '../../components/layout/Navbar'
+import { useAuth } from '../../context/AuthContext'
 
 type Form = {
   firstName: string

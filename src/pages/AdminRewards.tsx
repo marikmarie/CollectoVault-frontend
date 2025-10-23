@@ -1,6 +1,6 @@
 import React from 'react'
-import Navbar from '../components/Navbar'
-import Card from '../components/Card'
+import Navbar from '../components/layout/Navbar'
+import Card from '../components/common/Card'
 import { useForm } from 'react-hook-form'
 
 const AdminRewards: React.FC = () => {

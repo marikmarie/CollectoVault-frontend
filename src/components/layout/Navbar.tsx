@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 // const Avatar: React.FC<{ name?: string; size?: number }> = ({
 //   name = "User",
@@ -216,7 +216,7 @@ const Navbar: React.FC = () => {
               See Rewards
             </Link>
             <Link
-              to="/vault"
+              to="/vault`"
               onClick={() => setMobileOpen(false)}
               className="block text-slate-300"
             >

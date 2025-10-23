@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react'
-import Navbar from '../components/Navbar'
-import RewardCard from '../components/RewardCard'
-import { rewards as rewardsData } from '../data/dummy'
-import { useAuth } from '../context/AuthContext'
+import Navbar from '../../components/layout/Navbar'
+import RewardCard from '../../components/RewardCard'
+import { rewards as rewardsData } from '../../data/dummy'
+import { useAuth } from '../../context/AuthContext'
 
 const RewardsCatalog: React.FC = () => {
   const { user } = useAuth()

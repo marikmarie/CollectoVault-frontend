@@ -1,7 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import Navbar from '../components/Navbar'
-import Card from '../components/Card'
+import Navbar from '../../components/layout/Navbar'
+import Card from '../../components/common/Card'
 
 const RedeemReward: React.FC = () => {
   const handleRedeem = () => {

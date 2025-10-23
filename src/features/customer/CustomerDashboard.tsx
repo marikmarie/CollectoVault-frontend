@@ -1,9 +1,9 @@
 import React from 'react'
-import Navbar from '../components/Navbar'
-import Card from '../components/Card'
-import TierProgress from '../components/TierProgress'
-import { customers, rewards } from '../data/dummy'
-import RewardCard from '../components/RewardCard'
+import Navbar from '../../components/layout/Navbar'
+import Card from '../../components/common/Card'
+import TierProgress from '../../components/TierProgress'
+import { customers, rewards } from '../../data/dummy'
+import RewardCard from '../../components/RewardCard'
 import { Link } from 'react-router-dom'
 
 const CustomerDashboard: React.FC = () => {

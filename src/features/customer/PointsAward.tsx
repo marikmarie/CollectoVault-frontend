@@ -1,8 +1,8 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import Navbar from '../components/Navbar'
-import Card from '../components/Card'
-import { useData } from '../context/DataContext'
+import Navbar from '../../components/layout/Navbar'
+import Card from '../../components/common/Card'
+import { useData } from '../../context/DataContext'
 import { motion } from 'framer-motion'
 
 type AwardForm = {

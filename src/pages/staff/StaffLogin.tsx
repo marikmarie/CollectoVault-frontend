@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import Navbar from '../components/Navbar'
-import { useAuth } from '../context/AuthContext'
+import Navbar from '../../components/layout/Navbar'
+import { useAuth } from '../../context/AuthContext'
 
 type Form = {
   email: string
@@ -10,45 +10,43 @@ type Form = {
   remember?: boolean
 }
 
-const CustomerLogin: React.FC = () => {
+const StaffLogin: React.FC = () => {
   const navigate = useNavigate()
   const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<Form>({
     defaultValues: { email: '', password: '', remember: true }
   })
-  const { loginCustomer } = useAuth()
+  const { loginStaff } = useAuth()
   const [serverError, setServerError] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
 
   const onSubmit = async (data: Form) => {
     setServerError(null)
     try {
-      // call loginCustomer from context (support both signatures)
-      // keep optional chaining in case implementation differs
-      await (loginCustomer as any)?.(data.email, data.password)
-      navigate('/customer/dashboard')
+      // call loginStaff from context; adapt to your actual signature
+      await (loginStaff as any)?.(data.email, data.password)
+      navigate('/staff/dashboard')
     } catch (e: any) {
-      // show a friendly message; adapt this to your API shape if needed
-      setServerError(e?.message || 'Login failed. Please check credentials and try again.')
+      setServerError(e?.message || 'Login failed. Please verify your credentials.')
     }
   }
 
   const fillDemo = () => {
-    setValue('email', 'alice@example.com')
+    setValue('email', 'staff@example.com')
     setValue('password', 'password')
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 text-white">
+    <div className="min-h-screen bg-linear-to-b rgba from-slate-900 via-slate-800 to-slate-900 text-white">
       <Navbar />
-      <main className="max-w-4xl mx-auto px-6 py-12">
+      <main className="max-w-5xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          {/* Hero / Info */}
+          {/* Left: Info / Branding */}
           <section className="space-y-6">
             <h1 className="text-3xl md:text-4xl font-extrabold leading-tight">
-              Welcome back — log in to your CollectoVault account
+              Staff Portal — Manage rewards & customers
             </h1>
             <p className="text-slate-300">
-              Quickly access your points, rewards and membership status. New here? <Link to="/customer/register" className="underline text-white/90">Create an account</Link>.
+              Access staff tools to award points, manage redemptions, and view member activity. Secure sign-in for store managers and support staff.
             </p>
 
             <div className="flex gap-3 items-center">
@@ -57,27 +55,24 @@ const CustomerLogin: React.FC = () => {
                 type="button"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-900 rounded-md shadow-sm hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/40"
               >
-                Use Demo Account
+                Use Demo Staff
               </button>
 
-              <Link
-                to="/staff/login"
-                className="text-sm text-slate-300 hover:underline ml-2"
-              >
-                Staff portal
+              <Link to="/customer/login" className="text-sm text-slate-300 hover:underline ml-2">
+                Customer login
               </Link>
             </div>
 
             <ul className="mt-4 text-sm text-slate-400 space-y-2">
-              <li>• Secure sign-in with simple flow</li>
-              <li>• See your points, redeem rewards, and track tier progress</li>
+              <li>• Quick access to staff dashboard and member management</li>
+              <li>• Secure role-based access for managers and clerks</li>
             </ul>
           </section>
 
-          {/* Login Card */}
+          {/* Right: Login Card */}
           <aside className="bg-slate-800/60 backdrop-blur-sm rounded-xl p-6 shadow-lg">
-            <h2 className="text-xl font-semibold mb-2">Customer Login</h2>
-            <p className="text-sm text-slate-300 mb-4">Enter your credentials to continue to your dashboard.</p>
+            <h2 className="text-xl font-semibold mb-2">Staff Login</h2>
+            <p className="text-sm text-slate-300 mb-4">Sign in with your staff email to access the management console.</p>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
               {/* Email */}
@@ -99,6 +94,7 @@ const CustomerLogin: React.FC = () => {
                       message: 'Enter a valid email'
                     }
                   })}
+                  defaultValue="staff@example.com"
                 />
                 {errors.email && (
                   <p role="alert" className="mt-1 text-sm text-rose-400">
@@ -125,6 +121,7 @@ const CustomerLogin: React.FC = () => {
                       required: 'Password is required',
                       minLength: { value: 4, message: 'Password must be at least 4 characters' }
                     })}
+                    defaultValue="password"
                   />
 
                   <button
@@ -155,7 +152,7 @@ const CustomerLogin: React.FC = () => {
                   Remember me
                 </label>
 
-                <Link to="/customer/forgot-password" className="text-sm text-slate-300 hover:underline">
+                <Link to="/staff/forgot-password" className="text-sm text-slate-300 hover:underline">
                   Forgot password?
                 </Link>
               </div>
@@ -191,7 +188,7 @@ const CustomerLogin: React.FC = () => {
             </form>
 
             <div className="mt-4 text-center text-sm text-slate-400">
-              Don't have an account? <Link to="/customer/register" className="text-white underline">Sign up</Link>
+              Need help? <Link to="/support" className="text-white underline">Contact support</Link>
             </div>
           </aside>
         </div>
@@ -200,4 +197,4 @@ const CustomerLogin: React.FC = () => {
   )
 }
 
-export default CustomerLogin
+export default StaffLogin

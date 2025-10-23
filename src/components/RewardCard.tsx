@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Button from "./Button";
+import Button from "./common/Button";
 import type { Reward } from "../data/dummy";
-import Modal from "./Modal";
+import Modal from "./common/Modal";
 import { useData } from "../context/DataContext";
 import { useAuth } from "../context/AuthContext";
 

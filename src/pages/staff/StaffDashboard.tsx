@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import Navbar from '../components/Navbar'
-import Card from '../components/Card'
-import { customers } from '../data/dummy'
+import Navbar from '../../components/layout/Navbar'
+import Card from '../../components/common/Card'
+import { customers } from '../../data/dummy'
 import { Link } from 'react-router-dom'
-import Button from '../components/Button'
+import Button from '../../components/common/Button'
 //import { Search, Users, Award, Settings } from 'lucide-react'
 import { Search, Users } from 'lucide-react'
 

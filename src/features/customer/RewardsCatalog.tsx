@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import Navbar from '../../components/layout/Navbar'
-import RewardCard from '../../components/RewardCard'
+import RewardCard from '../../components/common/RewardCard'
 import { rewards as rewardsData } from '../../data/dummy'
 import { useAuth } from '../../context/AuthContext'
 

@@ -1,273 +1,172 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import React, { useState, type JSX } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext"; // existing hook in your project
 
-// const Avatar: React.FC<{ name?: string; size?: number }> = ({
-//   name = "User",
-//   size = 10,
-// }) => {
-//   const initials = name
-//     .split(" ")
-//     .map((n) => n[0])
-//     .slice(0, 2)
-//     .join("")
-//     .toUpperCase();
+// Minimal typing to avoid TS errors if your context types differ.
+// Adjust / import your actual User type if available.
+type User = {
+  id?: string;
+  name?: string;
+  email?: string;
+  avatarUrl?: string | null;
+  role?: "customer" | "vendor" | "admin";
+};
 
-//   return (
-//     <div
-//       className={`w-${size} h-${size} rounded-full bg-linear-to-br from-green-500 to-teal-400 flex items-center justify-center font-bold text-sm text-white`}
-//       aria-hidden
-//     >
-//       {initials}
-//     </div>
-//   );
-// };
+export default function Navbar(): JSX.Element {
+  const [open, setOpen] = useState(false);
+  const { user, logout } = (useAuth() as any) ?? { user: null, logout: undefined };
+  const navigate = useNavigate();
 
-const Navbar: React.FC = () => {
-  const { user, logout } = useAuth();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const profileRef = useRef<HTMLDivElement | null>(null);
-
-  // close menus on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (
-        profileRef.current &&
-        !profileRef.current.contains(e.target as Node)
-      ) {
-        setProfileOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  const handleLogout = async () => {
+    try {
+      await (logout ? logout() : Promise.resolve());
+    } catch (err) {
+      // ignore for now
+    } finally {
+      navigate("/");
+    }
+  };
 
   return (
-    <header className="w-full bg-slate-900/60 backdrop-blur-md border-b border-slate-800">
-      <nav className="max-w-6xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
-        {/* Brand */}
-        <div className="flex items-center gap-3">
-          <Link
-            to="/"
-            className="flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 rounded"
-          >
-            <div className="w-10 h-10 rounded-lg bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center font-extrabold text-white">
-              CV
-            </div>
-            <div className="hidden md:block">
-              <div className="text-white font-semibold text-lg">
-                CollectoVault
+    <nav className="bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 text-white shadow">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16 items-center">
+          {/* Left: brand */}
+          <div className="flex items-center gap-4">
+            <Link to="/" className="flex items-center gap-3">
+              {/* Simple SVG logo */}
+              <div className="w-10 h-10 rounded-lg bg-linear-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="white" />
+                </svg>
               </div>
-              <div className="text-xs text-slate-400">Power your loyalty</div>
-            </div>
-          </Link>
-        </div>
-
-        <div className="hidden md:flex items-center gap-6">
-          <Link
-            to="/"
-            className="text-slate-300 hover:text-white transition"
-          >
-            Home
-          </Link>
-          <Link
-            to="/services"
-            className="text-slate-300 hover:text-white transition"
-          >
-            Services
-          </Link>
-          <Link
-            to="/pricing"
-            className="text-slate-300 hover:text-white transition"
-          >
-            See Rewards
-          </Link>
-          <Link
-            to="/"
-            className="text-slate-300 hover:text-white transition"
-          >
-            CollectoVault
-          </Link>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {/* Primary CTA */}
-          {!user && (
-            <Link
-              to="/customer/register"
-              className="hidden md:inline-block px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium shadow"
-            >
-              Get Started
+              <div className="hidden sm:block">
+                <div className="text-lg font-extrabold">CollectoVault</div>
+                <div className="text-xs text-slate-300 -mt-1">Power your loyalty</div>
+              </div>
             </Link>
-          )}
+          </div>
 
-          {!user ? (
-            <div className="hidden md:flex items-center gap-3">
-              <Link
-                to="/customer/login"
-                className="text-slate-300 hover:text-white"
-              >
-                Customer
-              </Link>
-              <Link
-                to="/staff/login"
-                className="text-slate-300 hover:text-white"
-              >
-                Staff
-              </Link>
-            </div>
-          ) : (
-            <div className="relative" ref={profileRef}>
-              <button
-                onClick={() => setProfileOpen((s) => !s)}
-                aria-expanded={profileOpen}
-                aria-haspopup="true"
-                className="inline-flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 rounded"
-                title="Open profile menu"
-              >
-                <div className="text-slate-300 text-sm hidden md:block">
-                  Hello,{" "}
-                  <span className="text-white font-semibold">
-                    {user.name ?? user.firstName ?? "Member"}
-                  </span>
-                </div>
-                <div className="md:ml-0">
-                  {/* Avatar */}
-                  <div className="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center text-white font-medium">
-                    {(user.name || user.firstName || "U")
-                      .toString()
-                      .slice(0, 1)
-                      .toUpperCase()}
-                  </div>
-                </div>
-              </button>
+          {/* Center: nav links (desktop) */}
+          <div className="hidden md:flex md:items-center md:space-x-6">
+            <Link to="/" className="text-sm hover:underline">Home</Link>
+            <Link to="/vendors" className="text-sm hover:underline">Vendors</Link>
+            <Link to="/how-it-works" className="text-sm hover:underline">How it works</Link>
+            <Link to="/pricing" className="text-sm hover:underline">Pricing</Link>
+            <Link to="/customer/rewards" className="text-sm hover:underline">Rewards</Link>
+          </div>
 
-              {profileOpen && (
-                <div className="absolute right-0 mt-3 w-44 bg-slate-800 rounded-md shadow-lg border border-slate-700 overflow-hidden z-50">
-                
+          {/* Right: actions */}
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex sm:items-center sm:gap-3">
+              <Link
+                to="/buy-points"
+                className="px-3 py-1.5 rounded-md bg-white text-slate-900 text-sm font-semibold shadow-sm hover:brightness-95"
+              >
+                Buy Points
+              </Link>
+
+              {!user && (
+                <>
+                  <Link to="/customer/register" className="px-3 py-1.5 rounded-md bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600">
+                    Sign up
+                  </Link>
+                  <Link to="/customer/login" className="text-sm px-3 py-1.5 rounded-md border border-slate-700 hover:bg-slate-800">
+                    Sign in
+                  </Link>
+                </>
+              )}
+
+              {user && (
+                <div className="relative">
                   <button
-                    onClick={() => logout()}
-                    className="w-full text-left px-4 py-2 text-sm text-rose-400 hover:bg-slate-700"
+                    onClick={() => setOpen((s) => !s)}
+                    className="flex items-center gap-2 p-1 rounded-md hover:bg-slate-800"
+                    aria-expanded={open}
+                    aria-haspopup="true"
                   >
-                    Logout
+                    <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden">
+                      {user.avatarUrl ? (
+                        <img src={user.avatarUrl} alt={user.name ?? "avatar"} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-sm font-medium text-white">{(user.name || user.email || "U").charAt(0)}</span>
+                      )}
+                    </div>
+                    <div className="hidden sm:flex sm:flex-col text-left">
+                      <span className="text-sm font-medium">{user.name ?? user.email}</span>
+                      <span className="text-xs text-slate-400">Balance: <span className="font-semibold">1,240 pts</span></span>
+                    </div>
+                    <svg className="w-4 h-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                      <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                    </svg>
                   </button>
+
+                  {/* dropdown */}
+                  {open && (
+                    <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-md p-2 shadow-lg z-50">
+                      <Link to="/customer/dashboard" className="block px-3 py-2 rounded hover:bg-slate-700">Dashboard</Link>
+                      <Link to="/customer/profile" className="block px-3 py-2 rounded hover:bg-slate-700">Profile</Link>
+                      <Link to="/customer/transactions" className="block px-3 py-2 rounded hover:bg-slate-700">Transactions</Link>
+                      <div className="border-t border-slate-700 my-1" />
+                      <button onClick={handleLogout} className="w-full text-left px-3 py-2 rounded hover:bg-slate-700">Sign out</button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          )}
 
-          <button
-            onClick={() => setMobileOpen((s) => !s)}
-            className="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400"
-            aria-label="Toggle menu"
-            aria-expanded={mobileOpen}
-          >
-            {/* hamburger / close */}
-            <svg
-              className="w-6 h-6 text-slate-200"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {mobileOpen ? (
-                <>
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </>
-              ) : (
-                <>
-                  <line x1="3" y1="12" x2="21" y2="12" />
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="18" x2="21" y2="18" />
-                </>
-              )}
-            </svg>
-          </button>
+            {/* Mobile menu toggle */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setOpen((s) => !s)}
+                className="p-2 rounded-md hover:bg-slate-800"
+                aria-label="Toggle menu"
+              >
+                {!open ? (
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                ) : (
+                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
-      </nav>
+      </div>
 
-      {/* Mobile panel */}
-      {mobileOpen && (
+      {/* Mobile menu content */}
+      {open && (
         <div className="md:hidden bg-slate-900/95 border-t border-slate-800">
-          <div className="px-4 py-4 space-y-3">
-            <Link
-              to="/"
-              onClick={() => setMobileOpen(false)}
-              className="block text-slate-300"
-            >
-              Home
-            </Link>
-            <Link
-              to="/rewards"
-              onClick={() => setMobileOpen(false)}
-              className="block text-slate-300"
-            >
-              Services
-            </Link>
-            <Link
-              to="/services"
-              onClick={() => setMobileOpen(false)}
-              className="block text-slate-300"
-            >
-              See Rewards
-            </Link>
-            <Link
-              to="/vault`"
-              onClick={() => setMobileOpen(false)}
-              className="block text-slate-300"
-            >
-              CollectoVault
-            </Link>
+          <div className="px-4 pt-4 pb-6 space-y-3">
+            <Link to="/" className="block px-2 py-2 rounded hover:bg-slate-800">Home</Link>
+            <Link to="/vendors" className="block px-2 py-2 rounded hover:bg-slate-800">Vendors</Link>
+            <Link to="/how-it-works" className="block px-2 py-2 rounded hover:bg-slate-800">How it works</Link>
+            <Link to="/customer/rewards" className="block px-2 py-2 rounded hover:bg-slate-800">Rewards</Link>
 
             <div className="pt-2 border-t border-slate-800" />
 
-            {!user ? (
-              <>
-                <Link
-                  to="/customer/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="block text-slate-200"
-                >
-                  Customer Login
-                </Link>
-                <Link
-                  to="/staff/login"
-                  onClick={() => setMobileOpen(false)}
-                  className="block text-slate-200"
-                >
-                  Staff Login
-                </Link>
-                <Link
-                  to="/customer/register"
-                  onClick={() => setMobileOpen(false)}
-                  className="block mt-2 px-3 py-2 bg-green-500 text-white rounded"
-                >
-                  Get Started
-                </Link>
-              </>
-            ) : (
-              <>
-                
-                <button
-                  onClick={() => {
-                    setMobileOpen(false);
-                    logout();
-                  }}
-                  className="w-full text-left mt-1 px-3 py-2 text-rose-400"
-                >
-                  Logout
-                </button>
-              </>
+            <Link to="/buy-points" className="block px-2 py-2 rounded bg-emerald-500 text-white text-center">Buy Points</Link>
+
+            {!user && (
+              <div className="pt-2">
+                <Link to="/customer/login" className="block px-2 py-2 rounded hover:bg-slate-800">Sign in</Link>
+                <Link to="/customer/register" className="block mt-1 px-2 py-2 rounded bg-white text-slate-900 text-center">Sign up</Link>
+              </div>
+            )}
+
+            {user && (
+              <div className="pt-2 space-y-1">
+                <Link to="/customer/dashboard" className="block px-2 py-2 rounded hover:bg-slate-800">Dashboard</Link>
+                <Link to="/customer/profile" className="block px-2 py-2 rounded hover:bg-slate-800">Profile</Link>
+                <button onClick={handleLogout} className="w-full text-left px-2 py-2 rounded hover:bg-slate-800">Sign out</button>
+              </div>
             )}
           </div>
         </div>
       )}
-    </header>
+    </nav>
   );
-};
-
-export default Navbar;
+}

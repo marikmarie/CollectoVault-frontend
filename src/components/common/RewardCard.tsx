@@ -1,159 +1,176 @@
-import React, { useState } from "react";
-import Button from "../common/Button";
-import type { Reward } from "../../data/dummy";
-import Modal from "../common/Modal";
-import { useData } from "../../context/DataContext";
-import { useAuth } from "../../context/AuthContext";
+// src/components/common/RewardCard.tsx
+import React from "react";
+import Button from "./Button";
+import Card from "./Card";
+import Icon from "./Icon";
 
-type Props = { reward: Reward };
-{
-  /* compute classes so markup stays tidy */
-}
+export type RewardCardProps = {
+  id?: string | number;
+  title: string;
+  description?: string;
+  pointsPrice?: number | null;       // points required to redeem (nullable)
+  currencyPrice?: number | null;     // currency price (USD) if available
+  vendorName?: string;
+  imageUrl?: string | null;
+  tags?: string[];                   // e.g. ["new", "popular"]
+  availability?: "available" | "soldout" | "coming_soon";
+  compact?: boolean;
+  className?: string;
+  isRedeeming?: boolean;
+  onRedeem?: (id?: string | number) => Promise<void> | void;
+  disabled?: boolean;                // force disabled
+};
 
-const RewardCard: React.FC<Props> = ({ reward }) => {
-  const [open, setOpen] = useState(false);
-  const [redeeming, setRedeeming] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const { redeemReward } = useData();
-  const { user } = useAuth();
+/**
+ * RewardCard
+ * Reusable card that displays a redeemable reward/service offered by a vendor.
+ * Shows image, title, vendor, prices (points / currency), tags and a redeem button.
+ */
+export default function RewardCard({
+  id,
+  title,
+  description,
+  pointsPrice = null,
+  currencyPrice = null,
+  vendorName,
+  imageUrl = null,
+  tags = [],
+  availability = "available",
+  compact = false,
+  className = "",
+  isRedeeming = false,
+  onRedeem,
+  disabled = false,
+}: RewardCardProps) {
+  const isSoldOut = availability === "soldout";
+  const isComing = availability === "coming_soon";
+  const isDisabled = disabled || isSoldOut || isComing;
 
-  const userPoints = user?.points ?? 0;
-  const isCustomer = user?.role === "customer";
-  const canRedeem = isCustomer && userPoints >= reward.points;
-
-  const onConfirm = async () => {
-    if (!isCustomer) {
-      setMessage("Please login as a customer to redeem this reward.");
-      return;
-    }
-
-    if (userPoints < reward.points) {
-      setMessage("You do not have enough points to redeem this reward.");
-      return;
-    }
-
-    setRedeeming(true);
+  const handleRedeem = async () => {
+    if (isDisabled || !onRedeem) return;
     try {
-      const res = await redeemReward(user.id, reward.id);
-      // Assume res has { success: boolean, message?: string }
-      setMessage(
-        res?.message ??
-          (res?.success ? "Redeemed successfully!" : "Could not redeem reward.")
-      );
-    } catch (err: any) {
-      setMessage(err?.message ?? "An error occurred while redeeming.");
-    } finally {
-      setRedeeming(false);
-      setOpen(false);
+      await onRedeem(id);
+    } catch (err) {
+      // caller should handle errors; swallow here to avoid uncaught promise
+      // could integrate a toast provider if available
+      // console.error(err);
     }
   };
 
-  {
-    /* compute classes so markup stays tidy */
-  }
-  const redeemBtnClass =
-    isCustomer && canRedeem
-      ? "bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-md font-semibold transition-shadow shadow-sm"
-      : "bg-slate-800 text-slate-400 px-4 py-2 rounded-md font-semibold cursor-not-allowed opacity-80";
+  const Badge = ({ children }: { children: React.ReactNode }) => (
+    <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-800/60 border border-slate-700 text-slate-200">
+      {children}
+    </div>
+  );
 
-  return (
-    <article className="bg-slate-800/60 border border-slate-700 rounded-xl p-4 flex flex-col shadow-md hover:shadow-lg transition">
-      <div className="relative rounded-md overflow-hidden h-40 mb-4 bg-linear-to-br from-green-500/30 to-emerald-400/10 flex items-center justify-center">
-        {/* Placeholder image area */}
-        {reward.image ? (
-          <img
-            src={reward.image}
-            alt={reward.title}
-            className="object-cover w-full h-full"
-          />
+  if (compact) {
+    return (
+      <Card className={`flex items-center gap-3 ${className}`}>
+        {imageUrl ? (
+          <img src={imageUrl} alt={title} className="w-16 h-16 rounded-md object-cover flex-shrink-0" />
         ) : (
-          <div className="text-white text-lg font-semibold opacity-90">
-            {reward.title}
+          <div className="w-16 h-16 rounded-md bg-slate-800/30 flex items-center justify-center text-slate-300">
+            <Icon name="points" />
           </div>
         )}
 
-        {/* ribbon */}
-        {reward.popular && (
-          <span className="absolute left-3 top-3 bg-amber-400 text-slate-900 text-xs font-semibold px-2 py-1 rounded">
-            Popular
-          </span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="font-semibold truncate">{title}</div>
+              {vendorName && <div className="text-xs text-slate-400 truncate">{vendorName}</div>}
+            </div>
+
+            <div className="text-right shrink-0">
+              {pointsPrice ? <div className="text-sm font-semibold">{pointsPrice.toLocaleString()} pts</div> : null}
+              {currencyPrice ? <div className="text-xs text-slate-400">${currencyPrice.toFixed(2)}</div> : null}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <Button variant={isDisabled ? "ghost" : "primary"} onClick={handleRedeem} disabled={isDisabled} loading={isRedeeming}>
+            {isSoldOut ? "Sold out" : isComing ? "Coming" : "Redeem"}
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className={`flex flex-col overflow-hidden ${className}`}>
+      <div className="relative">
+        {imageUrl ? (
+          <img src={imageUrl} alt={title} className="w-full h-44 object-cover" />
+        ) : (
+          <div className="w-full h-44 bg-slate-800/30 flex items-center justify-center text-slate-300">
+            <Icon name="points" size={36} />
+          </div>
         )}
-      </div>
 
-      <header className="mb-2">
-        <h3 className="text-white font-semibold text-lg">{reward.title}</h3>
-        <div className="text-sm text-slate-400">{reward.subtitle}</div>
-      </header>
-
-      <p className="text-slate-300 text-sm flex-1 my-3 leading-relaxed">
-        {reward.description}
-      </p>
-
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold text-emerald-300">
-            {reward.points}
-          </span>
-          <span className="text-sm text-slate-400">pts</span>
-        </div>
-
-        {/* <div className="flex items-center gap-2">
-          <Button
-            label={isCustomer ? (canRedeem ? 'Redeem' : 'Not enough points') : 'Login to redeem'}
-            onClick={() => setOpen(true)}
-            disabled={!canRedeem}
-            aria-label={`Redeem ${reward.title}`}
-          />
-        </div> */}
-
-        <div className="flex items-center gap-2">
-          <Button
-            label={
-              isCustomer
-                ? canRedeem
-                  ? "Redeem"
-                  : "Not enough points"
-                : "Login to redeem"
-            }
-            onClick={() => setOpen(true)}
-            disabled={!canRedeem}
-            aria-label={`Redeem ${reward.title}`}
-            className={redeemBtnClass}
-          />
+        <div className="absolute top-3 right-3 flex items-center gap-2">
+          {tags?.slice(0, 2).map((t) => (
+            <span key={t} className="bg-emerald-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold shadow-sm">
+              {t}
+            </span>
+          ))}
+          {isSoldOut && <span className="bg-rose-600 text-white text-xs px-2 py-0.5 rounded-full font-semibold">Sold out</span>}
+          {isComing && <span className="bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold">Coming soon</span>}
         </div>
       </div>
 
-      {message && <div className="mt-3 text-sm text-amber-300">{message}</div>}
+      <div className="p-4 flex-1 flex flex-col">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-lg font-semibold truncate">{title}</div>
+            {vendorName && <div className="text-sm text-slate-400 mt-1 truncate">{vendorName}</div>}
+          </div>
 
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        title={`Redeem ${reward.title}`}
-      >
-        <div className="text-slate-300 mb-4">
-          Are you sure you want to redeem{" "}
-          <strong className="text-white">{reward.title}</strong> for{" "}
-          <strong className="text-emerald-300">{reward.points} pts</strong>?
+          <div className="text-right shrink-0">
+            {pointsPrice ? (
+              <div className="text-sm font-semibold">{pointsPrice.toLocaleString()} pts</div>
+            ) : null}
+            {currencyPrice ? (
+              <div className="text-xs text-slate-400">{currencyPrice !== null ? `$${currencyPrice.toFixed(2)}` : null}</div>
+            ) : null}
+          </div>
         </div>
 
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={() => setOpen(false)}
-            className="px-4 py-2 rounded bg-slate-700 text-slate-200"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={redeeming}
-            className="px-4 py-2 rounded bg-emerald-500 text-white font-semibold disabled:opacity-60"
-          >
-            {redeeming ? "Processing..." : "Confirm Redeem"}
-          </button>
+        {description ? <p className="text-sm text-slate-300 mt-3 line-clamp-3">{description}</p> : null}
+
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            {/* small icon for points */}
+            {pointsPrice ? (
+              <div className="inline-flex items-center gap-2 text-sm text-slate-300">
+                <Icon name="points" />
+                <span className="font-medium">{pointsPrice.toLocaleString()}</span>
+                <span className="text-xs text-slate-400">pts</span>
+              </div>
+            ) : (
+              <div className="text-sm text-slate-400">No points price</div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button variant={isDisabled ? "ghost" : "primary"} onClick={handleRedeem} disabled={isDisabled} loading={isRedeeming}>
+              {isSoldOut ? "Sold out" : isComing ? "Notify me" : "Redeem"}
+            </Button>
+            <button
+              className="px-3 py-1 rounded-md border border-slate-700 text-sm text-slate-300 hover:bg-slate-800"
+              onClick={() => {
+                // quick preview action — consumers of this component can implement navigation via onRedeem or parent handler
+                // we keep this lightweight and non-invasive
+                const el = document.getElementById(`reward-${id}`);
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+              }}
+              aria-label={`View details for ${title}`}
+            >
+              Details
+            </button>
+          </div>
         </div>
-      </Modal>
-    </article>
+      </div>
+    </Card>
   );
-};
-
-export default RewardCard;
+}

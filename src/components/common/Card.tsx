@@ -1,7 +1,12 @@
-import React from 'react'
+import React from "react";
 
-const Card: React.FC<{children?: React.ReactNode, className?: string}> = ({ children, className = '' }) => {
-  return <div className={`card ${className}`}>{children}</div>
+type Props = {
+  children: React.ReactNode;
+  className?: string;
+  as?: keyof JSX.IntrinsicElements;
+};
+
+export default function Card({ children, className = "", as: Component = "div" }: Props) {
+  const cls = `bg-slate-900/40 border border-slate-800 rounded-lg p-4 shadow-sm ${className}`;
+  return <Component className={cls}>{children}</Component>;
 }
-
-export default Card

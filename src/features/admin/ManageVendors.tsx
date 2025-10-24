@@ -1,7 +1,7 @@
 // src/pages/admin/ManageVendors.tsx
 import React, { useEffect, useMemo, useState, type JSX } from "react";
 import MainLayout from "../../components/layout/MainLayout";
-import vendorsService from "../../api/vendorsService";
+//import vendorsService from "../../api/vendorsService";
 import { Link } from "react-router-dom";
 
 type Vendor = {

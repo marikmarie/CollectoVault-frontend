@@ -1,5 +1,5 @@
 /* src/features/customer/CustomerDashboard.tsx */
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState , type JSX} from "react";
 import MainLayout from "../../components/layout/MainLayout";
 import TierProgress from "../../components/common/TierProgress";
 import Card from "../../components/common/Card";
@@ -53,7 +53,7 @@ export default function CustomerDashboard(): JSX.Element {
           setTopRewards(demo);
         }
 
-        // Optionally fetch latest points from vault API
+        
         if (user?.id && vault) {
           try {
             const resp = await vault.get(`/customers/${user.id}/points`);

@@ -1,17 +1,18 @@
-// src/pages/Customer/Register.tsx
-import { useEffect, type JSX } from "react";
+// src/pages/Customer/Login.tsx
+import  { useEffect , type JSX} from "react";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/layout/AuthLayout";
-import RegisterForm from "../../features/auth/RegisterForm";
+import LoginForm from "../../features/auth/LoginForm";
 import { useAuth } from "../../features/auth/useAuth";
 
-export default function Register(): JSX.Element {
+export default function Login(): JSX.Element {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If already logged in, no need to register
+    // If already logged in, redirect to dashboard
     if (isAuthenticated) {
+      // route based on role
       if (user?.role === "vendor") navigate("/vendor/dashboard");
       else if (user?.role === "admin") navigate("/admin");
       else navigate("/customer/dashboard");
@@ -19,8 +20,8 @@ export default function Register(): JSX.Element {
   }, [isAuthenticated, user, navigate]);
 
   return (
-    <AuthLayout title="Create your account" subtitle="Sign up to start collecting points and redeeming rewards">
-      <RegisterForm />
+    <AuthLayout title="Welcome back" subtitle="Sign in to access your CollectoVault account">
+      <LoginForm />
     </AuthLayout>
   );
 }

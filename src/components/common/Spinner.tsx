@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 
 export default function Spinner({ size = 6, label = "Loading..." }: { size?: number; label?: string }) {
   const s = `${size}rem`;

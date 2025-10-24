@@ -1,5 +1,5 @@
 /* src/features/customer/Checkout.tsx */
-import React, { useMemo, useState } from "react";
+import  { useMemo, useState , type JSX } from "react";
 import MainLayout from "../../components/layout/MainLayout";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";

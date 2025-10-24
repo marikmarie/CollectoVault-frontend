@@ -1,5 +1,5 @@
 /* src/features/customer/RewardsCatalog.tsx */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, type JSX } from "react";
 import MainLayout from "../../components/layout/MainLayout";
 import RewardCard from "../../components/common/RewardCard";
 import Spinner from "../../components/common/Spinner";

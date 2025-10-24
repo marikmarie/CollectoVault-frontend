@@ -1,5 +1,5 @@
 /* src/features/customer/VendorStorefront.tsx */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, type JSX } from "react";
 import MainLayout from "../../components/layout/MainLayout";
 import { useParams, Link } from "react-router-dom";
 import vendorsService from "../../api/vendorsService";

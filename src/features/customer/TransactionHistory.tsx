@@ -1,5 +1,5 @@
 /* src/features/customer/TransactionsHistory.tsx */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, type JSX } from "react";
 import MainLayout from "../../components/layout/MainLayout";
 import vault from "../../api/vaultClient";
 import Spinner from "../../components/common/Spinner";

@@ -1,193 +1,143 @@
 /* src/features/customer/Checkout.tsx */
-import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../features/auth/useAuth";
-import vault from "../../api/vaultClient";
+import React, { useMemo, useState } from "react";
+import MainLayout from "../../components/layout/MainLayout";
+import Button from "../../components/common/Button";
+import Card from "../../components/common/Card";
+import { useAuth } from "../auth/useAuth";
 import collectoPayments from "../../api/collectoPayments";
-
-const CART_KEY = "collectovault_cart_v1";
+import vault from "../../api/vaultClient";
 
 type CartItem = {
   id: string;
   title: string;
-  pricePoints?: number;
-  priceCurrency?: number;
+  qty?: number;
+  pricePoints?: number | null;
+  priceCurrency?: number | null;
   vendorId?: string;
 };
 
-function loadCart(): CartItem[] {
-  try {
-    const raw = localStorage.getItem(CART_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
+const demoCart: CartItem[] = [
+  { id: "r1", title: "Spa voucher", qty: 1, pricePoints: 1200, priceCurrency: 15, vendorId: "v1" },
+  { id: "r2", title: "Dinner for two", qty: 1, pricePoints: 800, priceCurrency: 10, vendorId: "v2" },
+];
 
-function clearCart() {
-  try {
-    localStorage.removeItem(CART_KEY);
-  } catch {}
-}
-
-export default function Checkout() {
-  const navigate = useNavigate();
+export default function Checkout(): JSX.Element {
   const { user, updateProfile } = useAuth();
-  const [cart, setCart] = useState<CartItem[]>(() => loadCart());
-  const [paying, setPaying] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [cart, setCart] = useState<CartItem[]>(demoCart);
+  const [payWithPoints, setPayWithPoints] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
   const totals = useMemo(() => {
-    const points = cart.reduce((s, i) => s + (i.pricePoints ?? 0), 0);
-    const currency = cart.reduce((s, i) => s + (i.priceCurrency ?? 0), 0);
+    const points = cart.reduce((s, it) => s + ((it.pricePoints ?? 0) * (it.qty ?? 1)), 0);
+    const currency = cart.reduce((s, it) => s + ((it.priceCurrency ?? 0) * (it.qty ?? 1)), 0);
     return { points, currency };
   }, [cart]);
 
-  useEffect(() => {
-    if (cart.length === 0) {
-      // redirect back to vendors if no items
-      // allow the user to land here via direct URL but display a message
-    }
-  }, [cart, navigate]);
-
-  const payWithPoints = async () => {
-    setError(null);
-    setPaying(true);
+  const handlePlaceOrder = async () => {
+    setProcessing(true);
+    setMessage(null);
     try {
-      const balance = user?.points ?? 0;
-      if (balance < totals.points) {
-        setError("You do not have enough points to complete this purchase.");
-        setPaying(false);
-        return;
-      }
-
-      // Try vault API to create an order / redeem points
-      if ((vault as any)?.post) {
-        // Example API: POST /orders { items, payWith: 'points' }
-        try {
-          const res = await (vault as any).post("/orders", { items: cart, payWith: "points" });
-          // if backend returns updated user points, update local profile
-          const updatedUser = res?.data?.user;
-          if (updatedUser?.points != null) updateProfile({ points: updatedUser.points });
-        } catch (err) {
-          console.warn("Order creation failed, falling back to demo", err);
-          // fallback: deduct locally for demo
-          updateProfile({ points: (user?.points ?? 0) - totals.points });
-        }
-      } else {
-        // demo fallback — deduct points locally
-        await new Promise((r) => setTimeout(r, 700));
-        updateProfile({ points: (user?.points ?? 0) - totals.points });
-      }
-
-      // success
-      clearCart();
-      setCart([]);
-      alert("Purchase successful — reward redemption completed.");
-      navigate("/customer/dashboard");
-    } catch (err: any) {
-      console.error("payWithPoints failed", err);
-      setError(err?.message ?? "Payment failed");
-    } finally {
-      setPaying(false);
-    }
-  };
-
-  const payWithCard = async () => {
-    setError(null);
-    setPaying(true);
-    try {
-      // Ideally we call our vault API to create an order and then call Collecto to process payment
-      if ((collectoPayments as any)?.initiate) {
-        const resp = await (collectoPayments as any).initiate({ amount: totals.currency, items: cart });
-        // If collecto returns a redirect URL, navigate or open it.
-        const redirect = resp?.data?.redirectUrl ?? resp?.redirectUrl;
-        if (redirect) {
-          window.location.href = redirect;
+      if (payWithPoints) {
+        // try vault API to place order and deduct points
+        if (vault && (vault as any).post) {
+          await vault.post("/orders", { items: cart, payWith: "points" });
+          // demo: deduct points locally
+          updateProfile({ points: Math.max(0, (user?.points ?? 0) - totals.points) });
+          setMessage("Order placed. Points deducted from your balance.");
+          setCart([]);
           return;
         }
-      }
-      // fallback demo: simulate payment success then create order in vault or just clear cart
-      await new Promise((r) => setTimeout(r, 900));
-      // optional: call vault to confirm order
-      if ((vault as any)?.post) {
-        try {
-          await (vault as any).post("/orders", { items: cart, payWith: "card" });
-        } catch {
-          // ignore
+
+        // fallback demo:
+        await new Promise((r) => setTimeout(r, 800));
+        updateProfile({ points: Math.max(0, (user?.points ?? 0) - totals.points) });
+        setMessage("Order placed (demo). Points deducted.");
+        setCart([]);
+      } else {
+        // pay with currency -> collectoPayments
+        if ((collectoPayments as any)?.initiatePayment) {
+          const resp = await (collectoPayments as any).initiatePayment({ amount: totals.currency, currency: "USD", description: "Purchase from CollectoVault" });
+          const data = resp?.data ?? resp;
+          if (data?.redirectUrl) {
+            window.location.href = data.redirectUrl;
+            return;
+          }
         }
+
+        // fallback: simulate payment and credit order on vault
+        await new Promise((r) => setTimeout(r, 900));
+        setMessage("Payment successful (demo). Order placed.");
+        setCart([]);
       }
-      clearCart();
-      setCart([]);
-      alert("Payment complete (demo). Thank you!");
-      navigate("/customer/dashboard");
     } catch (err: any) {
-      console.error("payWithCard failed", err);
-      setError(err?.message ?? "Card payment failed");
+      setMessage(err?.message ?? "Failed to place order. Try again.");
     } finally {
-      setPaying(false);
+      setProcessing(false);
     }
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-bold">Checkout</h2>
-          <p className="text-sm text-slate-300">Complete purchase with points or card.</p>
-        </div>
-      </div>
-
+    <MainLayout title="Checkout" subtitle="Confirm your order and pay">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-slate-900/40 border border-slate-800 rounded-lg p-6">
-          {cart.length === 0 ? (
-            <div className="p-6 text-slate-400">Your cart is empty. Add services from the vendor storefront.</div>
-          ) : (
-            <ul className="space-y-4">
-              {cart.map((c) => (
-                <li key={c.id} className="flex items-center justify-between bg-slate-800/30 p-3 rounded">
-                  <div>
-                    <div className="font-medium">{c.title}</div>
-                    <div className="text-sm text-slate-400">{c.vendorId}</div>
+        <div className="lg:col-span-2">
+          <Card>
+            <h3 className="text-lg font-semibold mb-4">Items</h3>
+            {cart.length === 0 ? (
+              <div className="text-slate-400">Your cart is empty.</div>
+            ) : (
+              <div className="space-y-3">
+                {cart.map((it) => (
+                  <div key={it.id} className="flex items-center justify-between bg-slate-900/30 p-3 rounded">
+                    <div>
+                      <div className="font-medium">{it.title}</div>
+                      <div className="text-xs text-slate-400">{it.qty} × {it.pricePoints ? `${it.pricePoints.toLocaleString()} pts` : `$${it.priceCurrency?.toFixed(2)}`}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-semibold">{it.pricePoints ? `${(it.pricePoints * (it.qty ?? 1)).toLocaleString()} pts` : `$${((it.priceCurrency ?? 0) * (it.qty ?? 1)).toFixed(2)}`}</div>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    {c.pricePoints ? <div className="font-semibold">{c.pricePoints.toLocaleString()} pts</div> : null}
-                    {c.priceCurrency ? <div className="text-sm text-slate-400">${c.priceCurrency.toFixed(2)}</div> : null}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+                ))}
+              </div>
+            )}
+          </Card>
         </div>
 
-        <aside className="bg-slate-900/40 border border-slate-800 rounded-lg p-6">
-          <div>
-            <div className="text-sm text-slate-400">Summary</div>
-            <div className="mt-3 flex justify-between">
-              <div className="text-sm">Points total</div>
-              <div className="font-semibold">{totals.points.toLocaleString()} pts</div>
-            </div>
-            <div className="mt-2 flex justify-between">
-              <div className="text-sm">Card total</div>
-              <div className="font-semibold">${totals.currency.toFixed(2)}</div>
-            </div>
-
-            <div className="mt-4">
-              <button onClick={payWithPoints} disabled={paying || cart.length === 0} className={`w-full px-4 py-2 rounded-md font-semibold ${paying ? "bg-slate-600" : "bg-emerald-500 hover:bg-emerald-600 text-white"}`}>
-                {paying ? "Processing..." : `Pay with points (${totals.points.toLocaleString()} pts)`}
-              </button>
-            </div>
-
+        <aside>
+          <Card>
+            <h4 className="text-sm text-slate-400">Summary</h4>
             <div className="mt-3">
-              <button onClick={payWithCard} disabled={paying || cart.length === 0} className={`w-full px-4 py-2 rounded-md font-semibold ${paying ? "bg-slate-600" : "border border-slate-700 hover:bg-slate-800"}`}>
-                {paying ? "Processing..." : `Pay with card ($${totals.currency.toFixed(2)})`}
-              </button>
-            </div>
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-slate-300">Points total</div>
+                <div className="font-semibold">{totals.points.toLocaleString()} pts</div>
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <div className="text-sm text-slate-300">Currency total</div>
+                <div className="font-semibold">${totals.currency.toFixed(2)}</div>
+              </div>
 
-            {error && <div className="mt-3 text-sm text-rose-400">{error}</div>}
-          </div>
+              <div className="mt-4">
+                <label className="inline-flex items-center gap-2">
+                  <input type="radio" name="pay" checked={payWithPoints} onChange={() => setPayWithPoints(true)} />
+                  <span className="text-sm text-slate-300">Pay with points</span>
+                </label>
+                <label className="inline-flex items-center gap-2 ml-4">
+                  <input type="radio" name="pay" checked={!payWithPoints} onChange={() => setPayWithPoints(false)} />
+                  <span className="text-sm text-slate-300">Pay with card</span>
+                </label>
+              </div>
+
+              <div className="mt-4">
+                <Button onClick={handlePlaceOrder} loading={processing} disabled={cart.length === 0}>
+                  {processing ? "Processing..." : (payWithPoints ? `Redeem ${totals.points.toLocaleString()} pts` : `Pay $${totals.currency.toFixed(2)}`)}
+                </Button>
+              </div>
+
+              {message && <div className="mt-3 text-sm text-emerald-400">{message}</div>}
+            </div>
+          </Card>
         </aside>
       </div>
-    </div>
+    </MainLayout>
   );
 }

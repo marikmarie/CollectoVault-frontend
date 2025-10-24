@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import Icon from "./Icon";
 
 type ToastType = "info" | "success" | "error" | "warning";
@@ -22,7 +22,7 @@ const colorFor = (t: ToastType) => {
   }
 };
 
-export default function Toast({ id, type = "info", title, message, onClose, duration = 4000 }: Props) {
+export default function Toast({ type = "info", title, message, onClose, duration = 4000 }: Props) {
   useEffect(() => {
     if (!duration || duration <= 0) return;
     const t = setTimeout(() => {

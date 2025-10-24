@@ -1,87 +1,78 @@
-import React from 'react'
-import { useForm } from 'react-hook-form'
-import Navbar from '../../components/layout/Navbar'
-import Card from '../../components/common/Card'
-import { useData } from '../../context/DataContext'
-import { motion } from 'framer-motion'
+/* src/features/customer/PointsAward.tsx */
+import React, { useState } from "react";
+import MainLayout from "../../components/layout/MainLayout";
+import Button from "../../components/common/Button";
+import Card from "../../components/common/Card";
+import { useAuth } from "../auth/useAuth";
+import collectoPayments from "../../api/collectoPayments";
+import vault from "../../api/vaultClient";
+import Spinner from "../../components/common/Spinner";
 
-type AwardForm = {
-  customerId: string
-  points: number
-}
+export default function PointsAward(): JSX.Element {
+  const { user, updateProfile } = useAuth();
+  const [amountUsd, setAmountUsd] = useState<number>(10);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
-const PointsAward: React.FC = () => {
-  const { register, handleSubmit, reset } = useForm<AwardForm>()
-  const { customers, awardPoints } = useData()
+  const handleBuy = async () => {
+    setLoading(true);
+    setMessage(null);
+    try {
+      // First, create a payment intent via Collecto or create an order on vault API then call collecto
+      if ((collectoPayments as any)?.initiatePayment) {
+        const resp = await (collectoPayments as any).initiatePayment({ amount: amountUsd, currency: "USD", description: "Buy Collecto points" });
+        const data = resp?.data ?? resp;
+        // If collecto returns a redirect url
+        if (data?.redirectUrl) {
+          window.location.href = data.redirectUrl;
+          return;
+        }
+      }
 
-  const onSubmit = (data: AwardForm) => {
-    if (!data.customerId || !data.points || data.points <= 0) {
-      alert('Please enter valid details')
-      return
+      // Fallback demo: simulate success and credit points locally
+      await new Promise((r) => setTimeout(r, 900));
+      const pointsBought = Math.round(amountUsd * 100); // demo rate: $1 -> 100 pts
+      // Update local user (demo)
+      updateProfile({ points: (user?.points ?? 0) + pointsBought });
+      setMessage(`Success! Credited ${pointsBought.toLocaleString()} points.`);
+    } catch (err: any) {
+      setMessage(err?.message ?? "Failed to process payment. Try again.");
+    } finally {
+      setLoading(false);
     }
-    awardPoints(data.customerId, Number(data.points), 'Manual award via staff UI')
-    alert(`🎉 Awarded ${data.points} points to customer ${data.customerId}`)
-    reset()
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      <Navbar />
-
-      <main className="max-w-2xl mx-auto p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Card className="p-8 shadow-lg bg-slate-800/60 backdrop-blur-md border border-slate-700 rounded-2xl">
-            <div className="mb-6 text-center">
-              <h2 className="text-3xl font-bold text-accent mb-2">Award Loyalty Points</h2>
-              <p className="text-slate-400 text-sm">
-                Reward your customers manually. Add points to recognize loyalty, resolve issues, or run promotions.
-              </p>
+    <MainLayout title="Buy points" subtitle="Purchase Collecto points quickly and securely">
+      <div className="max-w-3xl mx-auto">
+        <Card>
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm text-slate-300">Amount (USD)</label>
+              <input
+                type="number"
+                min={1}
+                value={amountUsd}
+                onChange={(e) => setAmountUsd(Number(e.target.value))}
+                className="mt-1 w-full rounded px-3 py-2 bg-slate-800/50 border border-slate-700"
+              />
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Select Customer</label>
-                <select
-                  {...register('customerId', { required: true })}
-                  className="w-full mt-1 p-3 rounded-lg bg-slate-900 border border-slate-700 focus:border-accent focus:ring-1 focus:ring-accent outline-none"
-                >
-                  <option value="">Choose customer</option>
-                  {customers.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} ({c.id})
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div>
+              <p className="text-sm text-slate-300">Rate: 1 USD = 100 points (demo). Final points credited after successful payment.</p>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Points to Award</label>
-                <input
-                  type="number"
-                  {...register('points', { required: true, min: 1 })}
-                  placeholder="e.g. 100"
-                  className="w-full p-3 rounded-lg bg-slate-900 border border-slate-700 focus:border-accent focus:ring-1 focus:ring-accent outline-none"
-                />
-              </div>
+            {message && <div className="text-sm text-emerald-400">{message}</div>}
 
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="px-6 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-accent/90 transition-all shadow-md"
-                >
-                  Award Points
-                </button>
-              </div>
-            </form>
-          </Card>
-        </motion.div>
-      </main>
-    </div>
-  )
+            <div className="flex items-center gap-3 justify-end">
+              <Button variant="secondary" onClick={() => setAmountUsd(10)}>Quick $10</Button>
+              <Button onClick={handleBuy} loading={loading}>
+                {loading ? <span className="flex items-center gap-2"><Spinner size={1.2} label="Processing..." /></span> : "Proceed to pay"}
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </MainLayout>
+  );
 }
-
-export default PointsAward

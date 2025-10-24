@@ -1,66 +1,117 @@
-import React, { useMemo, useState } from 'react'
-import Navbar from '../../components/layout/Navbar'
-import RewardCard from '../../components/common/RewardCard'
-import { rewards as rewardsData } from '../../data/dummy'
-import { useAuth } from '../../context/AuthContext'
+/* src/features/customer/RewardsCatalog.tsx */
+import React, { useEffect, useState } from "react";
+import MainLayout from "../../components/layout/MainLayout";
+import RewardCard from "../../components/common/RewardCard";
+import Spinner from "../../components/common/Spinner";
+import Modal from "../../components/common/Modal";
+import RedeemReward from "./RedeemReward";
+import vault from "../../api/vaultClient";
+import vendorsService from "../../api/vendorsService";
+import { useAuth } from "../auth/useAuth";
 
-const RewardsCatalog: React.FC = () => {
-  const { user } = useAuth()
-  const [query, setQuery] = useState('')
-  const [sort, setSort] = useState<'recommended' | 'points-asc' | 'points-desc'>('recommended')
+type Reward = {
+  id: string;
+  title: string;
+  description?: string;
+  pointsPrice?: number | null;
+  currencyPrice?: number | null;
+  vendorName?: string;
+  imageUrl?: string | null;
+  tags?: string[];
+  availability?: "available" | "soldout" | "coming_soon";
+};
 
-  const filtered = useMemo(() => {
-    let items = rewardsData.slice()
-    if (query.trim()) {
-      const q = query.toLowerCase()
-      items = items.filter(r => r.title.toLowerCase().includes(q) || r.description.toLowerCase().includes(q))
+export default function RewardsCatalog(): JSX.Element {
+  const { user } = useAuth();
+  const [rewards, setRewards] = useState<Reward[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeReward, setActiveReward] = useState<Reward | null>(null);
+  const [redeeming, setRedeeming] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setLoading(true);
+      try {
+        if ((vendorsService as any)?.getAllRewards) {
+          const res = await (vendorsService as any).getAllRewards();
+          const data = res?.data ?? res;
+          if (mounted) setRewards(data || []);
+        } else {
+          // fallback demo rewards
+          if (!mounted) return;
+          setRewards([
+            { id: "r1", title: "Spa voucher", description: "2-hour session", pointsPrice: 1200, currencyPrice: 15, vendorName: "Forest Mall Spa", tags: ["popular"] },
+            { id: "r2", title: "Dinner for two", description: "Set menu", pointsPrice: 800, currencyPrice: 10, vendorName: "Lakeview", tags: ["new"] },
+            { id: "r3", title: "Room discount 20%", description: "Weekday stays", pointsPrice: 2000, currencyPrice: 25, vendorName: "Forest Park Resort", tags: ["bestseller"] },
+          ]);
+        }
+      } catch (err) {
+        // ignore
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
+  const onRedeemClick = (r: Reward) => {
+    setActiveReward(r);
+  };
+
+  const onRedeemComplete = (message?: string) => {
+    setActiveReward(null);
+    setRedeeming(false);
+    if (message) {
+      setToast(message);
+      setTimeout(() => setToast(null), 3500);
     }
-
-    if (sort === 'points-asc') items.sort((a, b) => a.points - b.points)
-    if (sort === 'points-desc') items.sort((a, b) => b.points - a.points)
-    return items
-  }, [query, sort])
+  };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
-      <Navbar />
-      <main className="max-w-6xl mx-auto p-6">
-        <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
-          <div>
-            <h2 className="text-2xl font-bold">Rewards Catalog</h2>
-            <p className="text-slate-400 mt-1">Browse redeemable rewards — use points to claim discounts, freebies, and special experiences.</p>
-          </div>
+    <MainLayout title="Rewards" subtitle="Browse rewards you can redeem with your points">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Available rewards</h3>
+          <div className="text-sm text-slate-400">Showing curated rewards</div>
+        </div>
 
-          <div className="flex items-center gap-3">
-            <div className="text-sm text-slate-300">{user ? `You have ${user.points ?? 0} pts` : 'Log in to see your balance'}</div>
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search rewards"
-              className="rounded-md px-3 py-2 bg-slate-800 border border-slate-700 placeholder:text-slate-400 text-white"
-            />
-            <select value={sort} onChange={(e) => setSort(e.target.value as any)} className="rounded-md px-2 py-2 bg-slate-800 border border-slate-700 ">
-              <option value="recommended">Recommended</option>
-              <option value="points-asc">Lowest points</option>
-              <option value="points-desc">Highest points</option>
-            </select>
-          </div>
-        </header>
-
-        <section>
+        {loading ? (
+          <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-6 text-center"><Spinner /></div>
+        ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map(r => (
-              <RewardCard key={r.id} reward={r} />
+            {rewards.map((r) => (
+              <RewardCard
+                key={r.id}
+                id={r.id}
+                title={r.title}
+                description={r.description}
+                pointsPrice={r.pointsPrice ?? null}
+                currencyPrice={r.currencyPrice ?? null}
+                vendorName={r.vendorName}
+                imageUrl={r.imageUrl ?? null}
+                tags={r.tags}
+                onRedeem={() => onRedeemClick(r)}
+              />
             ))}
           </div>
+        )}
 
-          {filtered.length === 0 && (
-            <div className="mt-12 text-center text-slate-400">No rewards matched your search.</div>
+        <Modal open={Boolean(activeReward)} onClose={() => setActiveReward(null)} title={activeReward?.title ?? "Redeem"}>
+          {activeReward && (
+            <RedeemReward reward={activeReward} onDone={(msg) => onRedeemComplete(msg)} />
           )}
-        </section>
-      </main>
-    </div>
-  )
-}
+        </Modal>
 
-export default RewardsCatalog
+        {toast && (
+          <div className="fixed bottom-6 right-6 z-50">
+            <div className="max-w-sm">
+              <div className="bg-emerald-600 text-white rounded-md p-3 shadow">{toast}</div>
+            </div>
+          </div>
+        )}
+      </div>
+    </MainLayout>
+  );
+}

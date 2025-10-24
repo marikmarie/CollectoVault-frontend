@@ -1,134 +1,171 @@
-import React from 'react'
-import Navbar from '../../components/layout/Navbar'
-import Card from '../../components/common/Card'
-import TierProgress from '../../components/common/TierProgress'
-import { customers, rewards } from '../../data/dummy'
-import RewardCard from '../../components/common/RewardCard'
-import { Link } from 'react-router-dom'
+/* src/features/customer/CustomerDashboard.tsx */
+import React, { useEffect, useState } from "react";
+import MainLayout from "../../components/layout/MainLayout";
+import TierProgress from "../../components/common/TierProgress";
+import Card from "../../components/common/Card";
+import Button from "../../components/common/Button";
+import RewardCard from "../../components/common/RewardCard";
+import Spinner from "../../components/common/Spinner";
+import { useAuth } from "../auth/useAuth";
+import vendorsService from "../../api/vendorsService";
+import vault from "../../api/vaultClient";
 
-const CustomerDashboard: React.FC = () => {
-  const user = customers[0]
+type Reward = {
+  id: string;
+  title: string;
+  description?: string;
+  pointsPrice?: number | null;
+  currencyPrice?: number | null;
+  vendorName?: string;
+  imageUrl?: string | null;
+};
+
+export default function CustomerDashboard(): JSX.Element {
+  const { user } = useAuth();
+  const [points, setPoints] = useState<number>(user?.points ?? 0);
+  const [tier, setTier] = useState<string>("Silver");
+  const [nextTierPoints, setNextTierPoints] = useState<number>(2000);
+  const [topRewards, setTopRewards] = useState<Reward[]>([]);
+  const [loadingRewards, setLoadingRewards] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setLoadingRewards(true);
+      try {
+        // try vault API for quick recommendations / top rewards
+        if ((vendorsService as any)?.getTopRewards) {
+          const res = await (vendorsService as any).getTopRewards();
+          const data = res?.data ?? res;
+          if (mounted) setTopRewards(data || []);
+        } else if ((vendorsService as any)?.getAllServices) {
+          const res = await (vendorsService as any).getAllServices();
+          const data = res?.data ?? res;
+          if (mounted) setTopRewards((data || []).slice(0, 3));
+        } else {
+          // fallback demo
+          if (!mounted) return;
+          const demo: Reward[] = [
+            { id: "r1", title: "2-Hour Spa Voucher", description: "Relaxing treatment", pointsPrice: 1200, currencyPrice: 15, vendorName: "Forest Mall Spa", imageUrl: null },
+            { id: "r2", title: "Dinner for two", description: "Includes dessert", pointsPrice: 800, currencyPrice: 10, vendorName: "Lakeview Restaurant", imageUrl: null },
+            { id: "r3", title: "Room Discount 20%", description: "Valid weekday stays", pointsPrice: 2000, currencyPrice: 25, vendorName: "Forest Park Resort", imageUrl: null },
+          ];
+          setTopRewards(demo);
+        }
+
+        // Optionally fetch latest points from vault API
+        if (user?.id && vault) {
+          try {
+            const resp = await vault.get(`/customers/${user.id}/points`);
+            const data = resp?.data ?? resp;
+            if (mounted && data?.balance !== undefined) setPoints(data.balance);
+          } catch {
+            // ignore and keep demo
+          }
+        }
+      } catch (err) {
+        // ignore
+      } finally {
+        if (mounted) setLoadingRewards(false);
+      }
+    })();
+
+    return () => { mounted = false; };
+  }, [user]);
 
   return (
-    <div className="min-h-screen  bg-slate-900 text-white">
-      {/* <div className="min-h-screen bg-linear-60  text-white"> */}
-      <Navbar />
-
-      <main className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* LEFT: Profile & quick actions */}
-        <aside className="lg:col-span-1 space-y-4 sticky top-6">
-          <Card className="p-5">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-linear-to-tr from-slate-800 to-slate-700 flex items-center justify-center text-xl font-bold text-white">{(user.firstName || 'U').slice(0,1).toUpperCase()}</div>
+    <MainLayout title="Your dashboard" subtitle="See your points, tier progress and recommended rewards">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <div className="flex items-center justify-between gap-4">
               <div>
-                <div className="text-sm text-slate-300">Welcome back</div>
-                <div className="text-lg font-semibold">{user.firstName} {user.lastName}</div>
-                <div className="text-xs text-slate-400 mt-1">Member since {user.joined ?? '—'}</div>
-              </div>
-            </div>
-
-            <div className="mt-5">
-              <div className="text-xs text-slate-400">Balance</div>
-              <div className="text-3xl font-extrabold text-emerald-300">{user.points} <span className="text-sm text-slate-400">pts</span></div>
-
-              <div className="mt-4">
-                <TierProgress points={user.points} />
-                <div className="text-sm text-slate-400 mt-2">{user.tier} • {Math.max(0, (user.nextTierAt ?? 0) - user.points)} pts to next tier</div>
+                <div className="text-sm text-slate-400">Points balance</div>
+                <div className="text-3xl font-extrabold">{points.toLocaleString()} pts</div>
+                <div className="text-sm text-slate-300 mt-1">Member: {user?.firstName ?? user?.email ?? "Guest"}</div>
               </div>
 
-              <div className="mt-4 flex gap-2">
-                <Link to="/rewards" className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-md bg-emerald-500 font-semibold hover:bg-emerald-600">Redeem</Link>
-                <Link to="/customer/history" className="inline-flex items-center justify-center px-3 py-2 rounded-md bg-slate-800 border border-slate-700 text-sm">History</Link>
+              <div className="flex flex-col gap-3 items-end">
+                <Button variant="secondary" onClick={() => window.location.assign("/customer/rewards")}>Redeem rewards</Button>
+                <Button onClick={() => window.location.assign("/buy-points")}>Buy points</Button>
               </div>
             </div>
           </Card>
 
-          <Card className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm text-slate-400">Tier</div>
-                <div className="text-white font-semibold">{user.tier}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm text-slate-400">Rank</div>
-                <div className="text-white font-semibold">{user.rank ?? '—'}</div>
-              </div>
-            </div>
-
-            <div className="mt-4 text-sm text-slate-300">Pro tip: Earn points faster by shopping on weekends and referring friends.</div>
-          </Card>
-
-          <Card className="p-4">
-            <h4 className="text-sm font-semibold mb-2">Recent activity</h4>
-            <ul className="space-y-3 text-sm text-slate-300">
-              {user.recent?.length ? (
-                user.recent.slice(0,4).map((it: any) => (
-                  <li key={it.id} className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="font-medium">{it.title}</div>
-                      <div className="text-xs text-slate-400">{it.when}</div>
-                    </div>
-                   <div className="text-sm text-emerald-300">{it.points > 0 ? `+${it.points}` : it.points}</div>
-                  </li>
-                ))
-              ) : (
-                <li className="text-slate-500">No recent activity</li>
-              )}
-            </ul>
-            <div className="mt-3 text-right">
-              <Link to="/customer/history" className="text-sm text-slate-400 hover:underline">See all</Link>
-            </div>
-          </Card>
-        </aside>
-
-        {/* RIGHT: Rewards & main content */}
-        <section className="lg:col-span-3 space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold">Available Rewards</h2>
-              <p className="text-sm text-slate-400 mt-1">Use your points to claim exclusive rewards and discounts.</p>
-            </div>
-            {/* <div className="flex items-center gap-3">
-              <Link to="/rewards" className="text-sm text-slate-400 hover:underline">Browse all</Link>
-            </div> */}
-          </div>
-
-
-          {/* Featured reward */}
-          {rewards[0] && (
-            <div className="rounded-xl overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-linear-to-r from-slate-800/70 to-slate-700/40 p-4 rounded-xl">
-                <div className="md:col-span-1 flex items-center justify-center h-36 bg-linear-to-br from-green-500/30 to-emerald-400/10 rounded-lg">
-                  {rewards[0].image ? (
-                    <img src={rewards[0].image} alt={rewards[0].title} className="object-cover w-full h-full rounded" />
-                  ) : (
-                    <div className="text-white font-semibold">{rewards[0].title}</div>
-                  )}
+          <Card className="">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold">Tier progress</h3>
+                  <p className="text-sm text-slate-400">Keep earning to reach the next tier.</p>
                 </div>
+                <div className="text-sm text-slate-300">Current: <strong>{tier}</strong></div>
+              </div>
 
-                <div className="md:col-span- p-3">
-                  <h3 className="text-xl font-bold">{rewards[0].title}</h3>
-                  <p className="text-slate-300 mt-2">{rewards[0].description}</p>
-                  <div className="mt-4 flex items-center gap-4">
-                    <div className="text-2xl font-extrabold text-emerald-300">{rewards[0].points} pts</div>
-                    <Link to="/rewards" className="px-4 py-2 bg-emerald-500 rounded-md font-semibold hover:bg-emerald-600">Redeem</Link>
-                    {/* <Link to="/rewards" className="text-sm text-slate-400 hover:underline">View details</Link> */}
+              <TierProgress currentPoints={points} currentTier={tier} nextTier="Gold" nextTierPoints={nextTierPoints} />
+            </div>
+          </Card>
+
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold">Recent activity</h3>
+              <a className="text-sm text-slate-300 underline" href="/customer/transactions">View all</a>
+            </div>
+
+            <div className="bg-slate-900/40 border border-slate-800 rounded-lg overflow-hidden">
+              {/* simple activity items — try fetch from vault */}
+              <ul className="divide-y divide-slate-800">
+                <li className="p-4 flex items-center justify-between">
+                  <div>
+                    <div className="text-sm">Earned points</div>
+                    <div className="text-xs text-slate-400">Subscription bonus</div>
                   </div>
-                </div>
-              </div>
+                  <div className="text-green-400 font-semibold">+200 pts</div>
+                </li>
+                <li className="p-4 flex items-center justify-between">
+                  <div>
+                    <div className="text-sm">Redeemed</div>
+                    <div className="text-xs text-slate-400">Spa voucher</div>
+                  </div>
+                  <div className="text-rose-400 font-semibold">-1,200 pts</div>
+                </li>
+              </ul>
             </div>
-          )}
+          </section>
+        </div>
 
-          {/* Rewards grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rewards.slice(1).map(r => (
-              <RewardCard key={r.id} reward={r} />
-            ))}
+        <aside className="space-y-6">
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Recommended for you</h3>
+            {loadingRewards ? (
+              <Card><div className="p-6 text-center"><Spinner /></div></Card>
+            ) : (
+              <div className="grid gap-4">
+                {topRewards.map((r) => (
+                  <RewardCard
+                    key={r.id}
+                    id={r.id}
+                    title={r.title}
+                    description={r.description}
+                    pointsPrice={r.pointsPrice ?? null}
+                    currencyPrice={r.currencyPrice ?? null}
+                    vendorName={r.vendorName}
+                    imageUrl={r.imageUrl ?? null}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        </section>
-      </main>
-    </div>
-  )
-}
 
-export default CustomerDashboard
+          <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-4">
+            <h4 className="text-sm text-slate-400">Tips</h4>
+            <ul className="mt-2 text-sm text-slate-300 space-y-2">
+              <li>• Buy points during promotions for bonus credits.</li>
+              <li>• Redeem points for partner services for bigger savings.</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </MainLayout>
+  );
+}

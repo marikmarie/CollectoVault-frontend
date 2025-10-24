@@ -1,43 +1,26 @@
 /* src/features/customer/VendorStorefront.tsx */
 import React, { useEffect, useState } from "react";
+import MainLayout from "../../components/layout/MainLayout";
+import { useParams, Link } from "react-router-dom";
 import vendorsService from "../../api/vendorsService";
-import { useNavigate, useParams } from "react-router-dom";
+import RewardCard from "../../components/common/RewardCard";
+import Spinner from "../../components/common/Spinner";
 
 type Service = {
   id: string;
   title: string;
   description?: string;
-  pricePoints?: number;
-  priceCurrency?: number;
-  active?: boolean;
-  vendorId?: string;
-  vendorName?: string;
+  pointsPrice?: number | null;
+  currencyPrice?: number | null;
+  imageUrl?: string | null;
 };
 
-const CART_KEY = "collectovault_cart_v1";
-
-function loadCart(): Service[] {
-  try {
-    const raw = localStorage.getItem(CART_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveCart(items: Service[]) {
-  try {
-    localStorage.setItem(CART_KEY, JSON.stringify(items));
-  } catch {}
-}
-
-export default function VendorStorefront() {
-  const { vendorId } = useParams<{ vendorId?: string }>();
-  const navigate = useNavigate();
+export default function VendorStorefront(): JSX.Element {
+  const params = useParams<{ vendorId?: string }>();
+  const vendorId = params.vendorId ?? "";
+  const [vendorName, setVendorName] = useState<string>("Vendor");
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [cart, setCart] = useState<Service[]>(() => loadCart());
 
   useEffect(() => {
     let mounted = true;
@@ -47,23 +30,25 @@ export default function VendorStorefront() {
         if ((vendorsService as any)?.getServicesByVendor) {
           const resp = await (vendorsService as any).getServicesByVendor(vendorId);
           const data = resp?.data ?? resp;
-          if (!mounted) return;
-          setServices(data || []);
+          if (mounted) setServices(data || []);
+        } else if ((vendorsService as any)?.getVendor) {
+          const v = await (vendorsService as any).getVendor(vendorId);
+          if (mounted) setVendorName(v?.data?.name ?? v?.name ?? "Vendor");
+          const svc = await (vendorsService as any).getAllServices();
+          if (mounted) setServices((svc?.data ?? svc ?? []).slice(0, 6));
         } else {
-          // demo list
-          if (!mounted) return;
-          setServices([
-            { id: "s1", title: "Spa voucher - 2 hours", pricePoints: 1200, priceCurrency: 15, vendorId, vendorName: "Forest Mall", active: true },
-            { id: "s2", title: "Dinner for two", pricePoints: 800, priceCurrency: 10, vendorId, vendorName: "Forest Mall", active: true },
-            { id: "s3", title: "Room discount 20%", pricePoints: 2000, priceCurrency: 25, vendorId, vendorName: "Forest Mall", active: false },
-          ]);
+          // demo fallback
+          if (mounted) {
+            setVendorName("Forest Park Resort");
+            setServices([
+              { id: "s1", title: "2-hour spa", description: "Relaxing package", pointsPrice: 1200, currencyPrice: 15 },
+              { id: "s2", title: "Romantic dinner", description: "Three-course menu", pointsPrice: 800, currencyPrice: 10 },
+              { id: "s3", title: "Room upgrade", description: "Upgrade to premium", pointsPrice: 2000, currencyPrice: 25 },
+            ]);
+          }
         }
-      } catch (err: any) {
-        console.warn("vendorsService.getServicesByVendor failed", err);
-        setError("Failed to load services. Showing demo items.");
-        setServices([
-          { id: "s-demo", title: "Demo service", pricePoints: 500, priceCurrency: 5, vendorId, vendorName: "Demo Vendor", active: true },
-        ]);
+      } catch (err) {
+        // ignore
       } finally {
         if (mounted) setLoading(false);
       }
@@ -71,78 +56,32 @@ export default function VendorStorefront() {
     return () => { mounted = false; };
   }, [vendorId]);
 
-  useEffect(() => {
-    saveCart(cart);
-  }, [cart]);
-
-  const addToCart = (service: Service) => {
-    const next = [...cart, service];
-    setCart(next);
-  };
-
-  const removeFromCart = (id: string) => {
-    setCart((c) => c.filter((i) => i.id !== id));
-  };
-
-  const goToCheckout = () => {
-    if (cart.length === 0) {
-      alert("Your cart is empty");
-      return;
-    }
-    navigate("/customer/checkout");
-  };
-
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <MainLayout title={vendorName} subtitle="Browse services and redeem with points">
+      <div className="mb-6 flex items-center justify-between">
+        <div className="text-sm text-slate-300">Vendor: {vendorName}</div>
         <div>
-          <h2 className="text-2xl font-bold">{services.length > 0 ? `${services[0].vendorName ?? "Vendor"} Store` : "Store"}</h2>
-          <p className="text-sm text-slate-300">Browse services and redeem using points or pay with card.</p>
-        </div>
-
-        <div>
-          <button onClick={goToCheckout} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded text-white">
-            Checkout ({cart.length})
-          </button>
+          <Link to="/customer/rewards" className="text-sm underline">View all rewards</Link>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-4">
-        {loading ? (
-          <div className="col-span-full p-6 text-slate-400">Loading services...</div>
-        ) : error ? (
-          <div className="col-span-full p-4 text-rose-400">{error}</div>
-        ) : services.length === 0 ? (
-          <div className="col-span-full p-6 text-slate-400">No services available at the moment.</div>
-        ) : (
-          services.map((s) => (
-            <div key={s.id} className="bg-slate-900/40 border border-slate-800 rounded-lg p-4 flex flex-col">
-              <div className="flex-1">
-                <div className="font-semibold text-white">{s.title}</div>
-                <div className="text-sm text-slate-300 mt-1">{s.description}</div>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between">
-                <div>
-                  {s.pricePoints ? <div className="text-lg font-bold">{s.pricePoints.toLocaleString()} pts</div> : null}
-                  {s.priceCurrency ? <div className="text-sm text-slate-400">${s.priceCurrency.toFixed(2)}</div> : null}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => addToCart(s)}
-                    disabled={!s.active}
-                    className={`px-3 py-2 rounded-md text-sm font-semibold ${!s.active ? "bg-slate-700 cursor-not-allowed" : "bg-emerald-500 hover:bg-emerald-600 text-white"}`}
-                  >
-                    Add
-                  </button>
-                  <button onClick={() => alert("View details (demo)")} className="px-3 py-2 rounded-md border border-slate-700 text-sm">Details</button>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
+      {loading ? (
+        <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-6 text-center"><Spinner /></div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {services.map((s) => (
+            <RewardCard
+              key={s.id}
+              id={s.id}
+              title={s.title}
+              description={s.description}
+              pointsPrice={s.pointsPrice ?? null}
+              currencyPrice={s.currencyPrice ?? null}
+              vendorName={vendorName}
+            />
+          ))}
+        </div>
+      )}
+    </MainLayout>
   );
 }

@@ -1,61 +1,102 @@
-import React from 'react'
-import { motion } from 'framer-motion'
-import Navbar from '../../components/layout/Navbar'
-import Card from '../../components/common/Card'
+/* src/features/customer/RedeemReward.tsx */
+import React, { useState } from "react";
+import Button from "../../components/common/Button";
+import Card from "../../components/common/Card";
+import { useAuth } from "../auth/useAuth";
+import vault from "../../api/vaultClient";
 
-const RedeemReward: React.FC = () => {
-  const handleRedeem = () => {
-    alert('🎁 Redeem process initiated — this is a mock flow.')
-  }
+type Reward = {
+  id?: string | number;
+  title: string;
+  description?: string;
+  pointsPrice?: number | null;
+  currencyPrice?: number | null;
+  vendorName?: string;
+};
+
+export default function RedeemReward({ reward, onDone }: { reward: Reward; onDone?: (message?: string) => void }) {
+  const { user, updateProfile } = useAuth();
+  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleRedeemWithPoints = async () => {
+    setProcessing(true);
+    setError(null);
+    try {
+      // call vault redeem endpoint if available
+      if (vault && (vault as any).post) {
+        await vault.post(`/rewards/${reward.id}/redeem`, { userId: user?.id, method: "points" });
+        // update local user points if demo
+        updateProfile({ points: Math.max(0, (user?.points ?? 0) - (reward.pointsPrice ?? 0)) });
+        onDone?.("Redeemed successfully. Enjoy your reward!");
+        return;
+      }
+
+      // fallback demo
+      await new Promise((r) => setTimeout(r, 900));
+      updateProfile({ points: Math.max(0, (user?.points ?? 0) - (reward.pointsPrice ?? 0)) });
+      onDone?.("Redeemed (demo) — enjoy!");
+    } catch (err: any) {
+      console.error("redeem failed", err);
+      setError(err?.message ?? "Failed to redeem. Try again.");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handlePayWithCard = async () => {
+    setProcessing(true);
+    setError(null);
+    try {
+      // For currency purchases you'd call Collecto external payments then confirm with vault
+      // We'll simulate demo flow
+      await new Promise((r) => setTimeout(r, 900));
+      onDone?.("Payment successful (demo). Your reward will be processed.");
+    } catch (err: any) {
+      setError(err?.message ?? "Payment failed.");
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-black-900 via-slate-800 to-slate-900 text-white">
-      <Navbar />
+    <div>
+      <Card>
+        <div className="space-y-3">
+          <div>
+            <div className="text-lg font-semibold">{reward.title}</div>
+            {reward.vendorName && <div className="text-sm text-slate-400">{reward.vendorName}</div>}
+            {reward.description && <div className="text-sm text-slate-300 mt-2">{reward.description}</div>}
+          </div>
 
-      <main className="max-w-3xl mx-auto p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Card className="p-8 bg-slate-800/60 backdrop-blur-md border border-slate-700 rounded-2xl shadow-lg">
-            <header className="mb-6 text-center">
-              <h2 className="text-3xl font-bold text-accent mb-2">Redeem Reward</h2>
-              <p className="text-slate-400 text-sm">
-                Confirm reward redemptions for customers. In the full version, this will connect to the CollectoVolt backend to process reward claims.
-              </p>
-            </header>
-
-            <div className="bg-slate-900/50 border border-slate-700 rounded-xl p-5 mb-6">
-              <h3 className="text-lg font-semibold text-white mb-1">Reward Preview</h3>
-              <p className="text-slate-400 text-sm mb-3">
-                e.g. “Free Coffee Coupon” — 500 pts required
-              </p>
-              <div className="flex items-center justify-between text-sm text-slate-300">
-                <span>Customer: <strong className="text-white">Tukas Mari</strong></span>
-                <span>Balance: <strong className="text-accent">1240 pts</strong></span>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="bg-slate-900/30 p-3 rounded">
+              <div className="text-sm text-slate-400">Points price</div>
+              <div className="text-2xl font-bold">{reward.pointsPrice ? `${reward.pointsPrice.toLocaleString()} pts` : "—"}</div>
             </div>
-
-            <div className="flex justify-end gap-3">
-              <button
-                className="px-5 py-3 bg-slate-700 rounded-lg hover:bg-slate-600 transition-colors"
-                onClick={() => alert('Action cancelled')}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-5 py-3 bg-accent rounded-lg font-semibold hover:bg-accent/90 transition-all shadow-md"
-                onClick={handleRedeem}
-              >
-                Confirm Redeem
-              </button>
+            <div className="bg-slate-900/30 p-3 rounded">
+              <div className="text-sm text-slate-400">Currency</div>
+              <div className="text-2xl font-bold">{reward.currencyPrice ? `$${reward.currencyPrice.toFixed(2)}` : "—"}</div>
             </div>
-          </Card>
-        </motion.div>
-      </main>
+          </div>
+
+          {error && <div className="text-sm text-rose-400">{error}</div>}
+
+          <div className="flex items-center gap-3 justify-end">
+            {reward.pointsPrice ? (
+              <Button onClick={handleRedeemWithPoints} loading={processing} disabled={processing || (user?.points ?? 0) < (reward.pointsPrice ?? 0)}>
+                Redeem with points
+              </Button>
+            ) : null}
+
+            {reward.currencyPrice ? (
+              <Button variant="secondary" onClick={handlePayWithCard} loading={processing} disabled={processing}>
+                Pay ${reward.currencyPrice?.toFixed(2)}
+              </Button>
+            ) : null}
+          </div>
+        </div>
+      </Card>
     </div>
-  )
+  );
 }
-
-export default RedeemReward

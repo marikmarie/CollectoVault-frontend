@@ -1,4 +1,4 @@
-import React, { type ReactNode } from "react";
+import  { type ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 type Props = {
@@ -13,13 +13,13 @@ type Props = {
  */
 export default function AuthLayout({ children, title = "Welcome", subtitle }: Props) {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700 text-white flex items-center">
+    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-700 text-white flex items-center">
       <div className="max-w-6xl mx-auto px-6 py-12 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           {/* Left: marketing / preview */}
           <aside className="hidden lg:flex flex-col gap-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow">
+              <div className="w-12 h-12 rounded-lg bg-linear-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
                   <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="white" />
                 </svg>

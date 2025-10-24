@@ -1,16 +1,16 @@
-import React, { useState, type JSX } from "react";
+import  { useState, type JSX } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext"; // existing hook in your project
 
 // Minimal typing to avoid TS errors if your context types differ.
 // Adjust / import your actual User type if available.
-type User = {
-  id?: string;
-  name?: string;
-  email?: string;
-  avatarUrl?: string | null;
-  role?: "customer" | "vendor" | "admin";
-};
+// type User = {
+//   id?: string;
+//   name?: string;
+//   email?: string;
+//   avatarUrl?: string | null;
+//   role?: "customer" | "vendor" | "admin";
+// };
 
 export default function Navbar(): JSX.Element {
   const [open, setOpen] = useState(false);

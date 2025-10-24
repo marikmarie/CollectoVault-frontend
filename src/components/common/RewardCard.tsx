@@ -51,9 +51,7 @@ export default function RewardCard({
     try {
       await onRedeem(id);
     } catch (err) {
-      // caller should handle errors; swallow here to avoid uncaught promise
-      // could integrate a toast provider if available
-      // console.error(err);
+  
     }
   };
 
@@ -67,7 +65,7 @@ export default function RewardCard({
     return (
       <Card className={`flex items-center gap-3 ${className}`}>
         {imageUrl ? (
-          <img src={imageUrl} alt={title} className="w-16 h-16 rounded-md object-cover flex-shrink-0" />
+          <img src={imageUrl} alt={title} className="w-16 h-16 rounded-md object-cover shrink-0" />
         ) : (
           <div className="w-16 h-16 rounded-md bg-slate-800/30 flex items-center justify-center text-slate-300">
             <Icon name="points" />

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 export type Customer = {
+  avatarUrl: null;
   firstName: string;
   lastName: ReactNode;
   joined: string;
@@ -32,7 +33,8 @@ export const customers: Customer[] = [
     joined: "",
     nextTierAt: 0,
     rank: "",
-    recent: undefined
+    recent: undefined,
+    avatarUrl: null
   },
   {
     id: 'C002', name: 'Sam Son', email: 'sam@gmail.com', points: 430, tier: 'Bronze',
@@ -41,7 +43,8 @@ export const customers: Customer[] = [
     joined: "",
     nextTierAt: 0,
     rank: "",
-    recent: undefined
+    recent: undefined,
+    avatarUrl: null
   },
   {
     id: 'C003', name: 'Carol Kwi', email: 'carol@gmail.com', points: 3400, tier: 'Gold',
@@ -50,11 +53,13 @@ export const customers: Customer[] = [
     joined: "",
     nextTierAt: 0,
     rank: "",
-    recent: undefined
+    recent: undefined,
+    avatarUrl: null
   },
 ]
 
 export type Staff = {
+  avatarUrl: null;
   points: number;
   id: string;
   name: string;
@@ -65,9 +70,13 @@ export type Staff = {
 export const staff: Staff[] = [
   {
     id: 'S001', name: 'Dana Mark', email: 'dana@gmail.com', role: 'manager',
-    points: 0 
+    points: 0,
+    avatarUrl: null
   },
-  { id: 'S002', name: 'Evan Martin', email: 'evan@gmail.com', role: 'clerk', points: 0 },
+  {
+    id: 'S002', name: 'Evan Martin', email: 'evan@gmail.com', role: 'clerk', points: 0,
+    avatarUrl: null
+  },
 ]
 
 export const rewards: Reward[] = [

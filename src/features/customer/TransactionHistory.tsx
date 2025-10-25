@@ -1,9 +1,11 @@
 /* src/features/customer/TransactionsHistory.tsx */
-import React, { useEffect, useState, type JSX } from "react";
-import MainLayout from "../../components/layout/MainLayout";
+import  { useEffect, useState, type JSX } from "react";
+//import MainLayout from "../../components/layout/MainLayout";
 import vault from "../../api/vaultClient";
 import Spinner from "../../components/common/Spinner";
-import { useAuth } from "../auth/useAuth";
+//import { useAuth } from "../auth/useAuth";
+import { useAuth } from "../../context/AuthContext";
+
 import Card from "../../components/common/Card";
 
 type Tx = {
@@ -54,7 +56,7 @@ export default function TransactionsHistory(): JSX.Element {
   }, [user]);
 
   return (
-    <MainLayout title="Transactions" subtitle="Your points and payment history">
+    // <MainLayout title="Transactions" subtitle="Your points and payment history">
       <div>
         <Card>
           <div>
@@ -83,6 +85,6 @@ export default function TransactionsHistory(): JSX.Element {
           </div>
         </Card>
       </div>
-    </MainLayout>
+    // </MainLayout>
   );
 }

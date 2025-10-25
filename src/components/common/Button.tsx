@@ -1,20 +1,31 @@
-import React from 'react'
+import React from "react";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  label: string
-  variant?: 'primary' | 'secondary'
-}
+type Variant = "primary" | "secondary" | "ghost" | "danger";
 
-const Button: React.FC<ButtonProps> = ({ label, variant = 'primary', className = '', ...props }) => {
-  const base = 'px-4 py-2 rounded-lg font-semibold transition-all'
-  const styles = variant === 'primary'
-    ? 'bg-accent text-black hover:brightness-95'
-    : 'bg-primary text-white hover:opacity-90'
+type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: Variant;
+  loading?: boolean;
+};
+
+const variantClasses: Record<Variant, string> = {
+  primary: "bg-emerald-500 hover:bg-emerald-600 text-white",
+  secondary: "bg-white text-slate-900 hover:bg-slate-100",
+  ghost: "bg-transparent text-slate-200 hover:bg-slate-800",
+  danger: "bg-rose-500 hover:bg-rose-600 text-white",
+};
+
+export default function Button({ variant = "primary", className = "", loading = false, disabled, children, ...rest }: Props) {
+  const base = "inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md font-semibold shadow-sm transition";
+  const cls = `${base} ${variantClasses[variant]} ${disabled || loading ? "opacity-60 cursor-not-allowed" : ""} ${className}`;
   return (
-    <button className={`${base} ${styles} ${className}`} {...props}>
-      {label}
+    <button className={cls} disabled={disabled || loading} {...rest}>
+      {loading && (
+        <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.2" />
+          <path d="M22 12a10 10 0 00-10-10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+        </svg>
+      )}
+      <span>{children}</span>
     </button>
-  )
+  );
 }
-
-export default Button

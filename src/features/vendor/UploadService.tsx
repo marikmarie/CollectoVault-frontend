@@ -16,7 +16,7 @@ type Form = {
 
 export default function UploadService(): JSX.Element {
   const navigate = useNavigate();
-  const { register, handleSubmit, setError, formState: { errors, isSubmitting }, watch } = useForm<Form>({
+  const { register, handleSubmit, setError, formState: { errors }, watch } = useForm<Form>({
     defaultValues: { title: "", description: "", pricePoints: undefined, priceCurrency: undefined, category: "", active: true },
   });
 
@@ -50,21 +50,21 @@ export default function UploadService(): JSX.Element {
 
     try {
       // Build payload
-      const payload: any = {
-        title: data.title,
-        description: data.description,
-        pricePoints: data.pricePoints || null,
-        priceCurrency: data.priceCurrency || null,
-        category: data.category || "general",
-        active: Boolean(data.active),
-      };
+      // const payload: any = {
+      //   title: data.title,
+      //   description: data.description,
+      //   pricePoints: data.pricePoints || null,
+      //   priceCurrency: data.priceCurrency || null,
+      //   category: data.category || "general",
+      //   active: Boolean(data.active),
+      // };
 
       // If vendorsService.createService exists, call it (with file handling if supported)
       if ((vendorsService as any)?.createService) {
         // If the API supports multipart/form-data, you'd send FormData including image
-        const res = await (vendorsService as any).createService(payload);
+       // const res = await (vendorsService as any).createService(payload);
         
-        const created = res?.data ?? res;
+      //  const created = res?.data ?? res;
         navigate("/vendor/services");
       } else {
         

@@ -1,12 +1,15 @@
 /* src/features/customer/PointsAward.tsx */
-import React, { useState , type JSX } from "react";
-import MainLayout from "../../components/layout/MainLayout";
+import  { useState , type JSX } from "react";
+//import MainLayout from "../../components/layout/MainLayout";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
-import { useAuth } from "../auth/useAuth";
+// import { useAuth } from "../auth/useAuth";
+import { useAuth } from "../../context/AuthContext";
+
 import collectoPayments from "../../api/collectoPayments";
-import vault from "../../api/vaultClient";
+//import vault from "../../api/vaultClient";
 import Spinner from "../../components/common/Spinner";
+//import { div } from "framer-motion/client";
 
 export default function PointsAward(): JSX.Element {
   const { user, updateProfile } = useAuth();
@@ -43,7 +46,8 @@ export default function PointsAward(): JSX.Element {
   };
 
   return (
-    <MainLayout title="Buy points" subtitle="Purchase Collecto points quickly and securely">
+    // <MainLayout title="Buy points" subtitle="Purchase Collecto points quickly and securely">
+      <div>
       <div className="max-w-3xl mx-auto">
         <Card>
           <div className="grid grid-cols-1 gap-4">
@@ -73,6 +77,6 @@ export default function PointsAward(): JSX.Element {
           </div>
         </Card>
       </div>
-    </MainLayout>
+    </div>
   );
 }

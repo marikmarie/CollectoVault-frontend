@@ -1,14 +1,15 @@
 import  { type ReactNode } from "react";
 import Navbar from "./Navbar";
+import { Outlet } from "react-router-dom";
 
 type Props = {
-  children: ReactNode;
+  // children: ReactNode;
   title?: string;
   subtitle?: string;
   headerActions?: ReactNode;
 };
 
-export default function MainLayout({ children, title, subtitle, headerActions }: Props) {
+export default function MainLayout({ title, subtitle, headerActions }: Props) {
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 text-white">
       <Navbar />
@@ -30,7 +31,7 @@ export default function MainLayout({ children, title, subtitle, headerActions }:
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* content card style for inner pages */}
         <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-6 shadow-inner">
-          {children}
+          <Outlet />
         </div>
       </main>
 

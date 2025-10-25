@@ -1,7 +1,7 @@
 // src/pages/admin/ManageVendors.tsx
-import React, { useEffect, useMemo, useState, type JSX } from "react";
-import MainLayout from "../../components/layout/MainLayout";
-//import vendorsService from "../../api/vendorsService";
+import  { useEffect, useMemo, useState, type JSX } from "react";
+// import MainLayout from "../../components/layout/MainLayout";
+import vendorsService from "../../api/vendorsService";
 import { Link } from "react-router-dom";
 
 type Vendor = {
@@ -112,7 +112,7 @@ export default function ManageVendors(): JSX.Element {
   };
 
   return (
-    <MainLayout title="Manage vendors" subtitle="Approve, edit, or remove vendor accounts">
+    <div>
       <div className="mb-6 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 w-full max-w-md">
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search vendors by name or email" className="w-full rounded px-3 py-2 bg-slate-900/40 border border-slate-700" />
@@ -174,6 +174,6 @@ export default function ManageVendors(): JSX.Element {
           </table>
         )}
       </div>
-    </MainLayout>
+    </div>
   );
 }

@@ -1,11 +1,14 @@
 // src/pages/Customer/Login.tsx
 import  { useEffect , type JSX} from "react";
 import { useNavigate } from "react-router-dom";
-import AuthLayout from "../../components/layout/AuthLayout";
+//import AuthLayout from "../../components/layout/AuthLayout";
 import LoginForm from "../../features/auth/LoginForm";
-import { useAuth } from "../../features/auth/useAuth";
+//import { useAuth } from "../../features/auth/useAuth";
 
-export default function Login(): JSX.Element {
+import { useAuth } from "../../context/AuthContext";
+
+
+export default function CustomerLoginPage(): JSX.Element {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
@@ -20,8 +23,8 @@ export default function Login(): JSX.Element {
   }, [isAuthenticated, user, navigate]);
 
   return (
-    <AuthLayout title="Welcome back" subtitle="Sign in to access your CollectoVault account">
+    // <AuthLayout title="Welcome back" subtitle="Sign in to access your CollectoVault account">
       <LoginForm />
-    </AuthLayout>
+    // </AuthLayout>
   );
 }

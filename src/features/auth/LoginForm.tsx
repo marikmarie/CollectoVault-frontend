@@ -1,8 +1,12 @@
 /* src/features/auth/LoginForm.tsx */
-import React from "react";
+import type { JSX } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "./useAuth";
+//import { useAuth } from "./useAuth";
+import { useAuth } from "../../context/AuthContext";
+//import { login } from "../../api/authService";
+
+
 
 type Form = {
   email: string;
@@ -10,7 +14,7 @@ type Form = {
 };
 
 export default function LoginForm(): JSX.Element {
-  const { login } = useAuth();
+  const { loginCustomer } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -24,10 +28,12 @@ export default function LoginForm(): JSX.Element {
 
   const onSubmit = async (data: Form) => {
     try {
-      const user = await login({ email: data.email, password: data.password });
+      //const user = await login({ email: data.email, password: data.password });
+     const user = await loginCustomer(data.email);
       // redirect depending on role
       if (user.role === "vendor") navigate("/vendor/dashboard");
       else navigate("/customer/dashboard");
+    
     } catch (err: any) {
       console.error(err);
       setError("password", { message: err?.message ?? "Login failed. Check credentials." });

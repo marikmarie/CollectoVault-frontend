@@ -78,7 +78,8 @@ export default function Checkout(): JSX.Element {
   };
 
   return (
-    <MainLayout title="Checkout" subtitle="Confirm your order and pay">
+    //<MainLayout title="Checkout" subtitle="Confirm your order and pay">
+      <div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Card>
@@ -138,6 +139,6 @@ export default function Checkout(): JSX.Element {
           </Card>
         </aside>
       </div>
-    </MainLayout>
+    </div>
   );
 }

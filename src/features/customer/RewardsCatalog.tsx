@@ -1,13 +1,15 @@
 /* src/features/customer/RewardsCatalog.tsx */
-import React, { useEffect, useState, type JSX } from "react";
-import MainLayout from "../../components/layout/MainLayout";
+import  { useEffect, useState, type JSX } from "react";
+// import MainLayout from "../../components/layout/MainLayout";
 import RewardCard from "../../components/common/RewardCard";
 import Spinner from "../../components/common/Spinner";
 import Modal from "../../components/common/Modal";
 import RedeemReward from "./RedeemReward";
-import vault from "../../api/vaultClient";
+// import vault from "../../api/vaultClient";
 import vendorsService from "../../api/vendorsService";
-import { useAuth } from "../auth/useAuth";
+// import { useAuth } from "../auth/useAuth";
+//import { useAuth } from "../../context/AuthContext";
+
 
 type Reward = {
   id: string;
@@ -22,11 +24,11 @@ type Reward = {
 };
 
 export default function RewardsCatalog(): JSX.Element {
-  const { user } = useAuth();
+  //const { user } = useAuth();
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeReward, setActiveReward] = useState<Reward | null>(null);
-  const [redeeming, setRedeeming] = useState(false);
+  const [{/*redeeming*/}, setRedeeming] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export default function RewardsCatalog(): JSX.Element {
   };
 
   return (
-    <MainLayout title="Rewards" subtitle="Browse rewards you can redeem with your points">
+    // <MainLayout title="Rewards" subtitle="Browse rewards you can redeem with your points">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Available rewards</h3>
@@ -112,6 +114,6 @@ export default function RewardsCatalog(): JSX.Element {
           </div>
         )}
       </div>
-    </MainLayout>
+    // </MainLayout>
   );
 }

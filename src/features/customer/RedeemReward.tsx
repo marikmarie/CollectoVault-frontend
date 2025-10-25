@@ -1,8 +1,12 @@
 /* src/features/customer/RedeemReward.tsx */
-import React, { useState } from "react";
+import  { useState } from "react";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
-import { useAuth } from "../auth/useAuth";
+//import { useAuth } from "../auth/useAuth";
+
+import { useAuth } from "../../context/AuthContext";
+
+
 import vault from "../../api/vaultClient";
 
 type Reward = {

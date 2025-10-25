@@ -1,112 +1,120 @@
 // src/routes/AppRoutes.tsx
-import React, { Suspense, lazy } from "react";
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
-import ROUTES from "../constants/routes";
-import { useAuth } from "../features/auth/useAuth";
-import Spinner from "../components/common/Spinner";
+import React from "react";
+import { createBrowserRouter, Navigate } from "react-router-dom";
+
 import MainLayout from "../components/layout/MainLayout";
+import AuthLayout from "../components/layout/AuthLayout";
+import Spinner from "../components/common/Spinner";
+import LandingPage from "../pages/LandingPage";
+//import PricingPage from "../pages/PricingPage";
 
-// lazy pages — faster initial load and keeps code tidy
-const LandingPage = lazy(() => import("../pages/LandingPage").catch(() => ({ default: () => <div /> })));
-const CustomerLogin = lazy(() => import("../pages/Customer/Login").catch(() => ({ default: () => <div /> })));
-const CustomerRegister = lazy(() => import("../pages/Customer/Register").catch(() => ({ default: () => <div /> })));
-const CustomerDashboardPage = lazy(() => import("../pages/Customer/Dashboard").catch(() => ({ default: () => <div /> })));
+// CUSTOMER PAGES
+import CustomerLoginPage from "../pages/customer/CustomerLoginPage";
+import CustomerRegisterPage from "../pages/customer/CustomerRegisterPage";
+import CustomerDashboardPage from "../pages/customer/CustomerDashboardPage";
 
-const VendorDashboard = lazy(() => import("../features/vendor/VendorDashboard").catch(() => ({ default: () => <div /> })));
-const VendorUpload = lazy(() => import("../features/vendor/UploadService").catch(() => ({ default: () => <div /> })));
-const VendorServices = lazy(() => import("../features/vendor/ServiceList").catch(() => ({ default: () => <div /> })));
-const VendorStorefront = lazy(() => import("../features/customer/VendorStorefront").catch(() => ({ default: () => <div /> })));
+// CUSTOMER FEATURES
+import RewardsCatalog from "../features/customer/RewardsCatalog";
+import RedeemReward from "../features/customer/RedeemReward";
+import VendorStorefront from "../features/customer/VendorStorefront";
+import PointsAward from "../features/customer/PointsAward";
+import Checkout from "../features/customer/Checkout";
+import TransactionsHistory from "../features/customer/TransactionHistory";
 
-const RewardsCatalog = lazy(() => import("../features/customer/RewardsCatalog").catch(() => ({ default: () => <div /> })));
-const PointsAward = lazy(() => import("../features/customer/PointsAward").catch(() => ({ default: () => <div /> })));
-const Checkout = lazy(() => import("../features/customer/Checkout").catch(() => ({ default: () => <div /> })));
-const TransactionsHistory = lazy(() => import("../features/customer/TransactionHistory").catch(() => ({ default: () => <div /> })));
+// VENDOR FEATURES
+import VendorDashboard from "../features/vendor/VendorDashboard";
+import UploadService from "../features/vendor/UploadService";
+import ServiceList from "../features/vendor/ServiceList";
+import VendorLoginPage from "../pages/vendor/Login";
 
-// const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard").catch(() => ({ default: () => <div /> })));
-// const ManageVendors = lazy(() => import("../pages/admin/ManageVendors").catch(() => ({ default: () => <div /> })));
 
-const NotFound = lazy(() => import("../pages/Shared/NotFound").catch(() => ({ default: () => <div>Not found</div> })));
+// SHARED
+import NotFound from "../shared/NotFound";
+import Forbidden from "../shared/Forbidden";
 
-type ProtectedRouteProps = {
-  requiredRoles?: Array<"customer" | "vendor" | "admin">;
-  redirectTo?: string;
+/** 
+ * Temporary authentication simulation
+ * Replace with actual context or useAuth() later 
+ */
+const useFakeAuth = () => {
+  const [isAuthenticated] = React.useState<boolean>(true);
+  return { isAuthenticated };
 };
 
 /**
- * ProtectedRoute component - checks authentication & roles using useAuth()
- * If user not authenticated -> redirect to login
- * If user does not have required role -> show a basic forbidden view (or redirect)
+ * Protected Route wrapper
  */
-function ProtectedRoute({ requiredRoles, redirectTo }: ProtectedRouteProps) {
-  const { isAuthenticated, user } = useAuth();
-  // If not authenticated, redirect to appropriate login route (customer login by default)
-  if (!isAuthenticated) {
-    return <Navigate to={redirectTo ?? ROUTES.CUSTOMER_LOGIN} replace />;
-  }
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isAuthenticated } = useFakeAuth();
 
-  if (requiredRoles && requiredRoles.length > 0) {
-    const role = user?.role;
-    if (!role || !requiredRoles.includes(role as any)) {
-      // Render a simple forbidden message inside the app layout
-      return (
-        <MainLayout title="Forbidden" subtitle="You do not have permission to view this page">
-          <div className="p-6 text-slate-300">You do not have access to this section. Contact an administrator if you believe this is an error.</div>
-        </MainLayout>
-      );
-    }
-  }
-
-  // If authenticated and role is OK, render the nested route(s)
-  return <Outlet />;
-}
-
-export default function AppRoutes(): JSX.Element {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
+  if (isAuthenticated === undefined) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
         <Spinner />
       </div>
-    }>
-      <Routes>
-        {/* Public */}
-        <Route path={ROUTES.HOME} element={<LandingPage />} />
-        <Route path={ROUTES.HOW_IT_WORKS} element={<MainLayout title="How it works"><div className="p-6">How CollectoVault works — content placeholder</div></MainLayout>} />
-        <Route path={ROUTES.PRICING} element={<MainLayout title="Pricing"><div className="p-6">Pricing placeholder</div></MainLayout>} />
-        <Route path={ROUTES.TERMS} element={<MainLayout title="Terms"><div className="p-6">Terms placeholder</div></MainLayout>} />
-        <Route path={ROUTES.PRIVACY} element={<MainLayout title="Privacy"><div className="p-6">Privacy placeholder</div></MainLayout>} />
+    );
+  }
 
-        {/* Auth pages */}
-        <Route path={ROUTES.CUSTOMER_LOGIN} element={<CustomerLogin />} />
-        <Route path={ROUTES.CUSTOMER_REGISTER} element={<CustomerRegister />} />
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+};
 
-        {/* Customer-protected */}
-        <Route element={<ProtectedRoute requiredRoles={["customer"]} redirectTo={ROUTES.CUSTOMER_LOGIN} />}>
-          <Route path={ROUTES.CUSTOMER_DASHBOARD} element={<CustomerDashboardPage />} />
-          <Route path={ROUTES.CUSTOMER_REWARDS} element={<RewardsCatalog />} />
-          <Route path={ROUTES.CUSTOMER_TRANSACTIONS} element={<TransactionsHistory />} />
-          <Route path={ROUTES.CUSTOMER_CHECKOUT} element={<Checkout />} />
-          <Route path={ROUTES.CUSTOMER_BUY_POINTS} element={<PointsAward />} />
-        </Route>
+/**
+ * Main App Routes using createBrowserRouter
+ */
+export const AppRoutes = createBrowserRouter([
+  // Public Routes
+  { path: "/", element: <LandingPage /> },
+  //{ path: "/pricing", element: <PricingPage /> },
 
-        {/* Vendor-protected */}
-        <Route element={<ProtectedRoute requiredRoles={["vendor"]} redirectTo={ROUTES.VENDOR_LOGIN} />}>
-          <Route path={ROUTES.VENDOR_DASHBOARD} element={<VendorDashboard />} />
-          <Route path={ROUTES.VENDOR_UPLOAD} element={<VendorUpload />} />
-          <Route path={ROUTES.VENDOR_SERVICES} element={<VendorServices />} />
-        </Route>
+  {
+    element: <AuthLayout title="Welcome back" subtitle="Sign in to access your CollectoVault account"/>,
+    children: [
+      { path: "/login", element: <CustomerLoginPage /> },
+      { path: "/register", element: <CustomerRegisterPage /> },
+      { path: "/vendor/login", element: <VendorLoginPage /> },
+    ],
+  },
 
-        {/* Vendor public storefront */}
-        <Route path={ROUTES.VENDOR_STORE} element={<VendorStorefront />} />
+  // Protected Routes
+  {
+    element: (
+      <ProtectedRoute>
+        <MainLayout title="Rewards" subtitle="Browse rewards you can redeem with your points"/>
+      </ProtectedRoute>
+    ),
+    children: [
+      // CUSTOMER ROUTES
+      { path: "/customer/dashboard", element: <CustomerDashboardPage /> },
+      { path: "/customer/rewards", element: <RewardsCatalog /> },
+      { path: "/customer/redeem", element: <RedeemReward reward={{
+          id: undefined,
+          title: "",
+          description: undefined,
+          pointsPrice: undefined,
+          currencyPrice: undefined,
+          vendorName: undefined
+      }} /> },
+      { path: "/customer/vendors", element: <VendorStorefront /> },
+      { path: "/customer/points-award", element: <PointsAward /> },
+      { path: "/customer/checkout", element: <Checkout /> },
+      { path: "/customer/transactions", element: <TransactionsHistory /> },
 
-        {/* Admin-protected */}
-        <Route element={<ProtectedRoute requiredRoles={["admin"]} redirectTo={ROUTES.CUSTOMER_LOGIN} />}>
-          <Route path={ROUTES.ADMIN_ROOT} element={<AdminDashboard />} />
-          <Route path={ROUTES.ADMIN_VENDORS} element={<ManageVendors />} />
-        </Route>
+      // VENDOR ROUTES
+      { path: "/vendor/dashboard", element: <VendorDashboard /> },
+      { path: "/vendor/upload-service", element: <UploadService /> },
+      { path: "/vendor/services", element: <ServiceList /> },
 
-        {/* Fallback */}
-        <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
-      </Routes>
-    </Suspense>
-  );
-}
+      // ADMIN ROUTES
+    //   { path: "/admin/dashboard", element: <AdminDashboard /> },
+    //   { path: "/admin/vendors", element: <ManageVendors /> },
+    //   { path: "/admin/customers", element: <ManageCustomers /> },
+    //   { path: "/admin/reports", element: <Reports /> },
+    ],
+  },
+
+  // ERROR ROUTES
+  { path: "/forbidden", element: <Forbidden /> },
+  { path: "*", element: <NotFound /> },
+]);
+
+export default AppRoutes;

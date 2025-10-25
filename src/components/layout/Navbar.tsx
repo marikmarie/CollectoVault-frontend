@@ -2,6 +2,9 @@ import  { useState, type JSX } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext"; // existing hook in your project
 
+import ROUTES from "../../constants/routes";
+
+
 // Minimal typing to avoid TS errors if your context types differ.
 // Adjust / import your actual User type if available.
 // type User = {
@@ -68,10 +71,10 @@ export default function Navbar(): JSX.Element {
 
               {!user && (
                 <>
-                  <Link to="/customer/register" className="px-3 py-1.5 rounded-md bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600">
+                  <Link to={ROUTES.REGISTER} className="px-3 py-1.5 rounded-md bg-emerald-500 text-white text-sm font-semibold hover:bg-emerald-600">
                     Sign up
                   </Link>
-                  <Link to="/customer/login" className="text-sm px-3 py-1.5 rounded-md border border-slate-700 hover:bg-slate-800">
+                  <Link to="/login" className="text-sm px-3 py-1.5 rounded-md border border-slate-700 hover:bg-slate-800">
                     Sign in
                   </Link>
                 </>

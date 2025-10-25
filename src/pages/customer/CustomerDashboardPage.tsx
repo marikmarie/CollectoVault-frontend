@@ -1,15 +1,18 @@
 // src/pages/Customer/Dashboard.tsx
 import  { useEffect , type JSX} from "react";
 import { useNavigate } from "react-router-dom";
-import MainLayout from "../../components/layout/MainLayout";
+// import MainLayout from "../../components/layout/MainLayout";
 import CustomerDashboard from "../../features/customer/CustomerDashboard";
-import { useAuth } from "../../features/auth/useAuth";
+// import { useAuth } from "../../features/auth/useAuth";
+import { useAuth } from "../../context/AuthContext";
+
+
 
 /**
  * Page wrapper around the feature-level CustomerDashboard.
  * Ensures only authenticated customers can access this page (simple client-side guard).
  */
-export default function Dashboard(): JSX.Element {
+export default function CustomerDashboardPage(): JSX.Element {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
@@ -28,8 +31,8 @@ export default function Dashboard(): JSX.Element {
   }, [isAuthenticated, user, navigate]);
 
   return (
-    <MainLayout title="Dashboard" subtitle="Your CollectoVault overview">
+    // <MainLayout title="Dashboard" subtitle="Your CollectoVault overview">
       <CustomerDashboard />
-    </MainLayout>
+    // </MainLayout>
   );
 }

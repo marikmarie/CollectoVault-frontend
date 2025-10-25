@@ -1,12 +1,14 @@
 /* src/features/customer/CustomerDashboard.tsx */
 import  { useEffect, useState , type JSX} from "react";
-import MainLayout from "../../components/layout/MainLayout";
+//import MainLayout from "../../components/layout/MainLayout";
 import TierProgress from "../../components/common/TierProgress";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import RewardCard from "../../components/common/RewardCard";
 import Spinner from "../../components/common/Spinner";
-import { useAuth } from "../auth/useAuth";
+//import { useAuth } from "../auth/useAuth";
+import { useAuth } from "../../context/AuthContext";
+
 import vendorsService from "../../api/vendorsService";
 import vault from "../../api/vaultClient";
 
@@ -74,8 +76,8 @@ export default function CustomerDashboard(): JSX.Element {
   }, [user]);
 
   return (
-    <MainLayout title="Your dashboard" subtitle="See your points, tier progress and recommended rewards">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    // <MainLayout title="Your dashboard" subtitle="See your points, tier progress and recommended rewards">
+      <div>      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <div className="flex items-center justify-between gap-4">
@@ -166,6 +168,7 @@ export default function CustomerDashboard(): JSX.Element {
           </div>
         </aside>
       </div>
-    </MainLayout>
+      </div>
+    // </MainLayout>
   );
 }

@@ -1,5 +1,5 @@
 /* src/features/vendor/VendorDashboard.tsx */
-import React, { useEffect, useState, type JSX } from "react";
+import  { useEffect, useState, type JSX } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import vendorsService from "../../api/vendorsService";

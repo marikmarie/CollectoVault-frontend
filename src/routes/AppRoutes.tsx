@@ -6,7 +6,7 @@ import MainLayout from "../components/layout/MainLayout";
 import AuthLayout from "../components/layout/AuthLayout";
 import Spinner from "../components/common/Spinner";
 import LandingPage from "../pages/LandingPage";
-//import PricingPage from "../pages/PricingPage";
+import PricingPage from "../pages/Pricing";
 
 // CUSTOMER PAGES
 import CustomerLoginPage from "../pages/customer/CustomerLoginPage";
@@ -64,7 +64,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 export const AppRoutes = createBrowserRouter([
   // Public Routes
   { path: "/", element: <LandingPage /> },
-  //{ path: "/pricing", element: <PricingPage /> },
+  { path: "/pricing", element: <PricingPage /> },
 
   {
     element: <AuthLayout title="Welcome back" subtitle="Sign in to access your CollectoVault account"/>,

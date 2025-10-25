@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import ROUTES from "../constants/routes";
 import { Check } from "lucide-react";
+import Navbar from "../components/layout/Navbar";
 
 export default function Pricing() {
   const plans = [
@@ -56,6 +57,8 @@ export default function Pricing() {
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
       {/* Header */}
+      <Navbar />
+      
       <section className="text-center py-20 px-4">
         <motion.h1
           initial={{ opacity: 0, y: -30 }}

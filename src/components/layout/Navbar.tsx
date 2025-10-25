@@ -4,17 +4,6 @@ import { useAuth } from "../../context/AuthContext"; // existing hook in your pr
 
 import ROUTES from "../../constants/routes";
 
-
-// Minimal typing to avoid TS errors if your context types differ.
-// Adjust / import your actual User type if available.
-// type User = {
-//   id?: string;
-//   name?: string;
-//   email?: string;
-//   avatarUrl?: string | null;
-//   role?: "customer" | "vendor" | "admin";
-// };
-
 export default function Navbar(): JSX.Element {
   const [open, setOpen] = useState(false);
   const { user, logout } = (useAuth() as any) ?? { user: null, logout: undefined };
@@ -34,10 +23,10 @@ export default function Navbar(): JSX.Element {
     <nav className="bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 text-white shadow">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          {/* Left: brand */}
+          {/* Left: Logo */}
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center gap-3">
-              {/* Simple SVG logo */}
+             
               <div className="w-10 h-10 rounded-lg bg-linear-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
                   <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="white" />

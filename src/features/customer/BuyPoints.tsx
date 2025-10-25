@@ -3,13 +3,13 @@ import { motion } from "framer-motion";
 import { Check, Coins } from "lucide-react";
 import Button from "../../components/common/Button";
 import Card  from "../../components/common/Card";
-import Toast from "../../components/common/Toast"; // default export
-import type { ToastType } from "../../components/common/Toast"; // import type
+import Toast from "../../components/common/Toast"; 
+import type { ToastType } from "../../components/common/Toast"; 
 
 const POINT_PACKAGES = [
-  { id: 1, points: 500, price: 5000 },
-  { id: 2, points: 1000, price: 9500 },
-  { id: 3, points: 2500, price: 23000 },
+  { id: 1, points: 100, price: 5000 },
+  { id: 2, points: 500, price: 10000 },
+  { id: 3, points: 2500, price: 25000 },
   { id: 4, points: 5000, price: 45000 },
 ];
 
@@ -41,7 +41,7 @@ export default function BuyPoints() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center px-4 py-10">
+    <div className="min-h-screen bg-slate-500 flex flex-col items-center px-4 py-10">
       <motion.h1
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -51,7 +51,7 @@ export default function BuyPoints() {
       </motion.h1>
 
       <Card className="w-full max-w-md text-center p-6 mb-8">
-        <p className="text-gray-500 text-sm mb-2">Current Balance</p>
+        <p className="text-gray-50 text-sm mb-2">Current Balance</p>
         <div className="flex justify-center items-center gap-2">
           <Coins className="text-yellow-500" />
           <span className="text-2xl font-semibold text-gray-800">
@@ -76,7 +76,7 @@ export default function BuyPoints() {
               <h2 className="text-xl font-bold text-gray-800">
                 {pkg.points.toLocaleString()} Points
               </h2>
-              <p className="text-gray-600">UGX {pkg.price.toLocaleString()}</p>
+              <p className="text-gray-50">UGX {pkg.price.toLocaleString()}</p>
               {selected === pkg.id && (
                 <div className="flex justify-center">
                   <Check className="text-green-500 w-5 h-5" />

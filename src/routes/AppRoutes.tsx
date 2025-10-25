@@ -19,6 +19,7 @@ import RedeemReward from "../features/customer/RedeemReward";
 import VendorStorefront from "../features/customer/VendorStorefront";
 import PointsAward from "../features/customer/PointsAward";
 import Checkout from "../features/customer/Checkout";
+import BuyPoints from "../features/customer/BuyPoints";
 import TransactionsHistory from "../features/customer/TransactionHistory";
 
 // VENDOR FEATURES
@@ -98,6 +99,7 @@ export const AppRoutes = createBrowserRouter([
       { path: "/customer/points-award", element: <PointsAward /> },
       { path: "/customer/checkout", element: <Checkout /> },
       { path: "/customer/transactions", element: <TransactionsHistory /> },
+      { path: "/buy-points", element: <BuyPoints /> },
 
       // VENDOR ROUTES
       { path: "/vendor/dashboard", element: <VendorDashboard /> },

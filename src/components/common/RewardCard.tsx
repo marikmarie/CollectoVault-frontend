@@ -1,5 +1,5 @@
 // src/components/common/RewardCard.tsx
-import React from "react";
+//import React from "react";
 import Button from "./Button";
 import Card from "./Card";
 import Icon from "./Icon";
@@ -55,11 +55,11 @@ export default function RewardCard({
     }
   };
 
-  const Badge = ({ children }: { children: React.ReactNode }) => (
-    <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-800/60 border border-slate-700 text-slate-200">
-      {children}
-    </div>
-  );
+  // const Badge = ({ children }: { children: React.ReactNode }) => (
+  //   <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-800/60 border border-slate-700 text-slate-200">
+  //     {children}
+  //   </div>
+  // );
 
   if (compact) {
     return (

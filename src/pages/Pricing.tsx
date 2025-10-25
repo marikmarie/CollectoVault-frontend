@@ -23,7 +23,7 @@ export default function Pricing() {
     },
     {
       name: "Business",
-      price: "$49/mo",
+      price: "UGX 50000/mo",
       description: "Ideal for small to mid-size businesses that need branded loyalty features.",
       features: [
         "Unlimited customers",

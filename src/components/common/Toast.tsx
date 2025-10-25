@@ -1,7 +1,7 @@
 import  { useEffect } from "react";
 import Icon from "./Icon";
 
-type ToastType = "info" | "success" | "error" | "warning";
+export type ToastType = "info" | "success" | "error" | "warning";
 
 type Props = {
   id?: string | number;

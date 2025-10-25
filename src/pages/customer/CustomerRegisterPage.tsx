@@ -3,7 +3,9 @@ import  { useEffect, type JSX } from "react";
 import { useNavigate } from "react-router-dom";
 // import AuthLayout from "../../components/layout/AuthLayout";
 import RegisterForm from "../../features/auth/RegisterForm";
-import { useAuth } from "../../features/auth/useAuth";
+// import { useAuth } from "../../features/auth/useAuth";
+import { useAuth } from "../../context/AuthContext";
+
 
 export default function CustomerRegisterPage(): JSX.Element {
   const { isAuthenticated, user } = useAuth();

@@ -2,7 +2,9 @@
 import { useState, type JSX } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "./useAuth";
+// import { useAuth } from "./useAuth";
+
+import { useAuth } from "../../context/AuthContext";
 
 type Form = {
   firstName: string;

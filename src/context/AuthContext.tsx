@@ -11,12 +11,22 @@ type User = {
   avatarUrl?: string | null
 }
 
+type RegisterPayload = {
+  firstName: string;
+  lastName?: string;
+  email: string;
+  phone?: string;
+  password: string;
+};
+
 type AuthContextType = {
   user: User | null
   isAuthenticated?: boolean
   loginCustomer: (email: string) => User
   loginStaff: (email: string) => void
   logout: () => void
+  register: (payload: RegisterPayload) => Promise<User>;
+  
   updateProfile: (patch: Partial<User>) => void;
 }
 
@@ -73,6 +83,18 @@ const loginCustomer = (email: string): User => {
       } catch {}
     };
   
+  const register = async (payload: RegisterPayload): Promise<User> => {
+    // Implement your registration logic here
+    const newUser: User = {
+      id: Date.now().toString(),
+      name: `${payload.firstName} ${payload.lastName || ''}`,
+      email: payload.email,
+      role: 'customer',
+      points: 0
+    };
+    setUser(newUser);
+    return newUser;
+  };
 
-  return <AuthContext.Provider value={{ user, loginCustomer, loginStaff, logout, updateProfile }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, loginCustomer, loginStaff, logout, updateProfile, register }}>{children}</AuthContext.Provider>
 }

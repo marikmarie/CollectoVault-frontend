@@ -25,8 +25,8 @@ type Reward = {
 export default function CustomerDashboard(): JSX.Element {
   const { user } = useAuth();
   const [points, setPoints] = useState<number>(user?.points ?? 0);
-  const [tier, setTier] = useState<string>("Silver");
-  const [nextTierPoints, setNextTierPoints] = useState<number>(2000);
+  const [tier, {/*setTier*/}] = useState<string>("Silver");
+  const [nextTierPoints, {/*setNextTierPoints*/}] = useState<number>(2000);
   const [topRewards, setTopRewards] = useState<Reward[]>([]);
   const [loadingRewards, setLoadingRewards] = useState(true);
 

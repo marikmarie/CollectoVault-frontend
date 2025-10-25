@@ -148,7 +148,7 @@ export default function RegisterForm(): JSX.Element {
           </button>
         </div>
 
-        <div className="mt-4 text-center text-sm text-slate-400">By creating an account you agree to our terms. Already registered? <Link to="/customer/login" className="text-white underline">Sign in</Link></div>
+        <div className="mt-4 text-center text-sm text-slate-400">By creating an account you agree to our terms. Already registered? <Link to="/login" className="text-white underline">Sign in</Link></div>
       </form>
 
       <div className="mt-4">

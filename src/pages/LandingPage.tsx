@@ -89,7 +89,7 @@ const LandingPage: React.FC = () => {
 
             <div className="flex flex-wrap gap-4 items-center">
               <Button variant="primary" onClick={() => navigate("/customer/register")}>Get Started — It’s Free</Button>
-              <Link to="/customer/login" className="inline-flex items-center px-4 py-2 rounded-md border border-slate-700 hover:bg-slate-800 text-sm">
+              <Link to="/login" className="inline-flex items-center px-4 py-2 rounded-md border border-slate-700 hover:bg-slate-800 text-sm">
                 Sign in
               </Link>
             </div>

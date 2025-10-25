@@ -58,7 +58,7 @@ const StaffLogin: React.FC = () => {
                 Use Demo Staff
               </button>
 
-              <Link to="/customer/login" className="text-sm text-slate-300 hover:underline ml-2">
+              <Link to="/login" className="text-sm text-slate-300 hover:underline ml-2">
                 Customer login
               </Link>
             </div>

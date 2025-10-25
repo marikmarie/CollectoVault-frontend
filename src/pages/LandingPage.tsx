@@ -148,7 +148,7 @@ const LandingPage: React.FC = () => {
         </section>
 
         {/* FEATURES */}
-        <section className="mt-20">
+        <section id="how-it-works" className="mt-20 scroll-mt-24">
           <h2 className="text-2xl font-bold text-center">How CollectoVault helps your business</h2>
           <p className="text-center text-slate-400 mt-2 max-w-2xl mx-auto">A complete loyalty platform that works for hotels, malls, restaurants and any service provider. Flexible rules, clear analytics, and delightful experiences for customers.</p>
 

@@ -6,8 +6,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 //import { login } from "../../api/authService";
 
-
-
 type Form = {
   email: string;
   password: string;
@@ -21,67 +19,97 @@ export default function LoginForm(): JSX.Element {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setError,
+    //setError,
   } = useForm<Form>({
     defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = async (data: Form) => {
     try {
-      //const user = await login({ email: data.email, password: data.password });
-     const user = await loginCustomer(data.email);
-      // redirect depending on role
-      if (user.role === "vendor") navigate("/vendor/dashboard");
-      else navigate("/customer/dashboard");
-    
-    } catch (err: any) {
+      // const user = await loginCustomer(data.email);
+      // console.log("Logged in as", user);
+      // if (user.role === "vendor") 
+        navigate("/customer/dashboard");
+      // else navigate("/customer/dashboard");
+    } catch (err) {
       console.error(err);
-      setError("password", { message: err?.message ?? "Login failed. Check credentials." });
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-slate-200">Email</label>
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-slate-200"
+        >
+          Email
+        </label>
         <input
           id="email"
           type="email"
           {...register("email", { required: "Email is required" })}
-          className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${errors.email ? "border-rose-500" : "border-slate-700"}`}
+          className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
+            errors.email ? "border-rose-500" : "border-slate-700"
+          }`}
           placeholder="you@example.com"
         />
-        {errors.email && <p className="mt-1 text-sm text-rose-400">{errors.email.message}</p>}
+        {errors.email && (
+          <p className="mt-1 text-sm text-rose-400">{errors.email.message}</p>
+        )}
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-slate-200">Password</label>
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-slate-200"
+        >
+          Password
+        </label>
         <input
           id="password"
           type="password"
           {...register("password", { required: "Password is required" })}
-          className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${errors.password ? "border-rose-500" : "border-slate-700"}`}
+          className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
+            errors.password ? "border-rose-500" : "border-slate-700"
+          }`}
           placeholder="Your password"
         />
-        {errors.password && <p className="mt-1 text-sm text-rose-400">{errors.password.message}</p>}
+        {errors.password && (
+          <p className="mt-1 text-sm text-rose-400">
+            {errors.password.message}
+          </p>
+        )}
       </div>
 
       <div className="flex items-center justify-between text-sm">
-        <Link to="/customer/forgot-password" className="text-slate-300 hover:underline">Forgot password?</Link>
+        <Link
+          to="/customer/forgot-password"
+          className="text-slate-300 hover:underline"
+        >
+          Forgot password?
+        </Link>
       </div>
 
       <div className="flex items-center justify-end">
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`inline-flex items-center gap-2 px-5 py-2 rounded-md font-semibold shadow-sm ${isSubmitting ? "bg-slate-600 cursor-wait" : "bg-emerald-500 hover:bg-emerald-600 text-white"}`}
+          className={`inline-flex items-center gap-2 px-5 py-2 rounded-md font-semibold shadow-sm ${
+            isSubmitting
+              ? "bg-slate-600 cursor-wait"
+              : "bg-emerald-500 hover:bg-emerald-600 text-white"
+          }`}
         >
           {isSubmitting ? "Signing in..." : "Sign in"}
         </button>
       </div>
 
       <div className="text-sm text-slate-400 text-center">
-        Don't have an account? <Link to="/customer/register" className="underline text-white">Create one</Link>
+        Don't have an account?{" "}
+        <Link to="/vendor/register" className="underline text-white">
+          Create one
+        </Link>
       </div>
     </form>
   );

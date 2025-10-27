@@ -18,7 +18,7 @@ export default function CustomerDashboardPage(): JSX.Element {
 
   useEffect(() => {
     // Client-side redirect for non-authenticated users
-    if (!isAuthenticated) {
+    if (isAuthenticated) {
       navigate("/login");
       return;
     }

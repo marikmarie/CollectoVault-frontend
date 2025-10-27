@@ -35,8 +35,7 @@ export default function CustomerDashboard(): JSX.Element {
     (async () => {
       setLoadingRewards(true);
       try {
-        // try vault API for quick recommendations / top rewards
-        if ((vendorsService as any)?.getTopRewards) {
+       if ((vendorsService as any)?.getTopRewards) {
           const res = await (vendorsService as any).getTopRewards();
           const data = res?.data ?? res;
           if (mounted) setTopRewards(data || []);
@@ -44,8 +43,9 @@ export default function CustomerDashboard(): JSX.Element {
           const res = await (vendorsService as any).getAllServices();
           const data = res?.data ?? res;
           if (mounted) setTopRewards((data || []).slice(0, 3));
-        } else {
-          // fallback demo
+        } 
+        else {
+         
           if (!mounted) return;
           const demo: Reward[] = [
             { id: "r1", title: "2-Hour Spa Voucher", description: "Relaxing treatment", pointsPrice: 1200, currencyPrice: 15, vendorName: "Forest Mall Spa", imageUrl: null },

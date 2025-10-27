@@ -29,7 +29,7 @@ export default function MainLayout({ title, subtitle, headerActions }: Props) {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* content card style for inner pages */}
+        
         <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-6 shadow-inner">
           <Outlet />
         </div>

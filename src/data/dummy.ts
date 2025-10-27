@@ -47,7 +47,7 @@ export const customers: Customer[] = [
     avatarUrl: null
   },
   {
-    id: 'C003', name: 'Carol Kwi', email: 'carol@gmail.com', points: 3400, tier: 'Gold',
+    id: 'C003', name: 'TM', email: 'tm@gmail.com', points: 3400, tier: 'Gold',
     firstName: "",
     lastName: undefined,
     joined: "",

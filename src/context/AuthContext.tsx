@@ -4,6 +4,7 @@ import { customers as initialCustomers, staff as initialStaff } from '../data/du
 type User = {
   points: number
   firstName?: string
+  lastName?: string
   id: string
   name: string
   email?: string

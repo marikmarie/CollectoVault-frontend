@@ -9,6 +9,7 @@ const ROUTES = {
     DASHBOARD: "/customer/dashboard",
     REWARDS: "/customer/rewards",
     REDEEM: "/customer/redeem",
+    POINTS: "/customer/redeem",
     TRANSACTIONS: "/customer/transactions",
     CHECKOUT: "/customer/checkout",
     VENDORSTOREFRONT: "/vendor"

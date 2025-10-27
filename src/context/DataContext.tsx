@@ -9,6 +9,7 @@ type DataContextType = {
   redeemReward: (customerId: string, rewardId: string) => { success: boolean; message: string }
 }
 
+
 const DataContext = createContext<DataContextType | undefined>(undefined)
 
 export const useData = () => {

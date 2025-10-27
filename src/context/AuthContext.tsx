@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, type ReactNode, useEffect }
 import { customers as initialCustomers, staff as initialStaff } from '../data/dummy'
 
 type User = {
+  tier: string
+  progressPercent: number
   points: number
   firstName?: string
   lastName?: string
@@ -63,8 +65,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 const loginCustomer = (email: string): User => {
   const c = initialCustomers.find(x => x.email === email) || initialCustomers[0]
   const user: User = {
-    id: c.id,    name: c.name,    email: c.email,
-    role: 'customer',    points: c.points ?? 0,    avatarUrl: c.avatarUrl ?? null
+    id: c.id, name: c.name, email: c.email,
+    role: 'customer', points: c.points ?? 0, avatarUrl: c.avatarUrl ?? null,
+    tier: '',
+    progressPercent: 0
   }
   setUser(user)
   return user
@@ -72,7 +76,7 @@ const loginCustomer = (email: string): User => {
 
   const loginStaff = (email: string) => {
     const s = initialStaff.find(x => x.email === email) || initialStaff[0]
-    setUser({ id: s.id, name: s.name, email: s.email, role: 'staff', points: s.points ?? 0, avatarUrl: s.avatarUrl ?? null })
+   // setUser({ id: s.id, name: s.name, email: s.email, role: 'staff', points: s.points ?? 0, avatarUrl: s.avatarUrl ?? null })
   }
 
   const logout = () => setUser(null)
@@ -93,7 +97,9 @@ const loginCustomer = (email: string): User => {
       name: `${payload.firstName} ${payload.lastName || ''}`,
       email: payload.email,
       role: 'customer',
-      points: 0
+      points: 0,
+      tier: '',
+      progressPercent: 0
     };
     setUser(newUser);
     return newUser;

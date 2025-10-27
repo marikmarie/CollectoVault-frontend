@@ -1,9 +1,9 @@
 // src/pages/admin/AdminDashboard.tsx
-import React, { useEffect, useState, type JSX } from "react";
-import MainLayout from "../../components/layout/MainLayout";
+import  { useEffect, useState, type JSX } from "react";
+// import MainLayout from "../../components/layout/MainLayout";
 import { Link } from "react-router-dom";
 import vendorsService from "../../api/vendorsService";
-import { useAuth } from "../../features/auth/useAuth";
+// import { useAuth } from "../../features/auth/useAuth";
 
 type VendorSummary = {
   id: string;
@@ -15,7 +15,7 @@ type VendorSummary = {
 };
 
 export default function AdminDashboard(): JSX.Element {
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const [vendors, setVendors] = useState<VendorSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -86,7 +86,8 @@ export default function AdminDashboard(): JSX.Element {
   };
 
   return (
-    <MainLayout title="Admin dashboard" subtitle="Manage vendors, approvals and platform-wide insights">
+    // <MainLayout title="Admin dashboard" subtitle="Manage vendors, approvals and platform-wide insights">
+    <div>
       <div className="grid gap-6 md:grid-cols-3 mb-6">
         <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-5">
           <p className="text-sm text-slate-400">Total vendors</p>
@@ -170,6 +171,6 @@ export default function AdminDashboard(): JSX.Element {
           </div>
         </div>
       </section>
-    </MainLayout>
+    </div>
   );
 }

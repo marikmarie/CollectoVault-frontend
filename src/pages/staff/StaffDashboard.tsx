@@ -31,10 +31,10 @@ const StaffDashboard: React.FC = () => {
           </div>
           <div className="flex items-center gap-3">
             <Link to="/award">
-              <Button label="Award Points" />
+              <Button>Award Points</Button>
             </Link>
             <Link to="/admin/rewards">
-              <Button label="Manage Rewards" variant="secondary" />
+              <Button variant="secondary">Manage Rewards</Button>
             </Link>
           </div>
         </div>

@@ -1,7 +1,7 @@
 // src/pages/Vendor/Dashboard.tsx
 import { useEffect, type JSX,  } from "react";
 import { useNavigate } from "react-router-dom";
-import MainLayout from "../../components/layout/MainLayout";
+// import MainLayout from "../../components/layout/MainLayout";
 import VendorDashboard from "../../features/vendor/VendorDashboard";
 import { useAuth } from "../../features/auth/useAuth";
 
@@ -22,8 +22,8 @@ export default function VendorDashboardPage(): JSX.Element {
   }, [isAuthenticated, user]);
 
   return (
-    <MainLayout title="Vendor Dashboard" subtitle="Overview of services, sales and quick actions">
+    // <MainLayout title="Vendor Dashboard" subtitle="Overview of services, sales and quick actions">
       <VendorDashboard />
-    </MainLayout>
+    // </MainLayout>
   );
 }

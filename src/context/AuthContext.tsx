@@ -75,7 +75,9 @@ const loginCustomer = (email: string): User => {
   }
 
   const logout = () => setUser(null)
-  const updateProfile = (patch: Partial<User>) => {
+  //const updateProfile = (patch: Partial<User>) => {
+    const updateProfile = () => {
+  
       //const next = { ...(user ?? {}), ...patch };
      // setUser(next);
       try {

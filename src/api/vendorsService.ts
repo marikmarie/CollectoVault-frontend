@@ -2,8 +2,8 @@
 // High-level vendor/service/reward APIs for the front-end to call.
 // Uses the same mock data in mockDb.
 
-import vault from "./vaultClient";
-import { services, vendors, rewards, users, transactions } from "./mockDb";
+// import vault from "./vaultClient";
+import { services, vendors, rewards, transactions } from "./mockDb";
 
 const adaptResponse = (x: any) => ({ data: x });
 

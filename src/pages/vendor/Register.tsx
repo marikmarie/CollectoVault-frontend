@@ -1,7 +1,7 @@
 // src/pages/Vendor/Register.tsx
 import  { useEffect, type JSX } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AuthLayout from "../../components/layout/AuthLayout";
+// import AuthLayout from "../../components/layout/AuthLayout";
 import RegisterForm from "../../features/auth/RegisterForm";
 import { useAuth } from "../../features/auth/useAuth";
 
@@ -22,7 +22,7 @@ export default function VendorRegisterPage(): JSX.Element {
   }, [isAuthenticated, user]);
 
   return (
-    <AuthLayout title="Vendor registration" subtitle="Create your vendor account and start listing services">
+    // <AuthLayout title="Vendor registration" subtitle="Create your vendor account and start listing services">
       <div className="space-y-4">
         {/* Reuse the generic RegisterForm. If you want vendor-specific fields later (Payout info, Business name),
             create a VendorRegisterForm variant and replace this import. */}
@@ -34,6 +34,6 @@ export default function VendorRegisterPage(): JSX.Element {
           Need a customer account? <Link to="/customer/register" className="underline text-white">Create customer account</Link>
         </div>
       </div>
-    </AuthLayout>
+    // </AuthLayout>
   );
 }

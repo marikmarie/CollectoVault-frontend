@@ -3,7 +3,7 @@
 
 const delay = (ms = 600) => new Promise((r) => setTimeout(r, ms));
 
-export async function initiatePayment(opts: { amount: number; currency?: string; description?: string; returnUrl?: string }) {
+export async function initiatePayment() {
   await delay();
 
   const transactionId = `pay_${Math.random().toString(36).slice(2, 12)}`;

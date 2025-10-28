@@ -75,7 +75,7 @@ export default function Navbar(): JSX.Element {
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex sm:items-center sm:gap-3">
               <Link
-                to={ROUTES.CUSTOMER.CHECKOUT ?? "/buy-points"}
+                to={ROUTES.CUSTOMER.BUYPOINTS ?? "/buy-points"}
                 className="px-3 py-1.5 rounded-md bg-white text-slate-900 text-sm font-semibold shadow-sm hover:brightness-95"
               >
                 Buy Points

@@ -115,7 +115,7 @@ export default function CustomerDashboard(): JSX.Element {
             </div>
 
             <div className="bg-slate-900/40 border border-slate-800 rounded-lg overflow-hidden">
-              {/* simple activity items — try fetch from vault */}
+              
               <ul className="divide-y divide-slate-800">
                 <li className="p-4 flex items-center justify-between">
                   <div>

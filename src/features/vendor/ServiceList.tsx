@@ -31,7 +31,7 @@ export default function ServiceList(): JSX.Element {
           const data = res?.data ?? res;
           if (mounted) setServices(data || []);
         } else {
-          // fallback demo list
+          // fallback demo list Todo: remove when API is ready
           if (mounted) {
             setServices([
               { id: "s1", title: "Spa voucher", description: "Relaxing 2-hour spa", pricePoints: 1200, priceCurrency: 15, active: true, createdAt: new Date().toISOString() },

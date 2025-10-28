@@ -12,7 +12,8 @@ const ROUTES = {
     POINTS: "/customer/redeem",
     TRANSACTIONS: "/customer/transactions",
     CHECKOUT: "/customer/checkout",
-    VENDORSTOREFRONT: "/vendor"
+    VENDORSTOREFRONT: "/vendor",
+    BUYPOINTS: "/buy-points",
   },
 
   VENDOR: {

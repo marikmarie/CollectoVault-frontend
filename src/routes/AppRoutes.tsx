@@ -106,7 +106,7 @@ export const AppRoutes = createBrowserRouter([
       // VENDOR ROUTES
       { path: "/vendor/dashboard", element: <VendorDashboard /> },
       { path: "/upload-service", element: <UploadService /> },
-      { path: "/vendor/services", element: <ServiceList /> },
+      { path: "/services", element: <ServiceList /> },
 
       // ADMIN ROUTES
     //   { path: "/admin/dashboard", element: <AdminDashboard /> },

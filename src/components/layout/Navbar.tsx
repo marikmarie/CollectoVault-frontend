@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import { useState, type JSX } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import ROUTES from "../../constants/routes";
@@ -22,19 +22,18 @@ export default function Navbar(): JSX.Element {
     try {
       await (logout ? logout() : Promise.resolve());
     } catch (err) {
-      // ignore for now
+      
     } finally {
       navigate(ROUTES.ROOT ?? "/");
     }
   };
 
-  // Determine whether CTAs should point to vendor sign-up based on role or current path
   const isVendorContext = (() => {
     try {
-      if (user?.role === "vendoradmin") return true;
-      // treat vendor routes /vendor or /vendor/* as vendor context
+      if (user?.role === "vendor") return true;
+      
       if (location.pathname.startsWith("/vendor")) return true;
-      // if you have additional vendor subpaths, add checks here
+     
       return false;
     } catch {
       return false;
@@ -175,7 +174,7 @@ export default function Navbar(): JSX.Element {
 
             <div className="pt-2 border-t border-slate-800" />
 
-            <Link to={ROUTES.CUSTOMER.CHECKOUT ?? "/buy-points"} className="block px-2 py-2 rounded bg-emerald-500 text-white text-center">Buy Points</Link>
+            <Link to="/buy-points" className="block px-2 py-2 rounded bg-emerald-500 text-white text-center">Buy Points</Link>
 
             {!user && (
               <div className="pt-2">

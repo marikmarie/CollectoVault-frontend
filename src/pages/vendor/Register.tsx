@@ -64,23 +64,23 @@ export default function VendorRegisterPage(): JSX.Element {
   };
 
   // vendor registration form
-  const { register, handleSubmit, setValue, formState: { errors, isSubmitting }, watch } = useForm<VendorForm>({
+  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<VendorForm>({
     defaultValues: { collectoId: "", businessName: "", contactEmail: "", phone: "", password: "", confirmPassword: "", acceptTerms: false }
   });
 
   useEffect(() => {
     if (collectoData) {
-      // prefill read-only fields from Collecto
+  
       setValue("collectoId", collectoData.collectoId);
       setValue("businessName", collectoData.businessName);
       setValue("contactEmail", collectoData.contactEmail);
       setValue("phone", collectoData.phone ?? "");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, [collectoData]);
 
   const onSubmitVendor = async (data: VendorForm) => {
-    // basic client-side validation
+  
     if (data.password !== data.confirmPassword) {
       alert("Passwords do not match");
       return;
@@ -91,7 +91,7 @@ export default function VendorRegisterPage(): JSX.Element {
     }
 
     try {
-      // call register with vendor role
+    
       await authRegister({
         firstName: data.businessName,
         lastName: undefined,
@@ -99,7 +99,7 @@ export default function VendorRegisterPage(): JSX.Element {
         phone: data.phone,
         password: data.password,
       }, "vendor");
-      // on success, redirect to vendor dashboard
+     
       navigate(ROUTES.VENDOR.DASHBOARD);
     } catch (err: any) {
       console.error("Register failed", err);

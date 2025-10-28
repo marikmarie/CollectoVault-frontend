@@ -44,9 +44,9 @@ export default function RewardsCatalog(): JSX.Element {
           // fallback demo rewards
           if (!mounted) return;
           setRewards([
-            { id: "r1", title: "Spa voucher", description: "2-hour session", pointsPrice: 1200, currencyPrice: 15, vendorName: "Forest Mall Spa", tags: ["popular"] },
-            { id: "r2", title: "Dinner for two", description: "Set menu", pointsPrice: 800, currencyPrice: 10, vendorName: "Lakeview", tags: ["new"] },
-            { id: "r3", title: "Room discount 20%", description: "Weekday stays", pointsPrice: 2000, currencyPrice: 25, vendorName: "Forest Park Resort", tags: ["bestseller"] },
+            { id: "r1", title: "Spa voucher", description: "2-hour session", pointsPrice: 120, currencyPrice: 15000, vendorName: "Forest Mall Spa", tags: ["popular"] },
+            { id: "r2", title: "Dinner for two", description: "Set menu", pointsPrice: 900, currencyPrice: 25000, vendorName: "Lakeview", tags: ["new"] },
+            { id: "r3", title: "Room discount 20%", description: "Weekday stays", pointsPrice: 2000, currencyPrice: 50000, vendorName: "Forest Park Resort", tags: ["bestseller"] },
           ]);
         }
       } catch (err) {

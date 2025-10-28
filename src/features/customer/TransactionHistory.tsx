@@ -34,7 +34,7 @@ export default function TransactionsHistory(): JSX.Element {
           const data = resp?.data ?? resp;
           if (mounted) setTxs(data || []);
         } else {
-          // demo fallback
+         
           if (!mounted) return;
           setTxs([
             { id: "t1", type: "earn", amount: 200, description: "Promo bonus", date: new Date().toISOString() },

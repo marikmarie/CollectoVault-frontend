@@ -37,7 +37,7 @@ export default function PointsAward(): JSX.Element {
       const pointsBought = Math.round(amountUsd * 100); // demo rate: $1 -> 100 pts
       // Update local user (demo)
       updateProfile({ points: (user?.points ?? 0) + pointsBought });
-      setMessage(`Success! Credited ${pointsBought.toLocaleString()} points.`);
+      setMessage(`Success! Credited UGX{pointsBought.toLocaleString()} points.`);
     } catch (err: any) {
       setMessage(err?.message ?? "Failed to process payment. Try again.");
     } finally {
@@ -52,7 +52,7 @@ export default function PointsAward(): JSX.Element {
         <Card>
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm text-slate-300">Amount (USD)</label>
+              <label className="block text-sm text-slate-300">Amount (UGX)</label>
               <input
                 type="number"
                 min={1}
@@ -69,7 +69,7 @@ export default function PointsAward(): JSX.Element {
             {message && <div className="text-sm text-emerald-400">{message}</div>}
 
             <div className="flex items-center gap-3 justify-end">
-              <Button variant="secondary" onClick={() => setAmountUsd(10)}>Quick $10</Button>
+              <Button variant="secondary" onClick={() => setAmountUsd(10)}>Quick UGX 10000</Button>
               <Button onClick={handleBuy} loading={loading}>
                 {loading ? <span className="flex items-center gap-2"><Spinner size={1.2} label="Processing..." /></span> : "Proceed to pay"}
               </Button>

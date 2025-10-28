@@ -97,7 +97,7 @@ export const AppRoutes = createBrowserRouter([
           currencyPrice: undefined,
           vendorName: undefined
       }} /> },
-      { path: "/customer/vendors", element: <VendorStorefront /> },
+      { path: "/vendor", element: <VendorStorefront /> },
       { path: "/customer/points-award", element: <PointsAward /> },
       { path: "/customer/checkout", element: <Checkout /> },
       { path: "/customer/transactions", element: <TransactionsHistory /> },
@@ -105,7 +105,7 @@ export const AppRoutes = createBrowserRouter([
 
       // VENDOR ROUTES
       { path: "/vendor/dashboard", element: <VendorDashboard /> },
-      { path: "/vendor/upload-service", element: <UploadService /> },
+      { path: "/upload-service", element: <UploadService /> },
       { path: "/vendor/services", element: <ServiceList /> },
 
       // ADMIN ROUTES

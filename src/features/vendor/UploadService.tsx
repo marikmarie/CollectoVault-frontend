@@ -106,8 +106,8 @@ export default function UploadService(): JSX.Element {
               {errors.pricePoints && <p className="mt-1 text-sm text-rose-400">{errors.pricePoints.message}</p>}
             </div>
             <div>
-              <label className="block text-sm text-slate-300">Price (USD)</label>
-              <input type="number" step="0.01" {...register("priceCurrency", { valueAsNumber: true })} className="mt-1 w-full rounded px-3 py-2 bg-slate-800/50 border border-slate-700" placeholder="e.g. 15.00" />
+              <label className="block text-sm text-slate-300">Price (UGX)</label>
+              <input type="number" step="0.01" {...register("priceCurrency", { valueAsNumber: true })} className="mt-1 w-full rounded px-3 py-2 bg-slate-800/50 border border-slate-700" placeholder="e.g. 50000" />
             </div>
           </div>
 

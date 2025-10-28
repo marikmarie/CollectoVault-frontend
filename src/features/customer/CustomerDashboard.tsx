@@ -62,11 +62,11 @@ export default function CustomerDashboard(): JSX.Element {
             const data = resp?.data ?? resp;
             if (mounted && data?.balance !== undefined) setPoints(data.balance);
           } catch {
-            // ignore and keep demo
+          
           }
         }
       } catch (err) {
-        // ignore
+       
       } finally {
         if (mounted) setLoadingRewards(false);
       }

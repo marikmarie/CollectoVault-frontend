@@ -1,7 +1,8 @@
 /* src/features/vendor/VendorDashboard.tsx */
 import  { useEffect, useState, type JSX } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/useAuth";
+// import { useAuth } from "../auth/useAuth";
+import { useAuth } from "../../context/AuthContext";
 import vendorsService from "../../api/vendorsService";
 
 type ServiceSummary = {
@@ -20,7 +21,6 @@ export default function VendorDashboard(): JSX.Element {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // demo stats (fallback)
   const [totalOrders, setTotalOrders] = useState<number | null>(null);
   const [monthlyRevenue, setMonthlyRevenue] = useState<number | null>(null);
 

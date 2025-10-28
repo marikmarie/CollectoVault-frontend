@@ -8,11 +8,11 @@ export type RewardCardProps = {
   id?: string | number;
   title: string;
   description?: string;
-  pointsPrice?: number | null;       // points required to redeem (nullable)
-  currencyPrice?: number | null;     // currency price (USD) if available
+  pointsPrice?: number | null;       
+  currencyPrice?: number | null;     
   vendorName?: string;
   imageUrl?: string | null;
-  tags?: string[];                   // e.g. ["new", "popular"]
+  tags?: string[];                   
   availability?: "available" | "soldout" | "coming_soon";
   compact?: boolean;
   className?: string;
@@ -21,11 +21,7 @@ export type RewardCardProps = {
   disabled?: boolean;                // force disabled
 };
 
-/**
- * RewardCard
- * Reusable card that displays a redeemable reward/service offered by a vendor.
- * Shows image, title, vendor, prices (points / currency), tags and a redeem button.
- */
+
 export default function RewardCard({
   id,
   title,
@@ -81,7 +77,7 @@ export default function RewardCard({
 
             <div className="text-right shrink-0">
               {pointsPrice ? <div className="text-sm font-semibold">{pointsPrice.toLocaleString()} pts</div> : null}
-              {currencyPrice ? <div className="text-xs text-slate-400">${currencyPrice.toFixed(2)}</div> : null}
+              {currencyPrice ? <div className="text-xs text-slate-400">UGX{currencyPrice.toFixed(2)}</div> : null}
             </div>
           </div>
         </div>
@@ -129,7 +125,7 @@ export default function RewardCard({
               <div className="text-sm font-semibold">{pointsPrice.toLocaleString()} pts</div>
             ) : null}
             {currencyPrice ? (
-              <div className="text-xs text-slate-400">{currencyPrice !== null ? `$${currencyPrice.toFixed(2)}` : null}</div>
+              <div className="text-xs text-slate-400">{currencyPrice !== null ? `UGX ${currencyPrice}` : null}</div>
             ) : null}
           </div>
         </div>
@@ -157,8 +153,6 @@ export default function RewardCard({
             <button
               className="px-3 py-1 rounded-md border border-slate-700 text-sm text-slate-300 hover:bg-slate-800"
               onClick={() => {
-                // quick preview action — consumers of this component can implement navigation via onRedeem or parent handler
-                // we keep this lightweight and non-invasive
                 const el = document.getElementById(`reward-${id}`);
                 if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
               }}

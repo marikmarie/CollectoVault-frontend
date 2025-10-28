@@ -42,7 +42,7 @@ export default function Navbar(): JSX.Element {
           {/* Center: nav links (desktop) */}
           <div className="hidden md:flex md:items-center md:space-x-6">
             <Link to="/" className="text-sm hover:underline">Home</Link>
-            <Link to="/vendors" className="text-sm hover:underline">Vendors</Link>
+            <Link to="/vendor" className="text-sm hover:underline">Vendors</Link>
             <Link to="/how-it-works" className="text-sm hover:underline">How it works</Link>
             <Link to="/pricing" className="text-sm hover:underline">Pricing</Link>
             <Link to="/customer/rewards" className="text-sm hover:underline">Rewards</Link>

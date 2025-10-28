@@ -98,7 +98,7 @@ export const rewards: Reward[] = [
 ]
 
 export const transactions = [
-  { id: 'T001', customerId: 'C001', type: 'earn', points: 200, date: '2025-10-18', note: 'Purchase: $45' },
+  { id: 'T001', customerId: 'C001', type: 'earn', points: 200, date: '2025-10-18', note: 'Purchase: UGX 4500' },
   { id: 'T002', customerId: 'C001', type: 'redeem', points: -150, date: '2025-10-15', note: 'Redeemed: Free Coffee' },
   { id: 'T003', customerId: 'C002', type: 'earn', points: 430, date: '2025-09-21', note: 'Signup bonus' },
 ]

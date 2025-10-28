@@ -27,16 +27,16 @@ export default function RedeemReward({ reward, onDone }: { reward: Reward; onDon
     setProcessing(true);
     setError(null);
     try {
-      // call vault redeem endpoint if available
+      
       if (vault && (vault as any).post) {
         await vault.post(`/rewards/${reward.id}/redeem`, { userId: user?.id, method: "points" });
-        // update local user points if demo
+       
         updateProfile({ points: Math.max(0, (user?.points ?? 0) - (reward.pointsPrice ?? 0)) });
         onDone?.("Redeemed successfully. Enjoy your reward!");
         return;
       }
 
-      // fallback demo
+
       await new Promise((r) => setTimeout(r, 900));
       updateProfile({ points: Math.max(0, (user?.points ?? 0) - (reward.pointsPrice ?? 0)) });
       onDone?.("Redeemed (demo) — enjoy!");
@@ -52,9 +52,7 @@ export default function RedeemReward({ reward, onDone }: { reward: Reward; onDon
     setProcessing(true);
     setError(null);
     try {
-      // For currency purchases you'd call Collecto external payments then confirm with vault
-      // We'll simulate demo flow
-      await new Promise((r) => setTimeout(r, 900));
+         await new Promise((r) => setTimeout(r, 900));
       onDone?.("Payment successful (demo). Your reward will be processed.");
     } catch (err: any) {
       setError(err?.message ?? "Payment failed.");
@@ -76,11 +74,11 @@ export default function RedeemReward({ reward, onDone }: { reward: Reward; onDon
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="bg-slate-900/30 p-3 rounded">
               <div className="text-sm text-slate-400">Points price</div>
-              <div className="text-2xl font-bold">{reward.pointsPrice ? `${reward.pointsPrice.toLocaleString()} pts` : "—"}</div>
+              <div className="text-2xl font-bold">{reward.pointsPrice ? `UGX ${reward.pointsPrice.toLocaleString()} pts` : "—"}</div>
             </div>
             <div className="bg-slate-900/30 p-3 rounded">
               <div className="text-sm text-slate-400">Currency</div>
-              <div className="text-2xl font-bold">{reward.currencyPrice ? `$${reward.currencyPrice.toFixed(2)}` : "—"}</div>
+              <div className="text-2xl font-bold">{reward.currencyPrice ? `UGX ${reward.currencyPrice.toFixed(2)}` : "—"}</div>
             </div>
           </div>
 
@@ -95,7 +93,7 @@ export default function RedeemReward({ reward, onDone }: { reward: Reward; onDon
 
             {reward.currencyPrice ? (
               <Button variant="secondary" onClick={handlePayWithCard} loading={processing} disabled={processing}>
-                Pay ${reward.currencyPrice?.toFixed(2)}
+                Pay UGX {reward.currencyPrice?.toFixed(2)}
               </Button>
             ) : null}
           </div>

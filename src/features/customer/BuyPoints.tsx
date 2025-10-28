@@ -51,7 +51,7 @@ export default function BuyPoints() {
       </motion.h1>
 
       <Card className="w-full max-w-md text-center p-6 mb-8">
-        <p className="text-gray-50 text-sm mb-2">Current Balance</p>
+        <p className="text-gray-50 text-sm mb-2">Current Point Balance</p>
         <div className="flex justify-center items-center gap-2">
           <Coins className="text-yellow-500" />
           <span className="text-2xl font-semibold text-gray-800">

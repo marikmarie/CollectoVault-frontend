@@ -3,7 +3,8 @@ import  { useEffect, type JSX } from "react";
 import { Link, useNavigate } from "react-router-dom";
 // import AuthLayout from "../../components/layout/AuthLayout";
 import LoginForm from "../../features/auth/LoginForm";
-import { useAuth } from "../../features/auth/useAuth";
+//import { useAuth } from "../../features/auth/useAuth";
+import { useAuth } from "../../context/AuthContext";
 
 export default function VendorLoginPage(): JSX.Element {
   const { isAuthenticated, user } = useAuth();

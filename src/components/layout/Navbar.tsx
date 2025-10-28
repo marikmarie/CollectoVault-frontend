@@ -129,6 +129,7 @@ export default function Navbar(): JSX.Element {
         </div>
       </div>
 
+
       {/* Mobile menu content */}
       {open && (
         <div className="md:hidden bg-slate-900/95 border-t border-slate-800">

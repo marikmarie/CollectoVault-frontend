@@ -56,7 +56,7 @@ export default function BuyPoints(): JSX.Element {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700 text-white px-4 py-12 flex flex-col items-center">
+    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-700 text-white px-4 py-12 flex flex-col items-center">
       <motion.h1
         initial={{ opacity: 0, y: -6 }}
         animate={{ opacity: 1, y: 0 }}
@@ -96,10 +96,22 @@ export default function BuyPoints(): JSX.Element {
             {POINT_PACKAGES.map((pkg) => {
               const isSelected = selected === pkg.id;
               return (
-                <motion.div key={pkg.id} whileHover={{ scale: 1.02 }} className="relative">
+                <motion.div
+                  key={pkg.id}
+                  whileHover={{ scale: 1.02 }}
+                  className="relative cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleCardClick(pkg.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleCardClick(pkg.id);
+                    }
+                  }}
+                >
                   <Card
-                    onClick={() => handleCardClick(pkg.id)}
-                    className={`p-5 cursor-pointer transition-shadow border ${isSelected ? "ring-2 ring-emerald-400 border-emerald-400/30 shadow-xl" : "hover:shadow-lg"}`}
+                    className={`p-5 transition-shadow border ${isSelected ? "ring-2 ring-emerald-400 border-emerald-400/30 shadow-xl" : "hover:shadow-lg"}`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>

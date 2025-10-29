@@ -18,8 +18,8 @@ type CartItem = {
 };
 
 const demoCart: CartItem[] = [
-  { id: "r1", title: "Spa voucher", qty: 1, pricePoints: 1200, priceCurrency: 15, vendorId: "v1" },
-  { id: "r2", title: "Dinner for two", qty: 1, pricePoints: 800, priceCurrency: 10, vendorId: "v2" },
+  { id: "r1", title: "Spa voucher", qty: 1, pricePoints: 1200, priceCurrency: 150000, vendorId: "v1" },
+  { id: "r2", title: "Dinner for two", qty: 1, pricePoints: 800, priceCurrency: 100000, vendorId: "v2" },
 ];
 
 export default function Checkout(): JSX.Element {
@@ -40,7 +40,7 @@ export default function Checkout(): JSX.Element {
     setMessage(null);
     try {
       if (payWithPoints) {
-        // try vault API to place order and deduct points
+        // To do: vault API to place order and deduct points
         if (vault && (vault as any).post) {
           await vault.post("/orders", { items: cart, payWith: "points" });
           // demo: deduct points locally
@@ -93,10 +93,10 @@ export default function Checkout(): JSX.Element {
                   <div key={it.id} className="flex items-center justify-between bg-slate-900/30 p-3 rounded">
                     <div>
                       <div className="font-medium">{it.title}</div>
-                      <div className="text-xs text-slate-400">{it.qty} × {it.pricePoints ? `${it.pricePoints.toLocaleString()} pts` : `$${it.priceCurrency?.toFixed(2)}`}</div>
+                      <div className="text-xs text-slate-400">{it.qty} × {it.pricePoints ? `${it.pricePoints.toLocaleString()} pts` : `UGX ${it.priceCurrency?.toFixed(1)}`}</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-semibold">{it.pricePoints ? `${(it.pricePoints * (it.qty ?? 1)).toLocaleString()} pts` : `$${((it.priceCurrency ?? 0) * (it.qty ?? 1)).toFixed(2)}`}</div>
+                      <div className="font-semibold">{it.pricePoints ? `${(it.pricePoints * (it.qty ?? 1)).toLocaleString()} pts` : `UGX ${((it.priceCurrency ?? 0) * (it.qty ?? 1)).toFixed(1)}`}</div>
                     </div>
                   </div>
                 ))}
@@ -115,7 +115,7 @@ export default function Checkout(): JSX.Element {
               </div>
               <div className="flex items-center justify-between mt-2">
                 <div className="text-sm text-slate-300">Currency total</div>
-                <div className="font-semibold">${totals.currency.toFixed(2)}</div>
+                <div className="font-semibold">UGX {totals.currency.toFixed(2)}</div>
               </div>
 
               <div className="mt-4">
@@ -131,7 +131,7 @@ export default function Checkout(): JSX.Element {
 
               <div className="mt-4">
                 <Button onClick={handlePlaceOrder} loading={processing} disabled={cart.length === 0}>
-                  {processing ? "Processing..." : (payWithPoints ? `Redeem ${totals.points.toLocaleString()} pts` : `Pay $${totals.currency.toFixed(2)}`)}
+                  {processing ? "Processing..." : (payWithPoints ? `Redeem ${totals.points.toLocaleString()} pts` : `Pay UGX ${totals.currency.toFixed(1)}`)}
                 </Button>
               </div>
 

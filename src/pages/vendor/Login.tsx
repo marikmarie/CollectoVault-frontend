@@ -28,12 +28,12 @@ export default function VendorLoginPage(): JSX.Element {
       <div className="space-y-4">
         <LoginForm />
         <div className="text-sm text-slate-400">
-          Don't have a vendor account?{" "}
+          Don't have a collecto account?{" "}
           <Link to="/vendor/register" className="underline text-white">Create one</Link>
         </div>
-        <div className="text-sm text-slate-400">
+        {/* <div className="text-sm text-slate-400">
           Are you a customer? <Link to="/login" className="underline text-white">Sign in as customer</Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );

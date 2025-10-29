@@ -75,7 +75,7 @@ export default function VendorDashboard(): JSX.Element {
         </div>
 
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate("/vendor/upload")} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded text-white font-semibold">Upload Service</button>
+          <button onClick={() => navigate("/upload-service")} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded text-white font-semibold">Upload Service</button>
           <Link to="/vendor/services" className="px-4 py-2 border border-slate-700 rounded-md text-sm hover:bg-slate-800">Manage Services</Link>
         </div>
       </div>

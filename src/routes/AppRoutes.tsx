@@ -102,6 +102,7 @@ export const AppRoutes = createBrowserRouter([
       { path: "/customer/checkout", element: <Checkout /> },
       { path: "/customer/transactions", element: <TransactionsHistory /> },
       { path: "/buy-points", element: <BuyPoints /> },
+      { path: "/business", element: <VendorStorefront /> },
 
       // VENDOR ROUTES
       { path: "/vendor/dashboard", element: <VendorDashboard /> },

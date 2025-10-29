@@ -1,6 +1,8 @@
 // src/api/mockDb.ts
 // In-memory mock database for demo usage. Not persisted.
 
+//import { i } from "framer-motion/client";
+
 export type User = {
   id: string;
   firstName?: string;
@@ -117,7 +119,7 @@ export const services: Service[] = [
     pricePoints: 1200,
     priceCurrency: 25000,
     active: true,
-    imageUrl: null,
+    imageUrl: "images/spa.png",
     createdAt: now(),
   },
   {
@@ -128,7 +130,7 @@ export const services: Service[] = [
     pricePoints: 800,
     priceCurrency: 10000,
     active: true,
-    imageUrl: null,
+    imageUrl: "/images/dinner.png",
     createdAt: now(),
   },
   {
@@ -139,7 +141,7 @@ export const services: Service[] = [
     pricePoints: 2000,
     priceCurrency: 50000,
     active: false,
-    imageUrl: null,
+    imageUrl: "images/room.png",
     createdAt: now(),
   },
 ];

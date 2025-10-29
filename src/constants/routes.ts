@@ -12,14 +12,14 @@ const ROUTES = {
     POINTS: "/customer/redeem",
     TRANSACTIONS: "/customer/transactions",
     CHECKOUT: "/customer/checkout",
-    VENDORSTOREFRONT: "/vendor",
+    VENDORSTOREFRONT: "/business",
     BUYPOINTS: "/buy-points",
   },
 
   VENDOR: {
     LOGIN: "/vendor/login",
     DASHBOARD: "/vendor/dashboard",
-    SERVICES: "/vendor/services",
+    SERVICES: "/services",
     UPLOAD_SERVICE: "/vendor/upload-service",
   },
 

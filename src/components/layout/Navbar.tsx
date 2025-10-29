@@ -4,14 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import ROUTES from "../../constants/routes";
 
-/**
- * Behavior:
- * - If user.role === 'vendoradmin' OR the current pathname looks like vendor area -> show Vendor Sign Up
- * - Otherwise show Customer Sign Up
- *
- * Note: ROUTES currently doesn't include a vendor register constant, so we link to '/vendor/register'.
- * Adjust ROUTES if you want a centralized constant.
- */
+
 export default function Navbar(): JSX.Element {
   const [open, setOpen] = useState(false);
   const { user, logout } = (useAuth() as any) ?? { user: null, logout: undefined };

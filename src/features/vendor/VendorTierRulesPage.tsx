@@ -1,5 +1,6 @@
 // src/features/vendor/VendorTierRulesPage.tsx
-import React, { useState, type JSX } from "react";
+//import React, { useState, type JSX } from "react";
+import { useState, type JSX } from "react";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import Toast from "../../components/common/Toast";

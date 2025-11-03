@@ -133,7 +133,7 @@ export default function VendorRegisterPage(): JSX.Element {
 
               <div className="pt-4 text-sm text-slate-400">
                 <div>If you don't have a Collecto account, create one here:</div>
-                <a href="https://collecto.example/signup" target="_blank" rel="noreferrer" className="text-white underline">Create a Collecto account</a>
+                <a href="https://collecto.cissytech.com/" target="_blank" rel="noreferrer" className="text-white underline">Create a Collecto account</a>
               </div>
             </form>
           </div>
@@ -144,7 +144,7 @@ export default function VendorRegisterPage(): JSX.Element {
             <h3 className="font-semibold text-lg">Collecto ID not found</h3>
             <p className="text-sm text-slate-300 mt-2">We couldn't find a Collecto account with that ID. Please create a Collecto account first, then return here to complete vendor registration.</p>
             <div className="mt-4 flex gap-3">
-              <a href="https://collecto.example/signup" target="_blank" rel="noreferrer" className="px-4 py-2 bg-emerald-500 rounded text-black font-semibold">Create Collecto account</a>
+              <a href="https://collecto.cissytech.com/" target="_blank" rel="noreferrer" className="px-4 py-2 bg-emerald-500 rounded text-black font-semibold">Create Collecto account</a>
               <button onClick={() => setStep("lookup")} className="px-4 py-2 border rounded">Try another ID</button>
               <button onClick={() => setStep("form")} className="px-4 py-2 bg-slate-700 rounded">Continue manual registration</button>
             </div>

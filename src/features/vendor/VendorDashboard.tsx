@@ -1,9 +1,11 @@
 /* src/features/vendor/VendorDashboard.tsx */
-import  { useEffect, useState, type JSX } from "react";
+import { useEffect, useState, type JSX } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// import { useAuth } from "../auth/useAuth";
 import { useAuth } from "../../context/AuthContext";
 import vendorsService from "../../api/vendorsService";
+import Button from "../../components/common/Button";
+import Card from "../../components/common/Card";
+import ROUTES from "../../constants/routes";
 
 type ServiceSummary = {
   id: string;
@@ -23,6 +25,7 @@ export default function VendorDashboard(): JSX.Element {
 
   const [totalOrders, setTotalOrders] = useState<number | null>(null);
   const [monthlyRevenue, setMonthlyRevenue] = useState<number | null>(null);
+  const [pointsRedeemed, setPointsRedeemed] = useState<number | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -46,18 +49,21 @@ export default function VendorDashboard(): JSX.Element {
           }
         }
 
+        // demo KPIs (replace with real service calls later)
         setTotalOrders(124);
         setMonthlyRevenue(2730);
+        setPointsRedeemed(45230);
       } catch (err: any) {
         console.warn("vendorsService.getMyServices failed:", err);
         if (mounted) setError("Failed to load services. Showing demo data.");
-        
+
         if (mounted) {
           setServices([
             { id: "s1", title: "Demo Service A", active: true, pricePoints: 500, priceCurrency: 6, createdAt: new Date().toISOString() },
           ]);
           setTotalOrders(12);
           setMonthlyRevenue(240);
+          setPointsRedeemed(1240);
         }
       } finally {
         if (mounted) setLoading(false);
@@ -68,37 +74,50 @@ export default function VendorDashboard(): JSX.Element {
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
         <div>
           <h2 className="text-2xl font-bold">Vendor Dashboard</h2>
-          <p className="text-sm text-slate-300">Welcome back{user?.firstName ? `, ${user.firstName}` : ""} — manage your services and track sales.</p>
+          <p className="text-sm text-slate-300">
+            Welcome back{user?.firstName ? `, ${user.firstName}` : ""} — manage services, points & tiers.
+          </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate("/upload-service")} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded text-white font-semibold">Upload Service</button>
-          <Link to="/vendor/services" className="px-4 py-2 border border-slate-700 rounded-md text-sm hover:bg-slate-800">Manage Services</Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button onClick={() => navigate(ROUTES.VENDOR.UPLOAD_SERVICE)} className="px-4 py-2">Upload Service</Button>
+          <Link to={ROUTES.VENDOR.SERVICES} className="px-4 py-2 border border-slate-700 rounded-md text-sm hover:bg-slate-800">Manage Services</Link>
+
+          {/* New: Points & Tier direct buttons */}
+          <Button variant="secondary" onClick={() => navigate("/vendor/point-rules")} className="px-4 py-2">Manage Point Rules</Button>
+          <Button variant="secondary" onClick={() => navigate("/vendor/tier-rules")} className="px-4 py-2">Manage Tier Rules</Button>
         </div>
       </div>
 
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-3 mb-6">
-        <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-4">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-4 mb-6">
+        <Card className="p-4">
           <p className="text-sm text-slate-400">Total services</p>
           <p className="text-2xl font-bold">{services.length}</p>
-        </div>
-        <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-4">
+        </Card>
+
+        <Card className="p-4">
           <p className="text-sm text-slate-400">Total orders</p>
           <p className="text-2xl font-bold">{totalOrders ?? "—"}</p>
-        </div>
-        <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-4">
+        </Card>
+
+        <Card className="p-4">
           <p className="text-sm text-slate-400">Monthly revenue</p>
           <p className="text-2xl font-bold">{monthlyRevenue !== null ? `$${monthlyRevenue}` : "—"}</p>
-        </div>
+        </Card>
+
+        <Card className="p-4">
+          <p className="text-sm text-slate-400">Points redeemed</p>
+          <p className="text-2xl font-bold">{pointsRedeemed !== null ? pointsRedeemed.toLocaleString() : "—"}</p>
+        </Card>
       </div>
 
       <section className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold">Recent services</h3>
-          <Link to="/vendor/services" className="text-sm text-slate-300 underline">View all</Link>
+          <Link to={ROUTES.VENDOR.SERVICES} className="text-sm text-slate-300 underline">View all</Link>
         </div>
 
         <div className="bg-slate-900/40 border border-slate-800 rounded-lg overflow-hidden">
@@ -120,7 +139,7 @@ export default function VendorDashboard(): JSX.Element {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className={`text-sm px-2 py-1 rounded ${s.active ? "bg-emerald-600" : "bg-slate-700"} font-medium`}>{s.active ? "Active" : "Inactive"}</span>
-                    <Link to={`/vendor/services/${s.id}`} className="text-sm text-slate-300 hover:underline">Manage</Link>
+                    <Link to={`${ROUTES.VENDOR.SERVICES}/${s.id}`} className="text-sm text-slate-300 hover:underline">Manage</Link>
                   </div>
                 </li>
               ))}
@@ -132,29 +151,32 @@ export default function VendorDashboard(): JSX.Element {
       <section>
         <h3 className="text-lg font-semibold mb-3">Quick actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-4">
-            <p className="text-sm text-slate-400">Promote</p>
-            <p className="mt-2 text-sm">Create a promotion or discount for your services.</p>
-            <div className="mt-3">
-              <button className="px-3 py-1.5 bg-white text-slate-900 rounded">Create promo</button>
+          <Card className="p-4">
+            <p className="text-sm text-slate-400">Points & Rules</p>
+            <p className="mt-2 text-sm">Manage how customers earn points and configure rule-based rewards.</p>
+            <div className="mt-3 flex gap-2">
+              <Button variant="primary" onClick={() => navigate("/vendor/point-rules")}>Point Rules</Button>
+              <Button variant="secondary" onClick={() => navigate("/vendor/tier-rules")}>Tier Rules</Button>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-4">
+          <Card className="p-4">
             <p className="text-sm text-slate-400">Reports</p>
-            <p className="mt-2 text-sm">Download your sales and redemptions report.</p>
-            <div className="mt-3">
-              <button className="px-3 py-1.5 bg-white text-slate-900 rounded">Download</button>
+            <p className="mt-2 text-sm">Download sales and redemptions reports for reconciliation.</p>
+            <div className="mt-3 flex gap-2">
+              <Button variant="secondary" onClick={() => { /* wire export later */ }}>Export CSV</Button>
+              <Button variant="ghost" onClick={() => { /* open reports page */ navigate("/vendor/reports"); }}>View Reports</Button>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-4">
+          <Card className="p-4">
             <p className="text-sm text-slate-400">Settings</p>
-            <p className="mt-2 text-sm">Update your vendor profile and payout settings.</p>
-            <div className="mt-3">
+            <p className="mt-2 text-sm">Update profile, payout, and integration settings.</p>
+            <div className="mt-3 flex gap-2">
               <Link to="/vendor/profile" className="px-3 py-1.5 bg-white text-slate-900 rounded">Profile</Link>
+              <Button variant="ghost" onClick={() => navigate("/vendor/payouts")}>Payouts</Button>
             </div>
-          </div>
+          </Card>
         </div>
       </section>
     </div>

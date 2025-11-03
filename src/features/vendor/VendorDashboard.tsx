@@ -85,8 +85,7 @@ export default function VendorDashboard(): JSX.Element {
         <div className="flex flex-wrap items-center gap-3">
           <Button onClick={() => navigate(ROUTES.VENDOR.UPLOAD_SERVICE)} className="px-4 py-2">Upload Service</Button>
           <Link to={ROUTES.VENDOR.SERVICES} className="px-4 py-2 border border-slate-700 rounded-md text-sm hover:bg-slate-800">Manage Services</Link>
-
-          {/* New: Points & Tier direct buttons */}
+        
           <Button variant="secondary" onClick={() => navigate("/point-rules")} className="px-4 py-2">Manage Point Rules</Button>
           <Button variant="secondary" onClick={() => navigate("/tier-rules")} className="px-4 py-2">Manage Tier Rules</Button>
         </div>

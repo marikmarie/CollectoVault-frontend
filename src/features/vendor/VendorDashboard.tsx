@@ -41,9 +41,9 @@ export default function VendorDashboard(): JSX.Element {
           // fallback demo data
           if (mounted) {
             const demo: ServiceSummary[] = [
-              { id: "s1", title: "Forest Mall: Spa Voucher", active: true, pricePoints: 1200, priceCurrency: 15, createdAt: new Date().toISOString() },
-              { id: "s2", title: "Restaurant: Dinner for Two", active: true, pricePoints: 800, priceCurrency: 10, createdAt: new Date().toISOString() },
-              { id: "s3", title: "Room discount 20%", active: false, pricePoints: 2000, priceCurrency: 25, createdAt: new Date().toISOString() },
+              { id: "s1", title: "Forest Mall: Spa Voucher", active: true, pricePoints: 1200, priceCurrency: 15000, createdAt: new Date().toISOString() },
+              { id: "s2", title: "Restaurant: Dinner for Two", active: true, pricePoints: 800, priceCurrency: 10000, createdAt: new Date().toISOString() },
+              { id: "s3", title: "Room discount 20%", active: false, pricePoints: 2000, priceCurrency: 25000, createdAt: new Date().toISOString() },
             ];
             setServices(demo);
           }
@@ -51,7 +51,7 @@ export default function VendorDashboard(): JSX.Element {
 
         // demo KPIs (replace with real service calls later)
         setTotalOrders(124);
-        setMonthlyRevenue(2730);
+        setMonthlyRevenue(27300);
         setPointsRedeemed(45230);
       } catch (err: any) {
         console.warn("vendorsService.getMyServices failed:", err);
@@ -105,7 +105,7 @@ export default function VendorDashboard(): JSX.Element {
 
         <Card className="p-4">
           <p className="text-sm text-slate-400">Monthly revenue</p>
-          <p className="text-2xl font-bold">{monthlyRevenue !== null ? `$${monthlyRevenue}` : "—"}</p>
+          <p className="text-2xl font-bold">{monthlyRevenue !== null ? `UGX ${monthlyRevenue}` : "—"}</p>
         </Card>
 
         <Card className="p-4">
@@ -134,7 +134,7 @@ export default function VendorDashboard(): JSX.Element {
                   <div>
                     <div className="font-semibold">{s.title}</div>
                     <div className="text-sm text-slate-400">
-                      {s.pricePoints ? `${s.pricePoints} pts` : ""}{s.pricePoints && s.priceCurrency ? " • " : ""}{s.priceCurrency ? `$${s.priceCurrency}` : ""}
+                      {s.pricePoints ? `${s.pricePoints} pts` : ""}{s.pricePoints && s.priceCurrency ? " • " : ""}{s.priceCurrency ? `UGX${s.priceCurrency}` : ""}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">

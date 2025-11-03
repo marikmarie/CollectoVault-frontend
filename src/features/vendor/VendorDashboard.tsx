@@ -155,8 +155,8 @@ export default function VendorDashboard(): JSX.Element {
             <p className="text-sm text-slate-400">Points & Rules</p>
             <p className="mt-2 text-sm">Manage how customers earn points and configure rule-based rewards.</p>
             <div className="mt-3 flex gap-2">
-              <Button variant="primary" onClick={() => navigate("/vendor/point-rules")}>Point Rules</Button>
-              <Button variant="secondary" onClick={() => navigate("/vendor/tier-rules")}>Tier Rules</Button>
+              <Button variant="primary" onClick={() => navigate("/point-rules")}>Point Rules</Button>
+              <Button variant="secondary" onClick={() => navigate("/tier-rules")}>Tier Rules</Button>
             </div>
           </Card>
 

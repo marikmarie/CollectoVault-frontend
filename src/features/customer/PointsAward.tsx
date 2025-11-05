@@ -5,7 +5,6 @@ import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
 // import { useAuth } from "../auth/useAuth";
 import { useAuth } from "../../context/AuthContext";
-
 import collectoPayments from "../../api/collectoPayments";
 //import vault from "../../api/vaultClient";
 import Spinner from "../../components/common/Spinner";

@@ -9,6 +9,7 @@ import api from "../../api/index";
 
 
 type Form = {
+  name: string;
   firstName: string;
   lastName?: string;
   email: string;
@@ -49,6 +50,8 @@ export default function RegisterForm(): JSX.Element {
       //   phone: data.phone,
       //   password: data.password,
       // });
+      data.name = `${data.firstName} ${data.lastName}`.trim();
+
       await api.post("/api/auth/register", data)
       navigate("/customer/dashboard");
     } catch (err: any) {

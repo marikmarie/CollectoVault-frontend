@@ -4,7 +4,9 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 // import { useAuth } from "./useAuth";
 
-import { useAuth } from "../../context/AuthContext";
+//import { useAuth } from "../../context/AuthContext";
+import api from "../../api/index";
+
 
 type Form = {
   firstName: string;
@@ -16,10 +18,11 @@ type Form = {
   acceptTerms?: boolean;
 };
 
+
 export default function RegisterForm(): JSX.Element {
   const navigate = useNavigate();
-  const { register: authRegister } = useAuth();
-  const { register, handleSubmit, setError, setValue, formState: { errors, isSubmitting } } = useForm<Form>({
+  //const { register: authRegister } = useAuth();
+ const { register, handleSubmit, setError, setValue, formState: { errors, isSubmitting } } = useForm<Form>({
     defaultValues: { firstName: "", lastName: "", email: "", phone: "", password: "", confirmPassword: "", acceptTerms: false }
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -39,13 +42,14 @@ export default function RegisterForm(): JSX.Element {
     }
 
     try {
-      await authRegister({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phone: data.phone,
-        password: data.password,
-      });
+      // await authRegister({
+      //   firstName: data.firstName,
+      //   lastName: data.lastName,
+      //   email: data.email,
+      //   phone: data.phone,
+      //   password: data.password,
+      // });
+      await api.post("/api/auth/register", data)
       navigate("/customer/dashboard");
     } catch (err: any) {
       setServerError(err?.message ?? "Registration failed. Please try again.");

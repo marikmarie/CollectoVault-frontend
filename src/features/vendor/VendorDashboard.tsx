@@ -2,7 +2,7 @@
 import { useEffect, useState, type JSX } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import vendorsService from "../../api/vendorsService";
+import {vendorService} from "../../api/vendorService";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
 import ROUTES from "../../constants/routes";
@@ -33,8 +33,8 @@ export default function VendorDashboard(): JSX.Element {
       setLoading(true);
       setError(null);
       try {
-        if ((vendorsService as any)?.getMyServices) {
-          const res = await (vendorsService as any).getMyServices();
+        if ((vendorService as any)?.getMyServices) {
+          const res = await (vendorService as any).getMyServices();
           const data = res?.data ?? res;
           if (mounted) setServices(data || []);
         } else {

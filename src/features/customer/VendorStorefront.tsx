@@ -2,7 +2,7 @@
 import  { useEffect, useState, type JSX } from "react";
 // import MainLayout from "../../components/layout/MainLayout";
 import { useParams, Link } from "react-router-dom";
-import vendorsService from "../../api/vendorsService";
+import {vendorService} from "../../api/vendorService";
 import RewardCard from "../../components/common/RewardCard";
 import Spinner from "../../components/common/Spinner";
 
@@ -27,17 +27,17 @@ export default function VendorStorefront(): JSX.Element {
     (async () => {
       setLoading(true);
       try {
-        if ((vendorsService as any)?.getServicesByVendor) {
-          const resp = await (vendorsService as any).getServicesByVendor(vendorId);
+        if ((vendorService as any)?.getServicesByVendor) {
+          const resp = await (vendorService as any).getServicesByVendor(vendorId);
           const data = resp?.data ?? resp;
           if (mounted) setServices(data || []);
-        } else if ((vendorsService as any)?.getVendor) {
-          const v = await (vendorsService as any).getVendor(vendorId);
+        } else if ((vendorService as any)?.getVendor) {
+          const v = await (vendorService as any).getVendor(vendorId);
           if (mounted) setVendorName(v?.data?.name ?? v?.name ?? "Vendor");
-          const svc = await (vendorsService as any).getAllServices();
+          const svc = await (vendorService as any).getAllServices();
           if (mounted) setServices((svc?.data ?? svc ?? []).slice(0, 6));
         } else {
-          // demo fallback
+          
           if (mounted) {
             setVendorName("Forest Park Resort");
             setServices([

@@ -1,6 +1,6 @@
 /* src/features/vendor/ServiceList.tsx */
 import  { useEffect, useState, type JSX } from "react";
-import vendorsService from "../../api/vendorsService";
+import {vendorService} from "../../api/vendorService";
 import { Link, useNavigate } from "react-router-dom";
 
 type Service = {
@@ -26,8 +26,8 @@ export default function ServiceList(): JSX.Element {
       setLoading(true);
       setError(null);
       try {
-        if ((vendorsService as any)?.getMyServices) {
-          const res = await (vendorsService as any).getMyServices();
+        if ((vendorService as any)?.getMyServices) {
+          const res = await (vendorService as any).getMyServices();
           const data = res?.data ?? res;
           if (mounted) setServices(data || []);
         } else {
@@ -55,8 +55,8 @@ export default function ServiceList(): JSX.Element {
   const toggleActive = async (id: string, next: boolean) => {
     setBusyId(id);
     try {
-      if ((vendorsService as any)?.updateService) {
-        await (vendorsService as any).updateService(id, { active: next });
+      if ((vendorService as any)?.updateService) {
+        await (vendorService as any).updateService(id, { active: next });
         setServices((s) => s.map(x => x.id === id ? { ...x, active: next } : x));
       } else {
         // demo fallback: immediate local toggle
@@ -74,8 +74,8 @@ export default function ServiceList(): JSX.Element {
     if (!confirm("Delete this service? This action cannot be undone.")) return;
     setBusyId(id);
     try {
-      if ((vendorsService as any)?.deleteService) {
-        await (vendorsService as any).deleteService(id);
+      if ((vendorService as any)?.deleteService) {
+        await (vendorService as any).deleteService(id);
         setServices((s) => s.filter(x => x.id !== id));
       } else {
         setServices((s) => s.filter(x => x.id !== id));

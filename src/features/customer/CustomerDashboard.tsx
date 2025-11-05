@@ -9,7 +9,7 @@ import Spinner from "../../components/common/Spinner";
 //import { useAuth } from "../auth/useAuth";
 import { useAuth } from "../../context/AuthContext";
 
-import vendorsService from "../../api/vendorsService";
+import {vendorService} from "../../api/vendorService";
 import vault from "../../api/vaultClient";
 
 type Reward = {
@@ -35,12 +35,12 @@ export default function CustomerDashboard(): JSX.Element {
     (async () => {
       setLoadingRewards(true);
       try {
-       if ((vendorsService as any)?.getTopRewards) {
-          const res = await (vendorsService as any).getTopRewards();
+       if ((vendorService as any)?.getTopRewards) {
+          const res = await (vendorService as any).getTopRewards();
           const data = res?.data ?? res;
           if (mounted) setTopRewards(data || []);
-        } else if ((vendorsService as any)?.getAllServices) {
-          const res = await (vendorsService as any).getAllServices();
+        } else if ((vendorService as any)?.getAllServices) {
+          const res = await (vendorService as any).getAllServices();
           const data = res?.data ?? res;
           if (mounted) setTopRewards((data || []).slice(0, 3));
         } 

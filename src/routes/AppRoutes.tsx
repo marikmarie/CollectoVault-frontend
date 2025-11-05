@@ -33,7 +33,7 @@ import VendorTierRulesPage from "../features/vendor/VendorTierRulesPage";
 // SHARED
 import NotFound from "../shared/NotFound";
 import Forbidden from "../shared/Forbidden";
-import VendorRegisterPage from "../pages/vendor/Register";
+//import VendorRegisterPage from "../pages/vendor/Register";
 
 /** 
  * Temporary authentication simulation
@@ -74,7 +74,7 @@ export const AppRoutes = createBrowserRouter([
     children: [
       { path: "/login", element: <CustomerLoginPage /> },
       { path: "/register", element: <CustomerRegisterPage /> },
-      { path: "/vendor/register", element: <VendorRegisterPage /> },
+     // { path: "/vendor/register", element: <VendorRegisterPage /> },
       { path: "/vendor/login", element: <VendorLoginPage /> },
     ],
   },

@@ -6,7 +6,7 @@ import Spinner from "../../components/common/Spinner";
 import Modal from "../../components/common/Modal";
 import RedeemReward from "./RedeemReward";
 // import vault from "../../api/vaultClient";
-import vendorsService from "../../api/vendorsService";
+import {vendorService} from "../../api/vendorService";
 // import { useAuth } from "../auth/useAuth";
 //import { useAuth } from "../../context/AuthContext";
 
@@ -36,8 +36,8 @@ export default function RewardsCatalog(): JSX.Element {
     (async () => {
       setLoading(true);
       try {
-        if ((vendorsService as any)?.getAllRewards) {
-          const res = await (vendorsService as any).getAllRewards();
+        if ((vendorService as any)?.getAllRewards) {
+          const res = await (vendorService as any).getAllRewards();
           const data = res?.data ?? res;
           if (mounted) setRewards(data || []);
         } else {

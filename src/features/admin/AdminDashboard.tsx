@@ -2,7 +2,7 @@
 import  { useEffect, useState, type JSX } from "react";
 // import MainLayout from "../../components/layout/MainLayout";
 import { Link } from "react-router-dom";
-import vendorsService from "../../api/vendorsService";
+import vendorsService from "../../api/vendorService";
 // import { useAuth } from "../../features/auth/useAuth";
 
 type VendorSummary = {

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type JSX } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import vendorsService from "../../api/vendorsService";
+import {vendorService} from "../../api/vendorService";
 
 type Form = {
   title: string;
@@ -84,7 +84,7 @@ export default function UploadService(): JSX.Element {
 
     setSubmitting(true);
     try {
-      if ((vendorsService as any)?.createService) {
+      if ((vendorService as any)?.createService) {
         // const formData = new FormData();
         // formData.append("title", data.title);
         // formData.append("description", data.description ?? "");

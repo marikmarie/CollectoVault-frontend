@@ -43,17 +43,11 @@ export default function RegisterForm(): JSX.Element {
     }
 
     try {
-      // await authRegister({
-      //   firstName: data.firstName,
-      //   lastName: data.lastName,
-      //   email: data.email,
-      //   phone: data.phone,
-      //   password: data.password,
-      // });
+      
       data.name = `${data.firstName} ${data.lastName}`.trim();
 
       await api.post("/api/auth/register", data)
-      navigate("/customer/dashboard");
+      navigate("/login");
     } catch (err: any) {
       setServerError(err?.message ?? "Registration failed. Please try again.");
     }

@@ -1,8 +1,15 @@
 // src/api/collectoPayments.ts
-//import vaultClient from "./vaultClient";
-
 const COLLECTO_API_URL = (import.meta.env?.VITE_COLLECTO_API_URL as string) || "";
 const COLLECTO_API_KEY = (import.meta.env?.VITE_COLLECTO_API_KEY as string) || "";
+
+export type CollectoVendor = {
+  collectoId: string;
+  businessName: string;
+  contactEmail: string;
+  phone?: string | null;
+  // add any other fields Collecto returns that you need
+  metadata?: Record<string, any>;
+};
 
 /**
  * Create a payment (calls Collecto payment endpoint). If COLLECTO_API_URL not configured or call fails,
@@ -84,7 +91,66 @@ export async function verifyPayment(paymentId: string) {
   }
 }
 
+/**
+ * Fetch vendor/business details from Collecto by Collecto ID.
+ * If the API isn't configured or call fails, returns null (so caller can show "not found")
+ * or a mocked vendor in demo mode (you can change to null to force manual flow).
+ */
+export async function fetchCollectoVendor(collectoId: string): Promise<CollectoVendor | null> {
+  try {
+    if (!COLLECTO_API_URL) throw new Error("NO_COLLECTO_API_URL");
+
+    const res = await fetch(`${COLLECTO_API_URL.replace(/\/$/, "")}/vendors/${encodeURIComponent(collectoId)}`, {
+      method: "GET",
+      headers: {
+        Authorization: COLLECTO_API_KEY ? `Bearer ${COLLECTO_API_KEY}` : "",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status === 404) {
+      return null;
+    }
+
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`Collecto fetchCollectoVendor failed: ${res.status} ${txt}`);
+    }
+
+    const json = await res.json();
+    // If the Collecto API wraps vendor in data property, adjust accordingly:
+    // const payload = json.data ?? json;
+    const payload = json;
+
+    // map to the CollectoVendor type (adjust field names if different)
+    const vendor: CollectoVendor = {
+      collectoId: payload.collectoId ?? payload.id ?? collectoId,
+      businessName: payload.businessName ?? payload.name ?? "",
+      contactEmail: payload.contactEmail ?? payload.email ?? "",
+      phone: payload.phone ?? null,
+      metadata: payload.metadata ?? {},
+    };
+
+    return vendor;
+  } catch (err) {
+    console.warn("collectoPayments.fetchCollectoVendor fallback used:", err);
+    // Demo behaviour:
+    // Option A: return null so the UI shows "not-found" -> Use this if you want to force manual registration.
+    // return null;
+
+    // Option B: return a mock vendor so the demo flow pre-fills the form (I keep the mock to match your demo fallback pattern)
+    return {
+      collectoId,
+      businessName: `Demo Business ${collectoId}`,
+      contactEmail: `contact+${collectoId}@demo.collecto`,
+      phone: null,
+      metadata: {},
+    };
+  }
+}
+
 export default {
   createPayment,
   verifyPayment,
+  fetchCollectoVendor,
 };

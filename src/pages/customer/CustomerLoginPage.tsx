@@ -1,30 +1,25 @@
 // src/pages/Customer/Login.tsx
-import  { useEffect , type JSX} from "react";
+import { useEffect, type JSX } from "react";
 import { useNavigate } from "react-router-dom";
-//import AuthLayout from "../../components/layout/AuthLayout";
 import LoginForm from "../../features/auth/LoginForm";
-//import { useAuth } from "../../features/auth/useAuth";
-
-import { useAuth } from "../../context/AuthContext";
-
+import useSession from "../../hooks/useSession"; // <-- new session hook
 
 export default function CustomerLoginPage(): JSX.Element {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user } = useSession();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If already logged in, redirect to dashboard
-    if (isAuthenticated) {
-      // route based on role
-      if (user?.role === "vendor") navigate("/vendor/dashboard");
-      else if (user?.role === "admin") navigate("/admin");
-      else navigate("/customer/dashboard");
+    if (!isAuthenticated) return;
+
+    // Redirect depending on role
+    if (user?.role === "vendor") {
+      navigate("/vendor/dashboard");
+    } else if (user?.role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/customer/dashboard");
     }
   }, [isAuthenticated, user, navigate]);
 
-  return (
-    // <AuthLayout title="Welcome back" subtitle="Sign in to access your CollectoVault account">
-      <LoginForm />
-    // </AuthLayout>
-  );
+  return <LoginForm />;
 }

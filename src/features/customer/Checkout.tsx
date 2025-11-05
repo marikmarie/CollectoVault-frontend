@@ -1,29 +1,27 @@
 /* src/features/customer/Checkout.tsx */
-import  { useMemo, useState , type JSX } from "react";
-// import MainLayout from "../../components/layout/MainLayout";
+import { useMemo, useState, type JSX } from "react";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
-// import { useAuth } from "../auth/useAuth";
-import { useAuth } from "../../context/AuthContext";
-import collectoPayments from "../../api/collectoPayments";
-import vault from "../../api/vaultClient";
+import Spinner from "../../components/common/Spinner";
+import api from "../../api";
+import { useSession } from "../../hooks/useSession";
 
 type CartItem = {
   id: string;
   title: string;
   qty?: number;
   pricePoints?: number | null;
-  priceCurrency?: number | null;
+  priceCurrency?: number | null; // UGX
   vendorId?: string;
 };
 
 const demoCart: CartItem[] = [
-  { id: "r1", title: "Spa voucher", qty: 1, pricePoints: 1200, priceCurrency: 150000, vendorId: "v1" },
-  { id: "r2", title: "Dinner for two", qty: 1, pricePoints: 800, priceCurrency: 100000, vendorId: "v2" },
+  { id: "r1", title: "Spa voucher", qty: 1, pricePoints: 1200, priceCurrency: 150_000, vendorId: "v1" },
+  { id: "r2", title: "Dinner for two", qty: 1, pricePoints: 800, priceCurrency: 100_000, vendorId: "v2" },
 ];
 
 export default function Checkout(): JSX.Element {
-  const { user, updateProfile } = useAuth();
+  const { user, setUser } = (useSession() as any) ?? { user: null, setUser: undefined };
   const [cart, setCart] = useState<CartItem[]>(demoCart);
   const [payWithPoints, setPayWithPoints] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -36,51 +34,61 @@ export default function Checkout(): JSX.Element {
   }, [cart]);
 
   const handlePlaceOrder = async () => {
+    if (!user) {
+      setMessage("Please log in to place an order.");
+      return;
+    }
+
     setProcessing(true);
     setMessage(null);
+
     try {
-      if (payWithPoints) {
-        // To do: vault API to place order and deduct points
-        if (vault && (vault as any).post) {
-          await vault.post("/orders", { items: cart, payWith: "points" });
-          // demo: deduct points locally
-          updateProfile({ points: Math.max(0, (user?.points ?? 0) - totals.points) });
-          setMessage("Order placed. Points deducted from your balance.");
-          setCart([]);
-          return;
-        }
+      const payload = {
+        items: cart.map((it) => ({
+          id: it.id,
+          qty: it.qty ?? 1,
+          pricePoints: it.pricePoints ?? null,
+          priceCurrency: it.priceCurrency ?? null,
+          vendorId: it.vendorId ?? null,
+          title: it.title,
+        })),
+        payWith: payWithPoints ? "points" : "currency",
+        currency: "UGX",
+      };
 
-        // fallback demo:
-        await new Promise((r) => setTimeout(r, 800));
-        updateProfile({ points: Math.max(0, (user?.points ?? 0) - totals.points) });
-        setMessage("Order placed (demo). Points deducted.");
-        setCart([]);
-      } else {
-        // pay with currency -> collectoPayments
-        if ((collectoPayments as any)?.initiatePayment) {
-          const resp = await (collectoPayments as any).initiatePayment({ amount: totals.currency, currency: "USD", description: "Purchase from CollectoVault" });
-          const data = resp?.data ?? resp;
-          if (data?.redirectUrl) {
-            window.location.href = data.redirectUrl;
-            return;
-          }
-        }
+      // Backend handles points deduction or payment creation
+      const { data } = await api.post("/orders", payload);
 
-        // fallback: simulate payment and credit order on vault
-        await new Promise((r) => setTimeout(r, 900));
-        setMessage("Payment successful (demo). Order placed.");
-        setCart([]);
+      // If backend returned a redirect for external payment, follow it
+      if (data?.redirectUrl) {
+        window.location.href = data.redirectUrl;
+        return;
       }
+
+      // On success (points deducted or payment processed)
+      // Refresh user profile (GET /api/customers/:id) and setUser so UI updates
+      try {
+        const { data: profile } = await api.get(`/customers/${user.id}`);
+        if (setUser) setUser(profile);
+      } catch (err) {
+        // non-fatal — continue
+        console.warn("Failed to refresh user profile after order", err);
+      }
+
+      // Clear cart and show message
+      setCart([]);
+      setMessage(data?.message ?? "Order placed successfully.");
     } catch (err: any) {
-      setMessage(err?.message ?? "Failed to place order. Try again.");
+      // Try to show API error message shape
+      const msg = err?.response?.data?.message ?? err?.message ?? "Failed to place order. Try again.";
+      setMessage(msg);
     } finally {
       setProcessing(false);
     }
   };
 
   return (
-    //<MainLayout title="Checkout" subtitle="Confirm your order and pay">
-      <div>
+    <div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Card>
@@ -93,10 +101,14 @@ export default function Checkout(): JSX.Element {
                   <div key={it.id} className="flex items-center justify-between bg-slate-900/30 p-3 rounded">
                     <div>
                       <div className="font-medium">{it.title}</div>
-                      <div className="text-xs text-slate-400">{it.qty} × {it.pricePoints ? `${it.pricePoints.toLocaleString()} pts` : `UGX ${it.priceCurrency?.toFixed(1)}`}</div>
+                      <div className="text-xs text-slate-400">
+                        {it.qty} × {it.pricePoints ? `${it.pricePoints.toLocaleString()} pts` : `UGX ${Number(it.priceCurrency ?? 0).toLocaleString()}`}
+                      </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-semibold">{it.pricePoints ? `${(it.pricePoints * (it.qty ?? 1)).toLocaleString()} pts` : `UGX ${((it.priceCurrency ?? 0) * (it.qty ?? 1)).toFixed(1)}`}</div>
+                      <div className="font-semibold">
+                        {it.pricePoints ? `${(it.pricePoints * (it.qty ?? 1)).toLocaleString()} pts` : `UGX ${((it.priceCurrency ?? 0) * (it.qty ?? 1)).toLocaleString()}`}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -115,7 +127,7 @@ export default function Checkout(): JSX.Element {
               </div>
               <div className="flex items-center justify-between mt-2">
                 <div className="text-sm text-slate-300">Currency total</div>
-                <div className="font-semibold">UGX {totals.currency.toFixed(2)}</div>
+                <div className="font-semibold">UGX {totals.currency.toLocaleString()}</div>
               </div>
 
               <div className="mt-4">
@@ -125,13 +137,14 @@ export default function Checkout(): JSX.Element {
                 </label>
                 <label className="inline-flex items-center gap-2 ml-4">
                   <input type="radio" name="pay" checked={!payWithPoints} onChange={() => setPayWithPoints(false)} />
-                  <span className="text-sm text-slate-300">Pay with card</span>
+                  <span className="text-sm text-slate-300">Pay with card (UGX)</span>
                 </label>
               </div>
 
               <div className="mt-4">
                 <Button onClick={handlePlaceOrder} loading={processing} disabled={cart.length === 0}>
-                  {processing ? "Processing..." : (payWithPoints ? `Redeem ${totals.points.toLocaleString()} pts` : `Pay UGX ${totals.currency.toFixed(1)}`)}
+                  {processing ? <span className="flex items-center gap-2"><Spinner size={1.0} label="Processing..." /></span>
+                    : (payWithPoints ? `Redeem ${totals.points.toLocaleString()} pts` : `Pay UGX ${totals.currency.toLocaleString()}`)}
                 </Button>
               </div>
 

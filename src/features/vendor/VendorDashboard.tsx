@@ -1,24 +1,27 @@
 /* src/features/vendor/VendorDashboard.tsx */
 import { useEffect, useState, type JSX } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import {vendorService} from "../../api/vendorService";
+import { vendorService } from "../../api/vendorService";
+import api from "../../api";
+import { useSession } from "../../hooks/useSession";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
 import ROUTES from "../../constants/routes";
+import Spinner from "../../components/common/Spinner";
 
 type ServiceSummary = {
   id: string;
   title: string;
   active: boolean;
-  pricePoints?: number;
-  priceCurrency?: number;
-  createdAt?: string;
+  pricePoints?: number | null;
+  priceCurrency?: number | null;
+  createdAt?: string | null;
 };
 
 export default function VendorDashboard(): JSX.Element {
-  const { user } = useAuth();
+  const { user, loading: sessionLoading, isAuthenticated } = useSession() as any;
   const navigate = useNavigate();
+
   const [services, setServices] = useState<ServiceSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,50 +30,96 @@ export default function VendorDashboard(): JSX.Element {
   const [monthlyRevenue, setMonthlyRevenue] = useState<number | null>(null);
   const [pointsRedeemed, setPointsRedeemed] = useState<number | null>(null);
 
+  // Redirect if not authenticated or not vendor role
+  useEffect(() => {
+    if (sessionLoading) return;
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    // If authenticated but wrong role, redirect to their area
+    if (user?.role && user.role !== "vendor") {
+      if (user.role === "customer") navigate("/customer/dashboard");
+      else if (user.role === "admin") navigate("/admin");
+    }
+  }, [sessionLoading, isAuthenticated, user, navigate]);
+
   useEffect(() => {
     let mounted = true;
+
     (async () => {
+      if (sessionLoading) return;
+      // only fetch when we have a vendor user
+      if (!user || user.role !== "vendor") {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setError(null);
+
       try {
+        // Preferred: use vendorService if present
         if ((vendorService as any)?.getMyServices) {
           const res = await (vendorService as any).getMyServices();
           const data = res?.data ?? res;
-          if (mounted) setServices(data || []);
+          if (mounted) setServices((data || []) as ServiceSummary[]);
         } else {
-          // fallback demo data
-          if (mounted) {
-            const demo: ServiceSummary[] = [
-              { id: "s1", title: "Forest Mall: Spa Voucher", active: true, pricePoints: 1200, priceCurrency: 15000, createdAt: new Date().toISOString() },
-              { id: "s2", title: "Restaurant: Dinner for Two", active: true, pricePoints: 800, priceCurrency: 10000, createdAt: new Date().toISOString() },
-              { id: "s3", title: "Room discount 20%", active: false, pricePoints: 2000, priceCurrency: 25000, createdAt: new Date().toISOString() },
-            ];
-            setServices(demo);
-          }
+          // fallback: call backend endpoint
+          const { data } = await api.get(`/vendors/${user.id}/services`);
+          if (mounted) setServices((data || []) as ServiceSummary[]);
         }
 
-        // demo KPIs (replace with real service calls later)
-        setTotalOrders(124);
-        setMonthlyRevenue(27300);
-        setPointsRedeemed(45230);
+        // Try to fetch KPIs (optional)
+        if ((vendorService as any)?.getMetrics) {
+          const r = await (vendorService as any).getMetrics();
+          const m = r?.data ?? r;
+          if (mounted) {
+            setTotalOrders(m?.totalOrders ?? null);
+            setMonthlyRevenue(m?.monthlyRevenue ?? null);
+            setPointsRedeemed(m?.pointsRedeemed ?? null);
+          }
+        } else {
+          // fallback metrics endpoint
+          try {
+            const { data: metrics } = await api.get(`/vendors/${user.id}/metrics`);
+            if (mounted) {
+              setTotalOrders(metrics?.totalOrders ?? null);
+              setMonthlyRevenue(metrics?.monthlyRevenue ?? null);
+              setPointsRedeemed(metrics?.pointsRedeemed ?? null);
+            }
+          } catch {
+            // keep defaults if metrics not available
+            if (mounted) {
+              setTotalOrders(null);
+              setMonthlyRevenue(null);
+              setPointsRedeemed(null);
+            }
+          }
+        }
       } catch (err: any) {
-        console.warn("vendorsService.getMyServices failed:", err);
-        if (mounted) setError("Failed to load services. Showing demo data.");
-
+        console.warn("Vendor dashboard load failed", err);
         if (mounted) {
+          setError("Failed to load vendor data. Showing demo values.");
+          // demo fallback
           setServices([
-            { id: "s1", title: "Demo Service A", active: true, pricePoints: 500, priceCurrency: 6, createdAt: new Date().toISOString() },
+            { id: "s-demo", title: "Demo service", active: true, pricePoints: 500, priceCurrency: 15000, createdAt: new Date().toISOString() },
           ]);
           setTotalOrders(12);
-          setMonthlyRevenue(240);
+          setMonthlyRevenue(24000);
           setPointsRedeemed(1240);
         }
       } finally {
         if (mounted) setLoading(false);
       }
     })();
+
     return () => { mounted = false; };
-  }, []);
+  }, [user, sessionLoading]);
+
+  // Show session loading state quickly
+  if (sessionLoading) return <div className="p-6 text-center"><Spinner /></div>;
+  if (!isAuthenticated) return <div className="p-6 text-center">Redirecting...</div>;
 
   return (
     <div>
@@ -85,7 +134,7 @@ export default function VendorDashboard(): JSX.Element {
         <div className="flex flex-wrap items-center gap-3">
           <Button onClick={() => navigate(ROUTES.VENDOR.UPLOAD_SERVICE)} className="px-4 py-2">Upload Service</Button>
           <Link to={ROUTES.VENDOR.SERVICES} className="px-4 py-2 border border-slate-700 rounded-md text-sm hover:bg-slate-800">Manage Services</Link>
-        
+
           <Button variant="secondary" onClick={() => navigate("/point-rules")} className="px-4 py-2">Manage Point Rules</Button>
           <Button variant="secondary" onClick={() => navigate("/tier-rules")} className="px-4 py-2">Manage Tier Rules</Button>
         </div>
@@ -104,7 +153,7 @@ export default function VendorDashboard(): JSX.Element {
 
         <Card className="p-4">
           <p className="text-sm text-slate-400">Monthly revenue</p>
-          <p className="text-2xl font-bold">{monthlyRevenue !== null ? `UGX ${monthlyRevenue}` : "—"}</p>
+          <p className="text-2xl font-bold">{monthlyRevenue !== null ? `UGX ${monthlyRevenue.toLocaleString()}` : "—"}</p>
         </Card>
 
         <Card className="p-4">
@@ -133,7 +182,7 @@ export default function VendorDashboard(): JSX.Element {
                   <div>
                     <div className="font-semibold">{s.title}</div>
                     <div className="text-sm text-slate-400">
-                      {s.pricePoints ? `${s.pricePoints} pts` : ""}{s.pricePoints && s.priceCurrency ? " • " : ""}{s.priceCurrency ? `UGX${s.priceCurrency}` : ""}
+                      {s.pricePoints ? `${s.pricePoints.toLocaleString()} pts` : ""}{s.pricePoints && s.priceCurrency ? " • " : ""}{s.priceCurrency ? `UGX ${Number(s.priceCurrency).toLocaleString()}` : ""}
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -164,7 +213,7 @@ export default function VendorDashboard(): JSX.Element {
             <p className="mt-2 text-sm">Download sales and redemptions reports for reconciliation.</p>
             <div className="mt-3 flex gap-2">
               <Button variant="secondary" onClick={() => { /* wire export later */ }}>Export CSV</Button>
-              <Button variant="ghost" onClick={() => { /* open reports page */ navigate("/vendor/reports"); }}>View Reports</Button>
+              <Button variant="ghost" onClick={() => navigate("/vendor/reports")}>View Reports</Button>
             </div>
           </Card>
 

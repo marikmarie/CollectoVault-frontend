@@ -31,7 +31,7 @@ export default function LoginForm(): JSX.Element {
        console.log("Logged in as", user);
        if (user.data === "customer") 
         navigate("/customer/dashboard");
-       else navigate("/customer/dashboard");
+       else navigate("/vendor/dashboard");
     } catch (err) {
       console.error(err);
     }
@@ -53,7 +53,7 @@ export default function LoginForm(): JSX.Element {
           className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
             errors.email ? "border-rose-500" : "border-slate-700"
           }`}
-          placeholder="you@example.com"
+          placeholder="you@gmail.com"
         />
         {errors.email && (
           <p className="mt-1 text-sm text-rose-400">{errors.email.message}</p>

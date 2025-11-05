@@ -10,7 +10,7 @@ export type RewardCardProps = {
   description?: string;
   pointsPrice?: number | null;       
   currencyPrice?: number | null;     
-  vendorName?: string;
+  vendorName?: string | null;
   imageUrl?: string | null;
   tags?: string[];                   
   availability?: "available" | "soldout" | "coming_soon";

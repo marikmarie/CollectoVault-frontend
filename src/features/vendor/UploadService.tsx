@@ -85,16 +85,16 @@ export default function UploadService(): JSX.Element {
     setSubmitting(true);
     try {
       if ((vendorService as any)?.createService) {
-        // const formData = new FormData();
-        // formData.append("title", data.title);
-        // formData.append("description", data.description ?? "");
-        // if (data.pricePoints) formData.append("pricePoints", String(data.pricePoints));
-        // if (data.priceCurrency) formData.append("priceCurrency", String(data.priceCurrency));
-        // formData.append("category", data.category ?? "general");
-        // formData.append("active", String(data.active === "true" || data.active === true));
-        // if (data.image && data.image.length > 0) formData.append("image", data.image[0]);
-        // const res = await (vendorsService as any).createService(formData);
-        // const created = res?.data ?? res;
+        const formData = new FormData();
+        formData.append("title", data.title);
+        formData.append("description", data.description ?? "");
+        if (data.pricePoints) formData.append("pricePoints", String(data.pricePoints));
+        if (data.priceCurrency) formData.append("priceCurrency", String(data.priceCurrency));
+        formData.append("category", data.category ?? "general");
+        formData.append("active", String(data.active === "true" || data.active === true));
+        if (data.image && data.image.length > 0) formData.append("image", data.image[0]);
+        const res = await (vendorService as any).createService(formData);
+        const created = res?.data ?? res;
         navigate("/services");
       } else {
         // simulate server latency for demo

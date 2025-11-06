@@ -13,6 +13,7 @@ type Form = {
   firstName: string;
   lastName?: string;
   email: string;
+  role?: string;
   phone?: string;
   password: string;
   confirmPassword: string;
@@ -45,6 +46,7 @@ export default function RegisterForm(): JSX.Element {
     try {
       
       data.name = `${data.firstName} ${data.lastName}`.trim();
+      data.role = "customer";
 
       await api.post("/api/auth/register", data)
       navigate("/login");
@@ -52,17 +54,6 @@ export default function RegisterForm(): JSX.Element {
       setServerError(err?.message ?? "Registration failed. Please try again.");
     }
   };
-
-  // const fillDemo = () => {
-  //   setValue("firstName", "Mariam");
-  //   setValue("lastName", "Tukas");
-  //   setValue("email", "mariam@gmail.com");
-  //   setValue("phone", "+25674688000");
-  //   setValue("password", "password");
-  //   setValue("confirmPassword", "password");
-  //   setValue("acceptTerms", true);
-  // };
-
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -96,7 +87,7 @@ export default function RegisterForm(): JSX.Element {
             type="email"
             {...register("email", { required: "Email is required", pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Enter a valid email" } })}
             className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${errors.email ? "border-rose-500" : "border-slate-700"}`}
-            placeholder="you@example.com"
+            placeholder="you@gmail.com"
           />
           {errors.email && <p className="mt-1 text-sm text-rose-400">{errors.email.message}</p>}
         </div>
@@ -152,9 +143,6 @@ export default function RegisterForm(): JSX.Element {
         <div className="mt-4 text-center text-sm text-slate-400">By creating an account you agree to our terms. Already registered? <Link to="/login" className="text-white underline">Sign in</Link></div>
       </form>
 
-      {/* <div className="mt-4">
-        <button onClick={fillDemo} className="inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-900 rounded-md font-medium">Fill demo info</button>
-      </div> */}
     </div>
   );
 }

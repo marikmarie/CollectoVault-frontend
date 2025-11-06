@@ -20,7 +20,7 @@ const ROUTES = {
     LOGIN: "/vendor/login",
     DASHBOARD: "/vendor/dashboard",
     SERVICES: "/services",
-    UPLOAD_SERVICE: "/vendor/upload-service",
+    UPLOAD_SERVICE: "/upload-service",
   },
 
   ADMIN: {

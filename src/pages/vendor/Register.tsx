@@ -89,7 +89,7 @@ export default function VendorRegisterPage(): JSX.Element {
     }
 
     try {
-      // call backend register and include role
+      
       await authService.register({
         firstName: data.businessName,
         lastName: undefined,

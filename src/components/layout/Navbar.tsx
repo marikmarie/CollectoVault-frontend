@@ -75,7 +75,7 @@ export default function Navbar(): JSX.Element {
                 to={ROUTES.CUSTOMER.BUYPOINTS ?? "/buy-points"}
                 className="px-3 py-1.5 rounded-md bg-white text-slate-900 text-sm font-semibold shadow-sm hover:brightness-95"
               >
-                Buy Points
+                Order Now
               </Link>
 
               {!user && (

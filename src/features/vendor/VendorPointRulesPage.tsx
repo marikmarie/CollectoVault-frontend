@@ -1,20 +1,28 @@
-// src/features/vendor/VendorPointRulesPage.tsx
-import  { useMemo, useState, type JSX } from "react";
+/* src/features/vendor/VendorPointRulesPage.tsx */
+import  { useEffect, useMemo, useState, type JSX } from "react";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import Toast from "../../components/common/Toast";
 import type { ToastType } from "../../components/common/Toast";
-import { v4 as uuidv4 } from "uuid";
+import Spinner from "../../components/common/Spinner";
+import api from "../../api";
+import { useSession } from "../../hooks/useSession";
 
-type TriggerType = "purchase" | "registration" | "birthday" | "referral" | "manual" | "event";
+type TriggerType =
+  | "purchase"
+  | "registration"
+  | "birthday"
+  | "referral"
+  | "manual"
+  | "event";
 
 type PointRule = {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
   trigger: TriggerType;
   points: number;
-  multiplier?: number;
+  multiplier?: number | null;
   maxPerTransaction?: number | null;
   maxPerDay?: number | null;
   active: boolean;
@@ -24,86 +32,207 @@ type PointRule = {
   createdAt: string;
 };
 
-const SAMPLE_RULES: PointRule[] = [
-  {
-    id: "r-1",
-    name: "Standard purchase",
-    description: "1 point per UGX 100 spent",
-    trigger: "purchase",
-    points: 1, // interpret in UI as 1 point per 100UGX (we'll show multiplier usage in UI)
-    multiplier: 1,
-    maxPerTransaction: null,
-    maxPerDay: null,
-    active: true,
-    vendorId: "v1",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "r-2",
-    name: "Welcome bonus",
-    description: "Signup bonus",
-    trigger: "registration",
-    points: 200,
-    multiplier: undefined,
-    maxPerTransaction: 200,
-    maxPerDay: 200,
-    active: true,
-    vendorId: "v1",
-    createdAt: new Date().toISOString(),
-  },
-];
-
 export default function VendorPointRulesPage(): JSX.Element {
-  const [rules, setRules] = useState<PointRule[]>(SAMPLE_RULES);
+  const { user, loading: sessionLoading } = useSession() as any;
+
+  const [rules, setRules] = useState<PointRule[]>([]);
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<PointRule | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [toast, setToast] = useState<{ msg: string; type: ToastType } | null>(null);
+  const [toast, setToast] = useState<{ msg: string; type: ToastType } | null>(
+    null
+  );
+  const [loading, setLoading] = useState(true);
+  const [busyRuleId, setBusyRuleId] = useState<string | null>(null);
+  const vendorId = user?.id ?? null;
+
+  // map API row (snake_case) -> UI PointRule
+  function mapFromApi(r: any): PointRule {
+    return {
+      id: String(r.id),
+      name: r.name,
+      description: r.description ?? null,
+      trigger: (r.trigger as TriggerType),
+      points: Number(r.points ?? 0),
+      multiplier:
+        r.multiplier === null || r.multiplier === undefined
+          ? null
+          : Number(r.multiplier),
+      maxPerTransaction:
+        r.max_per_transaction === null || r.max_per_transaction === undefined
+          ? null
+          : Number(r.max_per_transaction),
+      maxPerDay:
+        r.max_per_day === null || r.max_per_day === undefined
+          ? null
+          : Number(r.max_per_day),
+      active: !!r.active,
+      vendorId: String(r.vendor_id ?? vendorId ?? ""),
+      startAt: r.start_at ?? null,
+      endAt: r.end_at ?? null,
+      createdAt: r.created_at ?? new Date().toISOString(),
+    };
+  }
+
+  // fetch rules
+  const fetchRules = async () => {
+    if (!vendorId) return;
+    setLoading(true);
+    try {
+      const { data } = await api.get(`/api/vendor/${vendorId}/point-rules`);
+      // data expected to be an array
+      const arr = (data || []) as any[];
+      setRules(arr.map(mapFromApi));
+    } catch (err: any) {
+      console.error("Failed to load point rules", err);
+      setToast({
+        msg: "Failed to load rules. See console for details.",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (sessionLoading) return;
+    if (!vendorId) {
+      setRules([]);
+      setLoading(false);
+      return;
+    }
+    fetchRules();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vendorId, sessionLoading]);
 
   const filtered = useMemo(() => {
     if (!search) return rules;
     const q = search.toLowerCase();
-    return rules.filter((r) => r.name.toLowerCase().includes(q) || (r.description || "").toLowerCase().includes(q));
+    return rules.filter(
+      (r) =>
+        r.name.toLowerCase().includes(q) ||
+        (r.description || "").toLowerCase().includes(q)
+    );
   }, [rules, search]);
 
   // create or update
-  const saveRule = (payload: Partial<PointRule>) => {
-    if (!payload.name) { setToast({ msg: "Rule name is required", type: "error" }); return; }
-    if (editing) {
-      setRules((prev) => prev.map((r) => (r.id === editing.id ? { ...r, ...payload, updatedAt: new Date().toISOString() } as PointRule : r)));
-      setToast({ msg: "Rule updated", type: "success" });
-    } else {
-      const newRule: PointRule = {
-        id: uuidv4(),
-        name: payload.name ?? "Unnamed rule",
-        description: payload.description,
-        trigger: (payload.trigger || "manual") as TriggerType,
-        points: payload.points ?? 0,
-        multiplier: payload.multiplier,
-        maxPerTransaction: payload.maxPerTransaction ?? null,
-        maxPerDay: payload.maxPerDay ?? null,
-        active: payload.active ?? true,
-        vendorId: "v1",
-        startAt: payload.startAt ?? null,
-        endAt: payload.endAt ?? null,
-        createdAt: new Date().toISOString(),
-      };
-      setRules((p) => [newRule, ...p]);
-      setToast({ msg: "Rule created", type: "success" });
+  const saveRule = async (payload: Partial<PointRule>) => {
+    if (!vendorId) {
+      setToast({ msg: "Vendor not available", type: "error" });
+      return;
     }
-    setShowModal(false);
-    setEditing(null);
+    if (!payload.name || payload.name.trim().length === 0) {
+      setToast({ msg: "Rule name is required", type: "error" });
+      return;
+    }
+
+    try {
+      setBusyRuleId("saving");
+      if (editing) {
+        // update existing
+        const body = {
+          name: payload.name,
+          description: payload.description ?? null,
+          trigger: payload.trigger ?? "manual",
+          points: payload.points ?? 0,
+          multiplier:
+            payload.multiplier === undefined ? null : payload.multiplier,
+          max_per_transaction:
+            payload.maxPerTransaction === undefined
+              ? null
+              : payload.maxPerTransaction,
+          max_per_day:
+            payload.maxPerDay === undefined ? null : payload.maxPerDay,
+          active: payload.active ? 1 : 0,
+          start_at: payload.startAt ?? null,
+          end_at: payload.endAt ?? null,
+        };
+        await api.put(
+          `/api/vendor/${vendorId}/point-rules/${editing.id}`,
+          body
+        );
+        setToast({ msg: "Rule updated", type: "success" });
+      } else {
+        // create new
+        const body = {
+          name: payload.name,
+          description: payload.description ?? null,
+          trigger: payload.trigger ?? "manual",
+          points: payload.points ?? 0,
+          multiplier:
+            payload.multiplier === undefined ? null : payload.multiplier,
+          max_per_transaction:
+            payload.maxPerTransaction === undefined
+              ? null
+              : payload.maxPerTransaction,
+          max_per_day:
+            payload.maxPerDay === undefined ? null : payload.maxPerDay,
+          active: payload.active ? 1 : 1,
+          start_at: payload.startAt ?? null,
+          end_at: payload.endAt ?? null,
+        };
+        await api.post(`/api/vendor/${vendorId}/point-rules`, body);
+        setToast({ msg: "Rule created", type: "success" });
+      }
+
+      // refresh list
+      await fetchRules();
+      setShowModal(false);
+      setEditing(null);
+    } catch (err: any) {
+      console.error("Save rule failed", err);
+      setToast({
+        msg: err?.message ?? "Failed to save rule",
+        type: "error",
+      });
+    } finally {
+      setBusyRuleId(null);
+    }
   };
 
-  const toggleActive = (id: string) => {
-    setRules((p) => p.map((r) => (r.id === id ? { ...r, active: !r.active } : r)));
-    setToast({ msg: "Rule status updated", type: "info" });
+  const toggleActive = async (id: string) => {
+    if (!vendorId) return;
+    const r = rules.find((x) => x.id === id);
+    if (!r) return;
+    try {
+      setBusyRuleId(id);
+      const body = {
+        name: r.name,
+        description: r.description ?? null,
+        trigger: r.trigger,
+        points: r.points ?? 0,
+        multiplier: r.multiplier ?? null,
+        max_per_transaction: r.maxPerTransaction ?? null,
+        max_per_day: r.maxPerDay ?? null,
+        active: r.active ? 0 : 1,
+        start_at: r.startAt ?? null,
+        end_at: r.endAt ?? null,
+      };
+      await api.put(`/api/vendor/${vendorId}/point-rules/${id}`, body);
+      await fetchRules();
+      setToast({ msg: "Rule status updated", type: "info" });
+    } catch (err: any) {
+      console.error("Toggle active failed", err);
+      setToast({ msg: "Failed to update rule", type: "error" });
+    } finally {
+      setBusyRuleId(null);
+    }
   };
 
-  const removeRule = (id: string) => {
+  const removeRule = async (id: string) => {
     if (!confirm("Remove this rule? This action can be reversed by re-creating it.")) return;
-    setRules((p) => p.filter((r) => r.id !== id));
-    setToast({ msg: "Rule removed", type: "success" });
+    if (!vendorId) return;
+    try {
+      setBusyRuleId(id);
+      await api.delete(`/api/vendor/${vendorId}/point-rules/${id}`);
+      await fetchRules();
+      setToast({ msg: "Rule removed", type: "success" });
+    } catch (err: any) {
+      console.error("Delete rule failed", err);
+      setToast({ msg: "Failed to remove rule", type: "error" });
+    } finally {
+      setBusyRuleId(null);
+    }
   };
 
   return (
@@ -115,49 +244,72 @@ export default function VendorPointRulesPage(): JSX.Element {
         </div>
 
         <div className="flex items-center gap-2">
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search rules..." className="px-3 py-2 rounded-md bg-slate-900/50 border border-slate-700 text-sm" />
-          <Button onClick={() => { setEditing(null); setShowModal(true); }} className="px-4 py-2">Create rule</Button>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search rules..."
+            className="px-3 py-2 rounded-md bg-slate-900/50 border border-slate-700 text-sm"
+          />
+          <Button
+            onClick={() => {
+              setEditing(null);
+              setShowModal(true);
+            }}
+            className="px-4 py-2"
+          >
+            Create rule
+          </Button>
         </div>
       </div>
 
       <div className="grid gap-4">
-        {filtered.length === 0 && <Card className="p-6 text-center text-slate-400">No rules found.</Card>}
+        {loading ? (
+          <Card className="p-6 text-center"><Spinner /></Card>
+        ) : filtered.length === 0 ? (
+          <Card className="p-6 text-center text-slate-400">No rules found.</Card>
+        ) : (
+          filtered.map((r) => (
+            <Card key={r.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-3">
+                  <div className={`px-2 py-1 rounded text-sm font-medium ${r.active ? "bg-emerald-600/20 text-emerald-300" : "bg-slate-800 text-slate-400"}`}>{r.trigger.toUpperCase()}</div>
+                  <div>
+                    <div className="font-semibold">{r.name}</div>
+                    <div className="text-sm text-slate-400">{r.description}</div>
+                  </div>
+                </div>
 
-        {filtered.map((r) => (
-          <Card key={r.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3">
-                <div className={`px-2 py-1 rounded text-sm font-medium ${r.active ? "bg-emerald-600/20 text-emerald-300" : "bg-slate-800 text-slate-400"}`}>{r.trigger.toUpperCase()}</div>
-                <div>
-                  <div className="font-semibold">{r.name}</div>
-                  <div className="text-sm text-slate-400">{r.description}</div>
+                <div className="mt-3 text-sm text-slate-300 flex gap-4">
+                  <div>Points: <span className="font-medium text-white">{r.points}</span></div>
+                  {r.multiplier != null && <div>Multiplier: <span className="font-medium">{r.multiplier}x</span></div>}
+                  {r.maxPerDay != null && <div>Max/day: {r.maxPerDay}</div>}
+                  {r.startAt && <div>Start: {new Date(r.startAt).toLocaleDateString()}</div>}
                 </div>
               </div>
 
-              <div className="mt-3 text-sm text-slate-300 flex gap-4">
-                <div>Points: <span className="font-medium text-white">{r.points}</span></div>
-                {r.multiplier && <div>Multiplier: <span className="font-medium">{r.multiplier}x</span></div>}
-                {r.maxPerDay && <div>Max/day: {r.maxPerDay}</div>}
-                {r.startAt && <div>Start: {new Date(r.startAt).toLocaleDateString()}</div>}
+              <div className="flex items-center gap-2">
+                <Button variant="secondary" onClick={() => { setEditing(r); setShowModal(true); }}>Edit</Button>
+                <Button variant="ghost" onClick={() => toggleActive(r.id)} disabled={busyRuleId === r.id}>
+                  {r.active ? "Disable" : "Enable"}
+                </Button>
+                <Button variant="danger" onClick={() => removeRule(r.id)} disabled={busyRuleId === r.id}>Remove</Button>
               </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button variant="secondary" onClick={() => { setEditing(r); setShowModal(true); }}>Edit</Button>
-              <Button variant="ghost" onClick={() => toggleActive(r.id)}>{r.active ? "Disable" : "Enable"}</Button>
-              <Button variant="danger" onClick={() => removeRule(r.id)}>Remove</Button>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          ))
+        )}
       </div>
 
-      {/* Modal (simple) */}
+      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-2xl bg-slate-800 rounded-lg p-6">
             <h3 className="text-lg font-semibold mb-3">{editing ? "Edit rule" : "Create rule"}</h3>
-
-            <RuleForm initial={editing ?? undefined} onCancel={() => { setShowModal(false); setEditing(null); }} onSave={(payload) => saveRule(payload)} />
+            <RuleForm
+              initial={editing ?? undefined}
+              onCancel={() => { setShowModal(false); setEditing(null); }}
+              onSave={(payload) => saveRule(payload)}
+              saving={busyRuleId === "saving"}
+            />
           </div>
         </div>
       )}
@@ -172,12 +324,22 @@ export default function VendorPointRulesPage(): JSX.Element {
 }
 
 /* Inline small RuleForm component */
-function RuleForm({ initial, onSave, onCancel }: { initial?: Partial<PointRule>, onSave: (payload: Partial<PointRule>) => void, onCancel: () => void }) {
+function RuleForm({
+  initial,
+  onSave,
+  onCancel,
+  saving,
+}: {
+  initial?: Partial<PointRule>;
+  onSave: (payload: Partial<PointRule>) => void;
+  onCancel: () => void;
+  saving?: boolean;
+}) {
   const [name, setName] = useState(initial?.name ?? "");
   const [desc, setDesc] = useState(initial?.description ?? "");
   const [trigger, setTrigger] = useState<TriggerType>((initial?.trigger as TriggerType) ?? "purchase");
   const [points, setPoints] = useState<number>(initial?.points ?? 0);
-  const [multiplier, setMultiplier] = useState<number | undefined>(initial?.multiplier);
+  const [multiplier, setMultiplier] = useState<number | undefined>(initial?.multiplier ?? undefined);
   const [maxPerDay, setMaxPerDay] = useState<number | "">((initial?.maxPerDay ?? "") as any);
   const [active, setActive] = useState<boolean>(initial?.active ?? true);
 
@@ -233,7 +395,15 @@ function RuleForm({ initial, onSave, onCancel }: { initial?: Partial<PointRule>,
 
       <div className="flex justify-end gap-2">
         <Button variant="ghost" onClick={onCancel}>Cancel</Button>
-        <Button onClick={() => onSave({ name, description: desc, trigger, points, multiplier, maxPerDay: maxPerDay === "" ? null : (maxPerDay as number), active })}>Save rule</Button>
+        <Button onClick={() => onSave({
+          name,
+          description: desc,
+          trigger,
+          points,
+          multiplier,
+          maxPerDay: maxPerDay === "" ? null : (maxPerDay as number),
+          active
+        })} loading={saving}>{saving ? "Saving..." : "Save rule"}</Button>
       </div>
     </div>
   );

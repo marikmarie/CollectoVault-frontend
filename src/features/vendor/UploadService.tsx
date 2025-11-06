@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type JSX } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import {vendorService} from "../../api/vendorService";
+import { vendorService } from "../../api/vendorService";
 
 type Form = {
   title: string;
@@ -20,7 +20,7 @@ export default function UploadService(): JSX.Element {
   const {
     register,
     handleSubmit,
-    setError,
+   // setError,
     setValue,
     formState: { errors },
     watch,
@@ -35,6 +35,8 @@ export default function UploadService(): JSX.Element {
       image: undefined,
     },
   });
+
+const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [serverError, setServerError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -69,45 +71,66 @@ export default function UploadService(): JSX.Element {
   }, [imageFiles]);
 
   const onSubmit = async (data: Form) => {
-    setServerError(null);
-    // basic validation: require title and at least one price
-    if (!data.title || data.title.trim().length === 0) {
-      setError("title", { message: "Title is required" });
-      return;
-    }
-    if (!data.pricePoints && !data.priceCurrency) {
-      setError("pricePoints", {
-        message: "Set a points price or currency price",
-      });
-      return;
-    }
-
     setSubmitting(true);
     try {
-      if ((vendorService as any)?.createService) {
-        const formData = new FormData();
-        formData.append("title", data.title);
-        formData.append("description", data.description ?? "");
-        if (data.pricePoints) formData.append("pricePoints", String(data.pricePoints));
-        if (data.priceCurrency) formData.append("priceCurrency", String(data.priceCurrency));
-        formData.append("category", data.category ?? "general");
-        formData.append("active", String(data.active === "true" || data.active === true));
-        if (data.image && data.image.length > 0) formData.append("image", data.image[0]);
-        const res = await (vendorService as any).createService(formData);
-        const created = res?.data ?? res;
-        navigate("/services");
-      } else {
-        // simulate server latency for demo
-        await new Promise((r) => setTimeout(r, 700));
-        navigate("/services");
-      }
+      await vendorService.createService({
+        title: data.title,
+        description: data.description,
+        pricePoints: data.pricePoints,
+        priceCurrency: data.priceCurrency,
+        category: data.category,
+        active: data.active === "true",
+        image_url: null, // placeholder until image upload added
+      });
+  setSuccessMessage("✅ Service created successfully!");
+  setTimeout(() => navigate("/vendor/dashboard"), 1200);
     } catch (err: any) {
-      console.error("create service failed", err);
-      setServerError(err?.message ?? "Failed to create service. Try again.");
+      setServerError("Failed to create service.");
     } finally {
       setSubmitting(false);
     }
   };
+
+  // const onSubmit = async (data: Form) => {
+  //   setServerError(null);
+  //   // basic validation: require title and at least one price
+  //   if (!data.title || data.title.trim().length === 0) {
+  //     setError("title", { message: "Title is required" });
+  //     return;
+  //   }
+  //   if (!data.pricePoints && !data.priceCurrency) {
+  //     setError("pricePoints", {
+  //       message: "Set a points price or currency price",
+  //     });
+  //     return;
+  //   }
+
+  //   setSubmitting(true);
+  //   try {
+  //     if ((vendorService as any)?.createService) {
+  //       const formData = new FormData();
+  //       formData.append("title", data.title);
+  //       formData.append("description", data.description ?? "");
+  //       if (data.pricePoints) formData.append("pricePoints", String(data.pricePoints));
+  //       if (data.priceCurrency) formData.append("priceCurrency", String(data.priceCurrency));
+  //       formData.append("category", data.category ?? "general");
+  //       formData.append("active", String(data.active === "true" || data.active === true));
+  //       if (data.image && data.image.length > 0) formData.append("image", data.image[0]);
+  //       const res = await (vendorService as any).createService(formData);
+  //       const created = res?.data ?? res;
+  //       navigate("/services");
+  //     } else {
+  //       // simulate server latency for demo
+  //       await new Promise((r) => setTimeout(r, 700));
+  //       navigate("/services");
+  //     }
+  //   } catch (err: any) {
+  //     console.error("create service failed", err);
+  //     setServerError(err?.message ?? "Failed to create service. Try again.");
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+  // };
 
   const openFilePicker = () => {
     fileInputRef.current?.click();

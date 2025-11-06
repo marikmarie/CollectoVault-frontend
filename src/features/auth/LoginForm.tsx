@@ -23,11 +23,19 @@ export default function LoginForm(): JSX.Element {
 
   const onSubmit = async (data: Form) => {
     try {
-      const user = await  authService.login(data)
-    
-       if (user.data === "customer")
-        navigate("/customer/dashboard");
-       else navigate("/vendor/dashboard");
+      //const user = await  authService.login(data)
+
+      // inside onSubmit after authService.login
+      const res = await authService.login(data);
+      // role might be res.data (string) OR res.data.role (object)
+      const role = res?.data?.role ?? res?.data;
+      if (role === "customer") navigate("/customer/dashboard");
+      else if (role === "vendor") navigate("/vendor/dashboard");
+      else navigate("/customer/dashboard"); // fallback
+
+      //  if (user.data === "customer")
+      //   navigate("/customer/dashboard");
+      //  else navigate("/vendor/dashboard");
     } catch (err) {
       console.error(err);
     }

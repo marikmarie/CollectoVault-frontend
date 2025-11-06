@@ -1,6 +1,6 @@
-/* src/features/customer/CustomerDashboard.tsx */
+// src/features/customer/CustomerDashboard.tsx
 import { useEffect, useState } from "react";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import TierProgress from "../../components/common/TierProgress";
 import Card from "../../components/common/Card";
@@ -21,9 +21,9 @@ type Reward = {
 };
 
 export default function CustomerDashboard() {
-  const { user, loading: sessionLoading , isAuthenticated} = useSession() as any;
+  const { user, loading: sessionLoading, isAuthenticated } = useSession() as any;
   const navigate = useNavigate();
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,38 +33,36 @@ export default function CustomerDashboard() {
   const [topRewards, setTopRewards] = useState<Reward[]>([]);
   const [loadingRewards, setLoadingRewards] = useState(true);
 
-
-   // Redirect if not authenticated or not vendor role
+  // Only run redirects after session finished loading
   useEffect(() => {
     if (sessionLoading) return;
     if (!isAuthenticated) {
       navigate("/login");
       return;
     }
+
     // If authenticated but wrong role, redirect to their area
-    if (user?.role && user.role !== "vendor") {
-      if (user.role === "customer") navigate("/customer/dashboard");
+    if (user?.role && user.role !== "customer") {
+      if (user.role === "vendor") navigate("/vendor/dashboard");
       else if (user.role === "admin") navigate("/admin");
     }
   }, [sessionLoading, isAuthenticated, user, navigate]);
 
   useEffect(() => {
-    //if (!user) return;
-    //  if (sessionLoading) return;
-    // if (!isAuthenticated) {
-    //   navigate("/login");
-    //   return;
-    // }
     let mounted = true;
 
     (async () => {
-if (!user || user.role !== "vendor") {
+      // only fetch when we have a customer user
+      if (sessionLoading) return;
+      if (!user || user.role !== "customer") {
         setLoading(false);
+        setLoadingRewards(false);
         return;
       }
 
       setLoading(true);
       setError(null);
+      setLoadingRewards(true);
 
       try {
         const { data: profile } = await api.get(`/customers/${user.id}`);
@@ -77,13 +75,19 @@ if (!user || user.role !== "vendor") {
         if (mounted) setTopRewards(rewards || []);
       } catch (err) {
         console.error(err);
+        if (mounted) setError("Failed to load customer data.");
       } finally {
-        if (mounted) setLoadingRewards(false);
+        if (mounted) {
+          setLoading(false);
+          setLoadingRewards(false);
+        }
       }
     })();
 
-    return () => { mounted = false };
-  }, [user]);
+    return () => {
+      mounted = false;
+    };
+  }, [user, sessionLoading]);
 
   if (sessionLoading) return <Spinner />;
   if (!user) return <div className="p-6 text-center">Please log in.</div>;

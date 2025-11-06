@@ -23,7 +23,7 @@ type Form = {
 export default function RegisterForm(): JSX.Element {
   const navigate = useNavigate();
   //const { register: authRegister } = useAuth();
- const { register, handleSubmit, setError, setValue, formState: { errors, isSubmitting } } = useForm<Form>({
+ const { register, handleSubmit, setError,  formState: { errors, isSubmitting } } = useForm<Form>({
     defaultValues: { firstName: "", lastName: "", email: "", phone: "", password: "", confirmPassword: "", acceptTerms: false }
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -53,15 +53,15 @@ export default function RegisterForm(): JSX.Element {
     }
   };
 
-  const fillDemo = () => {
-    setValue("firstName", "Mariam");
-    setValue("lastName", "Tukas");
-    setValue("email", "mariam@gmail.com");
-    setValue("phone", "+25674688000");
-    setValue("password", "password");
-    setValue("confirmPassword", "password");
-    setValue("acceptTerms", true);
-  };
+  // const fillDemo = () => {
+  //   setValue("firstName", "Mariam");
+  //   setValue("lastName", "Tukas");
+  //   setValue("email", "mariam@gmail.com");
+  //   setValue("phone", "+25674688000");
+  //   setValue("password", "password");
+  //   setValue("confirmPassword", "password");
+  //   setValue("acceptTerms", true);
+  // };
 
   return (
     <div>
@@ -152,9 +152,9 @@ export default function RegisterForm(): JSX.Element {
         <div className="mt-4 text-center text-sm text-slate-400">By creating an account you agree to our terms. Already registered? <Link to="/login" className="text-white underline">Sign in</Link></div>
       </form>
 
-      <div className="mt-4">
+      {/* <div className="mt-4">
         <button onClick={fillDemo} className="inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-900 rounded-md font-medium">Fill demo info</button>
-      </div>
+      </div> */}
     </div>
   );
 }

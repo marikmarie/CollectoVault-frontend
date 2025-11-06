@@ -2,7 +2,7 @@
 import  { useEffect, useState, type JSX } from "react";
 // import MainLayout from "../../components/layout/MainLayout";
 import { Link } from "react-router-dom";
-import vendorsService from "../../api/vendorService";
+import {vendorService} from "../../api/vendorService";
 // import { useAuth } from "../../features/auth/useAuth";
 
 type VendorSummary = {
@@ -31,8 +31,8 @@ export default function AdminDashboard(): JSX.Element {
       setLoading(true);
       setError(null);
       try {
-        if ((vendorsService as any)?.getAllVendors) {
-          const resp = await (vendorsService as any).getAllVendors();
+        if ((vendorService as any)?.getAllVendors) {
+          const resp = await (vendorService as any).getAllVendors();
           const data = resp?.data ?? resp;
           if (!mounted) return;
           setVendors(data || []);
@@ -71,8 +71,8 @@ export default function AdminDashboard(): JSX.Element {
 
   const approveVendor = async (id: string) => {
     try {
-      if ((vendorsService as any)?.approveVendor) {
-        await (vendorsService as any).approveVendor(id);
+      if ((vendorService as any)?.approveVendor) {
+        await (vendorService as any).approveVendor(id);
         setVendors((s) => s.map(v => v.id === id ? { ...v, approved: true } : v));
       } else {
         // demo fallback

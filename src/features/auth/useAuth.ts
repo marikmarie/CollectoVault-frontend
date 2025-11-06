@@ -2,7 +2,7 @@
 /* src/features/auth/useAuth.ts */
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import vault from "../../api/vaultClient"; // uses your vaultClient axios instance
+//import vault from "../../api/vaultClient"; // uses your vaultClient axios instance
 import * as authService from "../../api/authService";
 
 export type AuthUser = {
@@ -68,11 +68,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (token && !user) {
       (async () => {
         try {
-          const resp = await vault.get("/me");
-          if (resp?.data) {
-            setUser(resp.data);
-            localStorage.setItem(KEY_USER, JSON.stringify(resp.data));
-          }
+          // const resp = await vault.get("/me");
+          // if (resp?.data) {
+          //   setUser(resp.data);
+          //   localStorage.setItem(KEY_USER, JSON.stringify(resp.data));
+          // }
         } catch {
           // ignore for demo
         }

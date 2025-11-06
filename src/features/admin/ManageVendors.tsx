@@ -1,7 +1,7 @@
 // src/pages/admin/ManageVendors.tsx
 import  { useEffect, useMemo, useState, type JSX } from "react";
 // import MainLayout from "../../components/layout/MainLayout";
-import vendorsService from "../../api/vendorService";
+import {vendorService} from "../../api/vendorService";
 import { Link } from "react-router-dom";
 
 type Vendor = {
@@ -27,8 +27,8 @@ export default function ManageVendors(): JSX.Element {
       setLoading(true);
       setError(null);
       try {
-        if ((vendorsService as any)?.getAllVendors) {
-          const resp = await (vendorsService as any).getAllVendors();
+        if ((vendorService as any)?.getAllVendors) {
+          const resp = await (vendorService as any).getAllVendors();
           const data = resp?.data ?? resp;
           if (!mounted) return;
           setVendors(data || []);
@@ -62,8 +62,8 @@ export default function ManageVendors(): JSX.Element {
   const toggleActive = async (id: string, next: boolean) => {
     setBusyId(id);
     try {
-      if ((vendorsService as any)?.updateVendor) {
-        await (vendorsService as any).updateVendor(id, { active: next });
+      if ((vendorService as any)?.updateVendor) {
+        await (vendorService as any).updateVendor(id, { active: next });
         setVendors(s => s.map(v => v.id === id ? { ...v, active: next } : v));
       } else {
         setVendors(s => s.map(v => v.id === id ? { ...v, active: next } : v));
@@ -79,8 +79,8 @@ export default function ManageVendors(): JSX.Element {
   const approve = async (id: string) => {
     setBusyId(id);
     try {
-      if ((vendorsService as any)?.approveVendor) {
-        await (vendorsService as any).approveVendor(id);
+      if ((vendorService as any)?.approveVendor) {
+        await (vendorService as any).approveVendor(id);
         setVendors(s => s.map(v => v.id === id ? { ...v, approved: true } : v));
       } else {
         setVendors(s => s.map(v => v.id === id ? { ...v, approved: true } : v));
@@ -97,8 +97,8 @@ export default function ManageVendors(): JSX.Element {
     if (!confirm("Delete vendor? This will remove all related data in demo. Proceed?")) return;
     setBusyId(id);
     try {
-      if ((vendorsService as any)?.deleteVendor) {
-        await (vendorsService as any).deleteVendor(id);
+      if ((vendorService as any)?.deleteVendor) {
+        await (vendorService as any).deleteVendor(id);
         setVendors(s => s.filter(v => v.id !== id));
       } else {
         setVendors(s => s.filter(v => v.id !== id));

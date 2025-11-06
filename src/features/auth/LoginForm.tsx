@@ -2,10 +2,7 @@
 import type { JSX } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
-//import { useAuth } from "./useAuth";
-//import { useAuth } from "../../context/AuthContext";
-import api from "../../api/index";
-//import { login } from "../../api/authService";
+import { authService } from "../../api/authService";
 
 type Form = {
   email: string;
@@ -13,7 +10,6 @@ type Form = {
 };
 
 export default function LoginForm(): JSX.Element {
-  //const { loginCustomer } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -27,9 +23,9 @@ export default function LoginForm(): JSX.Element {
 
   const onSubmit = async (data: Form) => {
     try {
-      const user = await api.post("/api/auth/login", data)
-       console.log("Logged in as", user);
-       if (user.data === "customer") 
+      const user = await  authService.login(data)
+    
+       if (user.data === "customer")
         navigate("/customer/dashboard");
        else navigate("/vendor/dashboard");
     } catch (err) {

@@ -11,7 +11,7 @@ export default function CustomerDashboardPage(): JSX.Element {
   useEffect(() => {
     // If NOT authenticated → go to login
     if (!isAuthenticated) {
-      navigate("/login");
+      navigate("/login",  { replace: true });
       return;
     }
 
@@ -19,8 +19,12 @@ export default function CustomerDashboardPage(): JSX.Element {
     if (user?.role && user.role !== "customer") {
       if (user.role === "vendor") navigate("/vendor/dashboard");
       else if (user.role === "admin") navigate("/admin");
+     // else navigate("/customer/dashboard")
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user]);
+  //}, [isAuthenticated, user, navigate]);
 
-  return <CustomerDashboard />;
+  return (
+  <CustomerDashboard />
+  );
 }

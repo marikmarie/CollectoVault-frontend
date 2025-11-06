@@ -35,18 +35,13 @@ import NotFound from "../shared/NotFound";
 import Forbidden from "../shared/Forbidden";
 import VendorRegisterPage from "../pages/vendor/Register";
 
-/** 
- * Temporary authentication simulation
- * Replace with actual context or useAuth() later 
- */
+
 const useFakeAuth = () => {
   const [isAuthenticated] = React.useState<boolean>(true);
   return { isAuthenticated };
 };
 
-/**
- * Protected Route wrapper
- */
+
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useFakeAuth();
 

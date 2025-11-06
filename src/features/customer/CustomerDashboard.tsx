@@ -1,5 +1,7 @@
 /* src/features/customer/CustomerDashboard.tsx */
 import { useEffect, useState } from "react";
+import {  useNavigate } from "react-router-dom";
+
 import TierProgress from "../../components/common/TierProgress";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
@@ -19,18 +21,51 @@ type Reward = {
 };
 
 export default function CustomerDashboard() {
-  const { user, loading: sessionLoading } = useSession();
+  const { user, loading: sessionLoading , isAuthenticated} = useSession() as any;
+  const navigate = useNavigate();
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [points, setPoints] = useState(0);
   const [tier, setTier] = useState("Silver");
   const [nextTierPoints] = useState(2000);
   const [topRewards, setTopRewards] = useState<Reward[]>([]);
   const [loadingRewards, setLoadingRewards] = useState(true);
 
+
+   // Redirect if not authenticated or not vendor role
   useEffect(() => {
-    if (!user) return;
+    if (sessionLoading) return;
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    // If authenticated but wrong role, redirect to their area
+    if (user?.role && user.role !== "vendor") {
+      if (user.role === "customer") navigate("/customer/dashboard");
+      else if (user.role === "admin") navigate("/admin");
+    }
+  }, [sessionLoading, isAuthenticated, user, navigate]);
+
+  useEffect(() => {
+    //if (!user) return;
+    //  if (sessionLoading) return;
+    // if (!isAuthenticated) {
+    //   navigate("/login");
+    //   return;
+    // }
     let mounted = true;
 
     (async () => {
+if (!user || user.role !== "vendor") {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
       try {
         const { data: profile } = await api.get(`/customers/${user.id}`);
         if (mounted) {

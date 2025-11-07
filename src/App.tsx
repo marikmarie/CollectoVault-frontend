@@ -24,8 +24,7 @@ const App: React.FC = (): JSX.Element => {
   return (
 
       <RouterProvider router={AppRoutes} />
-
-  );
+ );
 };
 
 export default App;

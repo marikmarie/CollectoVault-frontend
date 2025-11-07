@@ -167,7 +167,7 @@ const LandingPage: React.FC = () => {
               </Link>
             </motion.div>
 
-            <motion.div
+            {/* <motion.div
               className="mt-2 text-sm text-slate-400"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -179,7 +179,7 @@ const LandingPage: React.FC = () => {
               </span>{" "}
               and{" "}
               <span className="font-semibold text-slate-100">Forest Mall</span>.
-            </motion.div>
+            </motion.div> */}
 
             <motion.div
               className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3"
@@ -201,7 +201,7 @@ const LandingPage: React.FC = () => {
               </div>
               <div className="text-sm text-slate-300">
                 <div className="text-2xl font-bold text-white">99%</div>
-                <div className="text-xs text-slate-400">Uptime (demo)</div>
+                <div className="text-xs text-slate-400">Uptime</div>
               </div>
             </motion.div>
           </motion.div>

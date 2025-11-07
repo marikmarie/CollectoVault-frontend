@@ -64,7 +64,7 @@ export default function VendorRegisterPage(): JSX.Element {
     }
   };
 
-  // vendor registration form
+  
   const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<VendorForm>({
     defaultValues: { collectoId: "", businessName: "", contactEmail: "", phone: "", password: "", confirmPassword: "", acceptTerms: false }
   });
@@ -99,11 +99,8 @@ export default function VendorRegisterPage(): JSX.Element {
         role: "vendor",
         collectoId: data.collectoId
       });
-
-      // refresh session so app knows the user is logged-in
       if (refresh) await refresh();
 
-      // navigate to vendor dashboard
       navigate(ROUTES.VENDOR.DASHBOARD, { replace: true });
     } catch (err: any) {
       console.error("Register failed", err);

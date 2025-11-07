@@ -22,8 +22,6 @@ localStorage.removeItem("collecto_token");
 export function getAuthToken(): string | null {
 return localStorage.getItem("collecto_token");
 }
-
-
 // api.interceptors.request.use((config) => {
 // const token = getAuthToken();
 // if (token && config.headers) {
@@ -47,9 +45,8 @@ const responseData = err.response?.data ?? { message: err.message };
 
 
 if (err.response?.status === 401) {
-try { setAuthToken(null); } catch (e) { /* ignore */ }
+try { setAuthToken(null); } catch (e) {}
 }
-
 
 console.error("API error:", responseData);
 throw responseData;

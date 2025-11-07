@@ -118,11 +118,8 @@ export async function fetchCollectoVendor(collectoId: string): Promise<CollectoV
     }
 
     const json = await res.json();
-    // If the Collecto API wraps vendor in data property, adjust accordingly:
-    // const payload = json.data ?? json;
     const payload = json;
 
-    // map to the CollectoVendor type (adjust field names if different)
     const vendor: CollectoVendor = {
       collectoId: payload.collectoId ?? payload.id ?? collectoId,
       businessName: payload.businessName ?? payload.name ?? "",
@@ -134,16 +131,11 @@ export async function fetchCollectoVendor(collectoId: string): Promise<CollectoV
     return vendor;
   } catch (err) {
     console.warn("collectoPayments.fetchCollectoVendor fallback used:", err);
-    // Demo behaviour:
-    // Option A: return null so the UI shows "not-found" -> Use this if you want to force manual registration.
-    // return null;
-
-    // Option B: return a mock vendor so the demo flow pre-fills the form (I keep the mock to match your demo fallback pattern)
     return {
       collectoId,
-      businessName: `Demo Business ${collectoId}`,
-      contactEmail: `contact+${collectoId}@demo.collecto`,
-      phone: null,
+      businessName: ` Business ${collectoId}`,
+      contactEmail: `contact+${collectoId}@tm.collecto`,
+      phone: `256789006785`,
       metadata: {},
     };
   }

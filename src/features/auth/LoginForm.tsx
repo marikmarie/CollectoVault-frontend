@@ -183,7 +183,7 @@ export default function LoginForm(): JSX.Element {
                 className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
                   errors.id ? "border-rose-500" : "border-slate-700"
                 } placeholder-slate-400 placeholder:font-normal`}
-                placeholder="Business ID"
+                placeholder="Collecto ID"
               />
             </div>
           )}

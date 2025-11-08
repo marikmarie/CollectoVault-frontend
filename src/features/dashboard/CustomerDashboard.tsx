@@ -2,7 +2,7 @@
 import type { JSX } from "react";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import api from "/../../api"; // adjust path if needed
+import api from "../../api"; // adjust path if needed
 import PointsCard from "./PointsCard";
 import TierProgress from "./TierProgress";
 import RewardsList from "./RewardsList";
@@ -26,7 +26,7 @@ type Me = {
 export default function CustomerDashboard(): JSX.Element {
   const navigate = useNavigate();
   const [me, setMe] = useState<Me | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [balance, setBalance] = useState<number>(0);
   const [tiers, setTiers] = useState<any[]>([]);
   const [rewards, setRewards] = useState<any[]>([]);
@@ -91,7 +91,7 @@ export default function CustomerDashboard(): JSX.Element {
   const openUsernameModal = () => setShowUsernameModal(true);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700 p-4 sm:p-8 text-white">
+    <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-700 p-4 sm:p-8 text-white">
       <motion.header initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto mb-8">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">

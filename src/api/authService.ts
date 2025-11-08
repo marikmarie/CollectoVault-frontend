@@ -1,9 +1,8 @@
 // src/api/authService.ts  (append / update)
-import api, { setAuthToken } from "./index";
+import api, { setVaultOtpToken } from "./index";
 
 export const authService = {
 
-  // Start OTP flow (calls Vault proxy: /collecto/auth)
   startCollectoAuth: async (payload: {
     type: "business" | "client" | "staff";
     collectoId?: string;
@@ -14,20 +13,21 @@ export const authService = {
     return resp.data;
   },
 
-  // Verify OTP (calls Vault proxy: /collecto/authVerify)
-  verifyCollectoOtp: async (payload: {
-    type: "business" | "client" | "staff";
-    collectoId?: string;
-    cid?: string;
-    uid?: string;
-    otpCode: string;
+ 
+ verifyCollectoOtp: async (payload: {
+    id: string;
+    vaultOTP: string;
+    vaultOTPToken?: string;
+
   }) => {
     const resp = await api.post("/api/collecto/authVerify", payload);
     const data = resp.data;
-    // if token returned, persist
     if (data?.token) {
-      setAuthToken(data.token);
+      const expiresAt = new Date(Date.now() + 5 *60*1000).toISOString();
+
+      setVaultOtpToken(data.data.vaultOTPToken, expiresAt); 
     }
+   
     return data;
   },
 };

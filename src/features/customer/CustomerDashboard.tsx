@@ -24,8 +24,8 @@ export default function CustomerDashboard() {
   const { user, loading: sessionLoading, isAuthenticated } = useSession() as any;
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setLoading] = useState(true);
+  const [, setError] = useState<string | null>(null);
 
   const [points, setPoints] = useState(0);
   const [tier, setTier] = useState("Silver");

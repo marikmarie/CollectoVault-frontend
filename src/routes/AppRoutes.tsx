@@ -7,6 +7,7 @@ import AuthLayout from "../components/layout/AuthLayout";
 import Spinner from "../components/common/Spinner";
 import LandingPage from "../pages/LandingPage";
 import PricingPage from "../pages/Pricing";
+import CustomerDashboard from "../features/dashboard/CustomerDashboard";
 
 // CUSTOMER PAGES
 import CustomerLoginPage from "../pages/customer/CustomerLoginPage";
@@ -63,7 +64,7 @@ export const AppRoutes = createBrowserRouter([
   // Public Routes
   { path: "/", element: <LandingPage /> },
   { path: "/pricing", element: <PricingPage /> },
-
+  {path: "/dashboard", element: <CustomerDashboard />},
   {
     element: <AuthLayout title="Welcome back" subtitle="Sign in to access your CollectoVault account"/>,
     children: [
@@ -74,7 +75,7 @@ export const AppRoutes = createBrowserRouter([
     ],
   },
 
-  // Protected Routes
+  
   {
     element: (
       <ProtectedRoute>

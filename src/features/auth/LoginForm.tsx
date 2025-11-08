@@ -1,14 +1,14 @@
 // src/features/auth/LoginForm.tsx
 import type { JSX } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../../api/authService";
 
 type FormValues = {
-  type: "business" | "client" | "staff";
+  type: "business" | "clent" | "staff"; // changed "client" -> "clent"
   id?: string;
-  uid?: string;
+  // uid?: string;
 };
 
 type OtpValues = {
@@ -21,15 +21,21 @@ export default function LoginForm(): JSX.Element {
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedType, setSelectedType] =
-    useState<FormValues["type"]>("client");
+    useState<FormValues["type"]>("clent"); // default to "clent"
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<FormValues>({
-    defaultValues: { type: "client", id: "", uid: "" },
+    defaultValues: { type: "clent", id: "" },
   });
+
+  // keep react-hook-form value in sync with selectedType
+  useEffect(() => {
+    setValue("type", selectedType);
+  }, [selectedType, setValue]);
 
   const [pendingPayload, setPendingPayload] =
     useState<Partial<FormValues> | null>(null);
@@ -42,12 +48,10 @@ export default function LoginForm(): JSX.Element {
       const payload: any = { type: data.type };
 
       if (data.type === "staff") {
-         if (!data.uid) throw new Error("UID is required for staff");
-        payload.uid = data.uid;
+        if (!data.id) throw new Error("UID is required for staff");
+        payload.id = data.id;
       } else {
-        //if (!data.collectoId) throw new Error("Collecto ID is required");
-        //if (!data.id) throw new Error("id is required");
-        // payload.collectoId = data.collectoId;
+        if (!data.id) throw new Error("ID is required");
         payload.id = data.id;
       }
 
@@ -87,12 +91,12 @@ export default function LoginForm(): JSX.Element {
       const res = await authService.verifyCollectoOtp(verifyPayload);
 
       if (res?.token) {
-        const userType = res?.type ?? pendingPayload.type;
+        const userType = res?.type ?? (pendingPayload.type as FormValues["type"]);
         if (userType === "business") {
           if (res?.isNewBusiness) return navigate("/business/setup");
           return navigate("/vendor/dashboard");
         }
-        if (userType === "client") return navigate("/customer/dashboard");
+        if (userType === "clent") return navigate("/customer/dashboard"); // changed check
         if (userType === "staff") return navigate("/staff/dashboard");
         return navigate("/");
       } else {
@@ -111,24 +115,30 @@ export default function LoginForm(): JSX.Element {
     setServerMessage(null);
   };
 
+  const typeOptions: { value: FormValues["type"]; label: string }[] = [
+    { value: "business", label: "Business" },
+    { value: "clent", label: "Client" }, // value is "clent", label shows "Client"
+    { value: "staff", label: "Staff" },
+  ];
+
   return (
     <div className="max-w-md mx-auto">
       <div className="mb-4">
         <div className="flex gap-2 justify-center">
-          {(["business", "client", "staff"] as const).map((t) => (
+          {typeOptions.map((t) => (
             <button
-              key={t}
+              key={t.value}
               onClick={() => {
-                setSelectedType(t);
+                setSelectedType(t.value);
               }}
               className={`px-3 py-2 rounded-full text-sm font-medium ${
-                selectedType === t
+                selectedType === t.value
                   ? "bg-emerald-500 text-white"
                   : "bg-slate-700 text-slate-200"
               }`}
               type="button"
             >
-              {t.charAt(0).toUpperCase() + t.slice(1)}
+              {t.label}
             </button>
           ))}
         </div>
@@ -143,9 +153,10 @@ export default function LoginForm(): JSX.Element {
           className="space-y-4"
           noValidate
         >
-          <input type="hidden" {...register("type")} value={selectedType} />
+          {/* keep the hidden field (value set via useEffect/setValue) */}
+          <input type="hidden" {...register("type")} />
 
-          {selectedType === "client" ? (
+          {selectedType === "clent" ? (
             <>
               <div>
                 <label className="block text-sm text-slate-200">
@@ -162,22 +173,18 @@ export default function LoginForm(): JSX.Element {
             </>
           ) : selectedType === "staff" ? (
             <div>
-              <label className="block text-sm text-slate-200">
-                UID
-              </label>
+              <label className="block text-sm text-slate-200">UID</label>
               <input
-                {...register("uid", { required: "UID is required for staff" })}
+                {...register("id", { required: "UID is required for staff" })}
                 className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
-                  errors.uid ? "border-rose-500" : "border-slate-700"
+                  errors.id ? "border-rose-500" : "border-slate-700"
                 } placeholder-slate-400 placeholder:font-normal`}
                 placeholder="staff uid"
               />
             </div>
           ) : (
             <div>
-              <label className="block text-sm text-slate-200">
-                Business ID
-              </label>
+              <label className="block text-sm text-slate-200">Business ID</label>
               <input
                 {...register("id", { required: "Business ID is required" })}
                 className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${

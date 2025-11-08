@@ -7,16 +7,12 @@ export type CollectoVendor = {
   businessName: string;
   contactEmail: string;
   phone?: string | null;
-  // add any other fields Collecto returns that you need
   metadata?: Record<string, any>;
 };
 
-/**
- * Create a payment (calls Collecto payment endpoint). If COLLECTO_API_URL not configured or call fails,
- * return a mocked response to enable demo flows.
- */
+
 export async function createPayment(payload: {
-  amount: number; // in minor units or currency as your Collecto API expects
+  amount: number; 
   currency: string;
   description?: string;
   metadata?: Record<string, any>;
@@ -91,11 +87,7 @@ export async function verifyPayment(paymentId: string) {
   }
 }
 
-/**
- * Fetch vendor/business details from Collecto by Collecto ID.
- * If the API isn't configured or call fails, returns null (so caller can show "not found")
- * or a mocked vendor in demo mode (you can change to null to force manual flow).
- */
+
 export async function fetchCollectoVendor(collectoId: string): Promise<CollectoVendor | null> {
   try {
     if (!COLLECTO_API_URL) throw new Error("NO_COLLECTO_API_URL");

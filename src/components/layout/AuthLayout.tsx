@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+//import { useState } from "react";
+import { Link, Outlet } from "react-router-dom";
 
 type Props = {
   title?: string;
@@ -7,17 +7,17 @@ type Props = {
 };
 
 export default function AuthLayout({ title = "Welcome", subtitle }: Props) {
-  const [role, setRole] = useState<"customer" | "vendor">("customer");
-  const navigate = useNavigate();
+  // const [role, setRole] = useState<"customer" | "vendor">("customer");
+  // const navigate = useNavigate();
 
-  const handleSwitchRole = (newRole: "customer" | "vendor") => {
-    setRole(newRole);
-    navigate(newRole === "vendor" ? "/vendor/login" : "/login");
-  };
+  // const handleSwitchRole = (newRole: "customer" | "vendor") => {
+  //   setRole(newRole);
+  //   navigate(newRole === "vendor" ? "/vendor/login" : "/login");
+  // };
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-linear-to-br from-slate-800 via-slate-800 to-slate-800 text-white flex items-center justify-center">
-      {/* 🌌 Animated Background */}
+
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-0 w-[200%] h-full opacity-30 bg-[radial-gradient(ellipse_at_center,rgba(0,255,200,0.1),transparent_50%)] animate-[pulse_6s_infinite]" />
         <div className="absolute -top-32 -left-32 w-[160%] h-[160%] bg-[conic-gradient(from_90deg_at_50%_50%,rgba(0,150,255,0.08),transparent_60%)] animate-[spin_60s_linear_infinite]" />
@@ -94,7 +94,7 @@ export default function AuthLayout({ title = "Welcome", subtitle }: Props) {
               )}
             </header>
 
-            {/* 🔁 Role Switch */}
+{/*             
             <div className="flex justify-center mb-6">
               <div className="inline-flex bg-slate-900/50 border border-slate-700 rounded-full p-1">
                 <button
@@ -118,7 +118,7 @@ export default function AuthLayout({ title = "Welcome", subtitle }: Props) {
                   Vendor
                 </button>
               </div>
-            </div>
+            </div> */}
 
             <Outlet />
 

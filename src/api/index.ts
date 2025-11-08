@@ -22,13 +22,7 @@ localStorage.removeItem("collecto_token");
 export function getAuthToken(): string | null {
 return localStorage.getItem("collecto_token");
 }
-// api.interceptors.request.use((config) => {
-// const token = getAuthToken();
-// if (token && config.headers) {
-// config.headers.Authorization = `Bearer ${token}`;
-// }
-// return config;
-// });
+
 api.interceptors.request.use((config) => {
   const token = getAuthToken();
   if (token && config.headers) {

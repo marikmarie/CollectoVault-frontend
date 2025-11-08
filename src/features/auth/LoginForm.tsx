@@ -46,7 +46,7 @@ export default function LoginForm(): JSX.Element {
         payload.uid = data.uid;
       } else {
         //if (!data.collectoId) throw new Error("Collecto ID is required");
-        if (!data.id) throw new Error("id is required");
+        //if (!data.id) throw new Error("id is required");
         // payload.collectoId = data.collectoId;
         payload.id = data.id;
       }
@@ -198,7 +198,7 @@ export default function LoginForm(): JSX.Element {
                   : "bg-emerald-500 hover:bg-emerald-600 text-white"
               }`}
             >
-              {isProcessing ? "Starting..." : "Send OTP"}
+              {isProcessing ? "Starting..." : "Authorize"}
             </button>
           </div>
 
@@ -219,7 +219,7 @@ export default function LoginForm(): JSX.Element {
                 {...registerOtp("otpCode", { required: "OTP is required" })}
                 className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
                   otpErrors.otpCode ? "border-rose-500" : "border-slate-700"
-                }`}
+                }  placeholder-slate-400 placeholder:font-normal`}
                 placeholder="123456"
               />
             </div>

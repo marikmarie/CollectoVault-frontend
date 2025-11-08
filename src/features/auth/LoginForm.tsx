@@ -7,8 +7,7 @@ import { authService } from "../../api/authService";
 
 type FormValues = {
   type: "business" | "client" | "staff";
-  collectoId?: string;
-  cid?: string;
+  id?: string;
   uid?: string;
 };
 
@@ -29,48 +28,46 @@ export default function LoginForm(): JSX.Element {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>({
-    defaultValues: { type: "client", collectoId: "", cid: "", uid: "" },
+    defaultValues: { type: "client", id: "", uid: "" },
   });
 
   const [pendingPayload, setPendingPayload] =
     useState<Partial<FormValues> | null>(null);
 
-const onIdentifiersSubmit = async (data: FormValues) => {
-  setServerMessage(null);
-  setIsProcessing(true);
+  const onIdentifiersSubmit = async (data: FormValues) => {
+    setServerMessage(null);
+    setIsProcessing(true);
 
-  try {
-    const payload: any = { type: data.type };
+    try {
+      const payload: any = { type: data.type };
 
-    if (data.type === "staff") {
-      if (!data.uid) throw new Error("UID is required for staff");
-      payload.uid = data.uid;
-    } else {
-      if (!data.collectoId) throw new Error("Collecto ID is required");
-      if (!data.cid) throw new Error("CID is required");
-      payload.collectoId = data.collectoId;
-      payload.cid = data.cid;
+      if (data.type === "staff") {
+         if (!data.uid) throw new Error("UID is required for staff");
+        payload.uid = data.uid;
+      } else {
+        //if (!data.collectoId) throw new Error("Collecto ID is required");
+        if (!data.id) throw new Error("id is required");
+        // payload.collectoId = data.collectoId;
+        payload.id = data.id;
+      }
+
+      const res = await authService.startCollectoAuth(payload);
+      console.log(res);
+
+      if (res?.data == null) {
+        setServerMessage("User Not found.");
+        return;
+      }
+
+      setPendingPayload(payload);
+      setStep("otp");
+      setServerMessage(res?.message ?? "OTP sent — enter it below");
+    } catch (err: any) {
+      setServerMessage(err?.message ?? String(err));
+    } finally {
+      setIsProcessing(false);
     }
-
-    const res = await authService.startCollectoAuth(payload);
-    console.log(res);
-
-    if (res?.data == null) {
-      setServerMessage("User Not found.");
-      return;
-    }
-
-    
-    setPendingPayload(payload);
-    setStep("otp");
-    setServerMessage(res?.message ?? "OTP sent — enter it below");
-
-  } catch (err: any) {
-    setServerMessage(err?.message ?? String(err));
-  } finally {
-    setIsProcessing(false);
-  }
-};
+  };
 
   const {
     register: registerOtp,
@@ -148,45 +145,45 @@ const onIdentifiersSubmit = async (data: FormValues) => {
         >
           <input type="hidden" {...register("type")} value={selectedType} />
 
-          {selectedType !== "staff" ? (
+          {selectedType === "client" ? (
             <>
               <div>
                 <label className="block text-sm text-slate-200">
-                  Collecto ID
+                  Id (Client ID)
                 </label>
                 <input
-                  {...register("collectoId", {
-                    required: "Collecto ID is required",
-                  })}
+                  {...register("id", { required: "id is required" })}
                   className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
-                    errors.collectoId ? "border-rose-500" : "border-slate-700"
-                  }`}
-                  placeholder="collecto_shop_123"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-slate-200">
-                  CID (Client ID)
-                </label>
-                <input
-                  {...register("cid", { required: "CID is required" })}
-                  className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
-                    errors.cid ? "border-rose-500" : "border-slate-700"
-                  }`}
+                    errors.id ? "border-rose-500" : "border-slate-700"
+                  } placeholder-slate-400 placeholder:font-normal`}
                   placeholder="Client user ID"
                 />
               </div>
             </>
-          ) : (
+          ) : selectedType === "staff" ? (
             <div>
-              <label className="block text-sm text-slate-200">UID</label>
+              <label className="block text-sm text-slate-200">
+                UID
+              </label>
               <input
                 {...register("uid", { required: "UID is required for staff" })}
                 className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
                   errors.uid ? "border-rose-500" : "border-slate-700"
-                }`}
+                } placeholder-slate-400 placeholder:font-normal`}
                 placeholder="staff uid"
+              />
+            </div>
+          ) : (
+            <div>
+              <label className="block text-sm text-slate-200">
+                Business ID
+              </label>
+              <input
+                {...register("id", { required: "Business ID is required" })}
+                className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
+                  errors.id ? "border-rose-500" : "border-slate-700"
+                } placeholder-slate-400 placeholder:font-normal`}
+                placeholder="Business ID"
               />
             </div>
           )}

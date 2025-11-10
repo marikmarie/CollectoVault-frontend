@@ -9,7 +9,6 @@ baseURL: API_BASE,
 timeout: 15000,
 });
 
-// Token helpers
 export function setAuthToken(token: string | null) {
 if (token) {
 localStorage.setItem("collecto_token", token);
@@ -23,7 +22,6 @@ export function getAuthToken(): string | null {
 return localStorage.getItem("collecto_token");
 }
 
-// setting otp session
 export function setVaultOtpToken(token: string | null, expiresAt?:string | null){
   if(token){
     sessionStorage.setItem("vaultOtpToken", token);

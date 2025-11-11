@@ -99,15 +99,52 @@ export default function LoginForm(): JSX.Element {
     formState: { errors: otpErrors },
   } = useForm<OtpValues>();
 
+  // const onOtpSubmit = async (data: OtpValues) => {
+  //   if (!pendingPayload) {
+  //     setServerMessage("No pending authentication. Start again.");
+  //     setStep("identifiers");
+  //     return;
+  //   }
+  //   setIsProcessing(true);
+  //   try {
+  //     const verifyPayload: any = { ...pendingPayload, vaultOTP: data.vaultOTP };
+  //     const res = await authService.verifyCollectoOtp(verifyPayload);
+
+  //     const verified = res?.data?.data?.verified;
+  //     if (!verified) {
+  //       setServerMessage(res?.data?.message ?? "OTP verification failed");
+  //       return;
+  //     }
+
+  //       const userType = res?.type ?? (pendingPayload.type as FormValues["type"]);
+  //       if (userType === "business") {
+  //         if (res?.isNewBusiness) return navigate("/business/setup");
+  //         return navigate("/vendor/dashboard");
+  //       }
+  //       if (userType === "client") return navigate("/customer/dashboard");
+  //       if (userType === "staff") return navigate("/staff/dashboard");
+  //       return navigate("/");
+
+  //   } catch (err: any) {
+  //     setServerMessage(err?.message ?? "Verification failed");
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
   const onOtpSubmit = async (data: OtpValues) => {
     if (!pendingPayload) {
       setServerMessage("No pending authentication. Start again.");
       setStep("identifiers");
       return;
     }
+
     setIsProcessing(true);
     try {
-      const verifyPayload: any = { ...pendingPayload, vaultOTP: data.vaultOTP };
+      const verifyPayload: any = {
+        ...pendingPayload,
+        vaultOTP: data.vaultOTP,
+      };
+
       const res = await authService.verifyCollectoOtp(verifyPayload);
 
       const verified = res?.data?.data?.verified;
@@ -115,16 +152,22 @@ export default function LoginForm(): JSX.Element {
         setServerMessage(res?.data?.message ?? "OTP verification failed");
         return;
       }
+      const userType = pendingPayload.type;
 
-        const userType = res?.type ?? (pendingPayload.type as FormValues["type"]);
-        if (userType === "business") {
-          if (res?.isNewBusiness) return navigate("/business/setup");
-          return navigate("/vendor/dashboard");
-        }
-        if (userType === "client") return navigate("/customer/dashboard");
-        if (userType === "staff") return navigate("/staff/dashboard");
-        return navigate("/");
-     
+      if (userType === "business") {
+        return navigate("/vendor/dashboard");
+      }
+
+      if (userType === "client") {
+        return navigate("/customer/dashboard");
+      }
+
+      if (userType === "staff") {
+        return navigate("/staff/dashboard");
+      }
+
+      // fallback
+      navigate("/");
     } catch (err: any) {
       setServerMessage(err?.message ?? "Verification failed");
     } finally {

@@ -10,10 +10,8 @@ export default function CustomerDashboardPage(): JSX.Element {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // wait until session finished loading
     if (sessionLoading) return;
 
-    // If NOT authenticated → go to login
     if (!isAuthenticated) {
       navigate("/login", { replace: true });
       return;

@@ -1,52 +1,21 @@
-/* src/hooks/useSession.ts */
-import { useEffect, useCallback, useState } from "react";
-import { authService } from "../api/authService";
+import { useEffect, useState } from "react";
+import { getVaultOtpToken, setVaultOtpToken } from "../api"; 
+import { useNavigate } from "react-router-dom";
+import ROUTES from "../constants/routes";
 
-export type SessionUser = any;
-
-export function useSession() {
-  const [user, setUser] = useState<SessionUser | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    try {
-      // authService.me() should return user object (or throw 401)
-      const data = await authService.me();
-      // support API that returns { user } or user directly
-      const resolved = (data && (data.user ?? data)) as SessionUser;
-      setUser(resolved ?? null);
-      return resolved ?? null;
-    } catch {
-      setUser(null);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // logout helper that clears token via authService and resets user
-  const logout = useCallback(async () => {
-    try {
-      await authService.logout();
-    } finally {
-      setUser(null);
-    }
-  }, []);
+export default function useSession() {
+  const [token, setToken] = useState<string | null>(getVaultOtpToken());
+  const navigate = useNavigate();
 
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      if (!mounted) return;
-      await refresh();
-    })();
-    return () => { mounted = false; };
-  }, [refresh]);
+    if (!token) navigate(ROUTES.LOGIN ?? "/login");
+  }, [token]);
 
-  const isAuthenticated = !!user;
+  const logout = () => {
+    setVaultOtpToken(null, null);
+    setToken(null);
+    navigate(ROUTES.LOGIN ?? "/login");
+  };
 
-  return { user, setUser, loading, refresh, logout, isAuthenticated };
+  return { token, logout };
 }
-
-// make the hook available as default export too, prevents import errors
-export default useSession;

@@ -13,6 +13,7 @@ import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import { Coins } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../../components/layout/Navbar";
 
 type Me = {
   id: number;
@@ -92,6 +93,7 @@ export default function CustomerDashboard(): JSX.Element {
 
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-700 p-4 sm:p-8 text-white">
+      <Navbar />
       <motion.header initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="max-w-6xl mx-auto mb-8">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">

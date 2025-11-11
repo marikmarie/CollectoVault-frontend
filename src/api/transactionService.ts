@@ -5,3 +5,4 @@ export const transactionService = {
   redeemPoints: (customerId: string, data: any) => api.post(`/transactions/${customerId}/redeem`, data),
   getTransactions: (customerId: string) => api.get(`/transactions/${customerId}`),
 };
+ 

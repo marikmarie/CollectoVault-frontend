@@ -1,7 +1,6 @@
 // src/features/customer/CustomerDashboard.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import TierProgress from "../../components/common/TierProgress";
 import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";

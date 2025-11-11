@@ -155,13 +155,11 @@ export default function Navbar(): JSX.Element {
         </div>
       </div>
 
-      {/* Mobile menu content */}
       {open && (
         <div className="md:hidden bg-slate-900/95 border-t border-slate-800">
           <div className="px-4 pt-4 pb-6 space-y-3">
             <Link to={ROUTES.ROOT ?? "/"} className="block px-2 py-2 rounded hover:bg-slate-800">Home</Link>
             <Link to={ROUTES.CUSTOMER.VENDORSTOREFRONT ?? "/vendor"} className="block px-2 py-2 rounded hover:bg-slate-800">Services</Link>
-            <Link to="#how-it-works" className="block px-2 py-2 rounded hover:bg-slate-800">How it works</Link>
             <Link to={ROUTES.PRICING ?? "/pricing"} className="block px-2 py-2 rounded hover:bg-slate-800">Pricing</Link>
             <Link to={ROUTES.CUSTOMER.REWARDS ?? "/customer/rewards"} className="block px-2 py-2 rounded hover:bg-slate-800">Rewards</Link>
 

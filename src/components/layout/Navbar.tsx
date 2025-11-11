@@ -59,7 +59,6 @@ export default function Navbar(): JSX.Element {
             </Link>
           </div>
 
-          {/* Center: nav links (desktop) */}
           <div className="hidden md:flex md:items-center md:space-x-6">
             <Link to={ROUTES.ROOT ?? "/"} className="text-sm hover:underline">Home</Link>
             <Link to={ROUTES.CUSTOMER.VENDORSTOREFRONT ?? "/vendor"} className="text-sm hover:underline">Services</Link>
@@ -68,7 +67,6 @@ export default function Navbar(): JSX.Element {
             <Link to={ROUTES.CUSTOMER.REWARDS ?? "/customer/rewards"} className="text-sm hover:underline">Rewards</Link>
           </div>
 
-          {/* Right: actions */}
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex sm:items-center sm:gap-3">
               <Link
@@ -136,7 +134,6 @@ export default function Navbar(): JSX.Element {
               )}
             </div>
 
-            {/* Mobile menu toggle */}
             <div className="md:hidden">
               <button
                 onClick={() => setOpen((s) => !s)}

@@ -57,9 +57,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
-/**
- * Main App Routes using createBrowserRouter
- */
+
 export const AppRoutes = createBrowserRouter([
   // Public Routes
   { path: "/", element: <LandingPage /> },

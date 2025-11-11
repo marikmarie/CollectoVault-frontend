@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { authService } from "../../api/authService";
 
 type FormValues = {
-  type: "business" | "client" | "staff"; 
+  type: "business" | "client" | "staff";
   id?: string;
   // uid?: string;
 };
@@ -22,8 +22,7 @@ export default function LoginForm(): JSX.Element {
   const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedType, setSelectedType] =
-    useState<FormValues["type"]>("client"); 
-   
+    useState<FormValues["type"]>("client");
 
   const {
     register,
@@ -57,7 +56,7 @@ export default function LoginForm(): JSX.Element {
       }
 
       const res = await authService.startCollectoAuth(payload);
-   
+
       console.log(res);
 
       if (res?.data.status === "error") {
@@ -77,10 +76,13 @@ export default function LoginForm(): JSX.Element {
         setServerMessage("Server Error. Please try again later.");
         return;
       }
-     
+
       // add(payload);
       if (res?.data.data.vaultOTPSent === true) {
-        setPendingPayload({ ...payload, vaultOTPToken: res?.data.data.vaultOTPToken });
+        setPendingPayload({
+          ...payload,
+          vaultOTPToken: res?.data.data.vaultOTPToken,
+        });
         setStep("otp");
         setServerMessage(res?.message ?? "OTP sent — enter it below");
       }
@@ -108,18 +110,21 @@ export default function LoginForm(): JSX.Element {
       const verifyPayload: any = { ...pendingPayload, vaultOTP: data.vaultOTP };
       const res = await authService.verifyCollectoOtp(verifyPayload);
 
-      if (res?.token) {
+      const verified = res?.data?.data?.verified;
+      if (!verified) {
+        setServerMessage(res?.data?.message ?? "OTP verification failed");
+        return;
+      }
+
         const userType = res?.type ?? (pendingPayload.type as FormValues["type"]);
         if (userType === "business") {
           if (res?.isNewBusiness) return navigate("/business/setup");
           return navigate("/vendor/dashboard");
         }
-        if (userType === "client") return navigate("/customer/dashboard"); // changed check
+        if (userType === "client") return navigate("/customer/dashboard");
         if (userType === "staff") return navigate("/staff/dashboard");
         return navigate("/");
-      } else {
-        setServerMessage(res?.message ?? "OTP verification failed");
-      }
+     
     } catch (err: any) {
       setServerMessage(err?.message ?? "Verification failed");
     } finally {
@@ -135,7 +140,7 @@ export default function LoginForm(): JSX.Element {
 
   const typeOptions: { value: FormValues["type"]; label: string }[] = [
     { value: "business", label: "Business" },
-    { value: "client", label: "Client" }, 
+    { value: "client", label: "Client" },
     { value: "staff", label: "Staff" },
   ];
 
@@ -202,7 +207,9 @@ export default function LoginForm(): JSX.Element {
             </div>
           ) : (
             <div>
-              <label className="block text-sm text-slate-200">Business ID</label>
+              <label className="block text-sm text-slate-200">
+                Business ID
+              </label>
               <input
                 {...register("id", { required: "Business ID is required" })}
                 className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${

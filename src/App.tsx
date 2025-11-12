@@ -1,30 +1,30 @@
-// import React from 'react'
 
-// import './index.css'
-// import AppRoutes from './routes/AppRoutes'
+// // src/App.tsx
 
-// const App: React.FC = () => {
+// // src/App.tsx
+// import React , {type JSX} from "react";
+// import { RouterProvider } from "react-router-dom";
+// import { AppRoutes } from "./routes/AppRoutes";
+// import "./index.css"; // TailwindCSS
+
+// const App: React.FC = (): JSX.Element => {
 //   return (
-//     <AppRoutes />
-//   );
-// }
 
-// export default App
+//       <RouterProvider router={AppRoutes} />
+//  );
+// };
+
+// export default App;
 
 
-// src/App.tsx
-
-// src/App.tsx
-import React , {type JSX} from "react";
 import { RouterProvider } from "react-router-dom";
 import { AppRoutes } from "./routes/AppRoutes";
-import "./index.css"; // TailwindCSS
+import { AuthProvider } from "./context/AuthContext";
 
-const App: React.FC = (): JSX.Element => {
+export default function App() {
   return (
-
+    <AuthProvider>
       <RouterProvider router={AppRoutes} />
- );
-};
-
-export default App;
+    </AuthProvider>
+  );
+}

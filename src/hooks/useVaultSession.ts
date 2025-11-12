@@ -12,7 +12,7 @@ export function useVaultSession() {
   }, [token]);
 
   const logout = () => {
-    setVaultOtpToken(null, null);
+    setVaultOtpToken("", "null");
     setToken(null);
     navigate(ROUTES.LOGIN ?? "/login");
   };

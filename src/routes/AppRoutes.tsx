@@ -1,7 +1,7 @@
 // src/routes/AppRoutes.tsx
 import React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
-
+import { useAuth } from "../context/AuthContext";
 import MainLayout from "../components/layout/MainLayout";
 import AuthLayout from "../components/layout/AuthLayout";
 import Spinner from "../components/common/Spinner";
@@ -37,21 +37,11 @@ import Forbidden from "../shared/Forbidden";
 // import VendorRegisterPage from "../pages/vendor/Register";
 
 
-const useFakeAuth = () => {
-  const [isAuthenticated] = React.useState<boolean>(true);
-  return { isAuthenticated };
-};
-
-
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated } = useFakeAuth();
+  const { isAuthenticated, loaded } = useAuth();
 
-  if (isAuthenticated === undefined) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Spinner />
-      </div>
-    );
+  if (!loaded) {
+    return <Spinner />;
   }
 
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;

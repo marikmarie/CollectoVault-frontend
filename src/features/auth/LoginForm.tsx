@@ -1,19 +1,17 @@
-// src/features/auth/LoginForm.tsx
 import type { JSX } from "react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../../api/authService";
+import { setVaultOtpToken, getVaultOtpToken } from "../../api";
 
 type FormValues = {
   type: "business" | "client" | "staff";
   id?: string;
-  // uid?: string;
 };
 
 type OtpValues = {
   vaultOTP: string;
-  vaultOTPToken: string | null;
 };
 
 export default function LoginForm(): JSX.Element {
@@ -23,6 +21,9 @@ export default function LoginForm(): JSX.Element {
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedType, setSelectedType] =
     useState<FormValues["type"]>("client");
+  const [pendingPayload, setPendingPayload] = useState<
+    (Partial<FormValues> & { vaultOTPToken?: string | null }) | null
+  >(null);
 
   const {
     register,
@@ -37,57 +38,77 @@ export default function LoginForm(): JSX.Element {
     setValue("type", selectedType);
   }, [selectedType, setValue]);
 
-  const [pendingPayload, setPendingPayload] =
-    useState<Partial<FormValues> | null>(null);
-
+ 
   const onIdentifiersSubmit = async (data: FormValues) => {
     setServerMessage(null);
     setIsProcessing(true);
 
     try {
-      const payload: any = { type: data.type };
-
-      if (data.type === "staff") {
-        if (!data.id) throw new Error("UID is required for staff");
-        payload.id = data.id;
-      } else {
-        if (!data.id) throw new Error("ID is required");
-        payload.id = data.id;
+      if (!data.id) {
+        setServerMessage("An ID is required");
+        return;
       }
-
+      const payload = { type: data.type, id: data.id };
       const res = await authService.startCollectoAuth(payload);
+      console.log("🔐 startCollectoAuth response:", res);
 
-      console.log(res);
+      const root = res?.data;
+      const inner = root?.data ?? null;
 
-      if (res?.data.status === "error") {
-        setServerMessage(res?.data.message || "Authorization failed");
-        return;
-      }
-      if (res?.data == null) {
-        setServerMessage("User Not found.");
-        return;
-      }
-      if (res?.data?.auth == false) {
-        setServerMessage(res?.message || "Authorization failed");
+      if (!root) {
+        setServerMessage(
+          root?.message ?? root?.status_message ?? "Unexpected server response"
+        );
         return;
       }
 
-      if (res?.status == 500) {
-        setServerMessage("Server Error. Please try again later.");
-        return;
-      }
+      const returnedToken =
+        inner?.data?.vaultOTPToken ??
+        inner?.vaultOTPToken ??
+        null;
+      //const returnedExpiry = inner?.data?.expiresAt ?? inner?.expiresAt ?? null;
 
-      // add(payload);
-      if (res?.data.data.vaultOTPSent === true) {
-        setPendingPayload({
-          ...payload,
-          vaultOTPToken: res?.data.data.vaultOTPToken,
-        });
+      if (returnedToken) {
+        const expiryIso =new Date(Date.now() + 15 * 60 * 1000).toISOString();
+        setVaultOtpToken(returnedToken, expiryIso);
+        console.log("🔐 OTP sent:", returnedToken);
+        console.log("🔐 OTP sent:", expiryIso);
+        setPendingPayload({ ...payload, vaultOTPToken: returnedToken });
         setStep("otp");
-        setServerMessage(res?.message ?? "OTP sent — enter it below");
+        setServerMessage(
+          inner?.message ?? "OTP sent — check your Collecto Vault app or SMS"
+        );
+        return;
       }
+
+      if (root?.auth === true && root?.status === "error") {
+        const existingToken = getVaultOtpToken();
+         console.log(existingToken);
+
+        if (existingToken) {
+          setPendingPayload({ ...payload, vaultOTPToken: existingToken });
+          setStep("otp");
+          setServerMessage(
+            root?.message ??
+              "You already have an active OTP session. Enter your OTP."
+          );
+        } else {
+          setServerMessage("You must wait before requesting a new OTP.");
+        }
+        return;
+      }
+
+      if (inner?.status === "error") {
+        setServerMessage(inner?.message ?? "Authorization error");
+        return;
+      }
+
+      setServerMessage(
+        inner?.message ?? root?.message ?? "Unexpected server response"
+      );
     } catch (err: any) {
-      setServerMessage(err?.message ?? String(err));
+      console.error("❌ startCollectoAuth error:", err);
+      setServerMessage(err?.message ?? "Authorization failed");
     } finally {
       setIsProcessing(false);
     }
@@ -99,41 +120,12 @@ export default function LoginForm(): JSX.Element {
     formState: { errors: otpErrors },
   } = useForm<OtpValues>();
 
-  // const onOtpSubmit = async (data: OtpValues) => {
-  //   if (!pendingPayload) {
-  //     setServerMessage("No pending authentication. Start again.");
-  //     setStep("identifiers");
-  //     return;
-  //   }
-  //   setIsProcessing(true);
-  //   try {
-  //     const verifyPayload: any = { ...pendingPayload, vaultOTP: data.vaultOTP };
-  //     const res = await authService.verifyCollectoOtp(verifyPayload);
-
-  //     const verified = res?.data?.data?.verified;
-  //     if (!verified) {
-  //       setServerMessage(res?.data?.message ?? "OTP verification failed");
-  //       return;
-  //     }
-
-  //       const userType = res?.type ?? (pendingPayload.type as FormValues["type"]);
-  //       if (userType === "business") {
-  //         if (res?.isNewBusiness) return navigate("/business/setup");
-  //         return navigate("/vendor/dashboard");
-  //       }
-  //       if (userType === "client") return navigate("/customer/dashboard");
-  //       if (userType === "staff") return navigate("/staff/dashboard");
-  //       return navigate("/");
-
-  //   } catch (err: any) {
-  //     setServerMessage(err?.message ?? "Verification failed");
-  //   } finally {
-  //     setIsProcessing(false);
-  //   }
-  // };
+  /**
+   * STEP 2 - Verify OTP
+   */
   const onOtpSubmit = async (data: OtpValues) => {
-    if (!pendingPayload) {
-      setServerMessage("No pending authentication. Start again.");
+    if (!pendingPayload?.vaultOTPToken) {
+      setServerMessage("No active authentication session. Start again.");
       setStep("identifiers");
       return;
     }
@@ -143,32 +135,27 @@ export default function LoginForm(): JSX.Element {
       const verifyPayload: any = {
         ...pendingPayload,
         vaultOTP: data.vaultOTP,
+        vaultOTPToken: pendingPayload.vaultOTPToken,
       };
 
       const res = await authService.verifyCollectoOtp(verifyPayload);
+      console.log("✅ verifyCollectoOtp response:", res);
 
       const verified = res?.data?.data?.verified;
       if (!verified) {
         setServerMessage(res?.data?.message ?? "OTP verification failed");
         return;
       }
+
+      setServerMessage(res?.data?.message ?? "OTP verified successfully");
+
       const userType = pendingPayload.type;
-
-      if (userType === "business") {
-        return navigate("/vendor/dashboard");
-      }
-
-      if (userType === "client") {
-        return navigate("/dashboard");
-      }
-
-      if (userType === "staff") {
-        return navigate("/staff/dashboard");
-      }
-
-      // fallback
-      navigate("/");
+      if (userType === "business") navigate("/vendor/dashboard");
+      else if (userType === "client") navigate("/dashboard");
+      else if (userType === "staff") navigate("/staff/dashboard");
+      else navigate("/");
     } catch (err: any) {
+      console.error(err);
       setServerMessage(err?.message ?? "Verification failed");
     } finally {
       setIsProcessing(false);
@@ -188,15 +175,13 @@ export default function LoginForm(): JSX.Element {
   ];
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md mx-auto p-4">
       <div className="mb-4">
         <div className="flex gap-2 justify-center">
           {typeOptions.map((t) => (
             <button
               key={t.value}
-              onClick={() => {
-                setSelectedType(t.value);
-              }}
+              onClick={() => setSelectedType(t.value)}
               className={`px-3 py-2 rounded-full text-sm font-medium ${
                 selectedType === t.value
                   ? "bg-emerald-500 text-white"
@@ -213,55 +198,30 @@ export default function LoginForm(): JSX.Element {
         </p>
       </div>
 
+      {/* Step 1: Identifier */}
       {step === "identifiers" && (
         <form
           onSubmit={handleSubmit(onIdentifiersSubmit)}
           className="space-y-4"
           noValidate
         >
-          {/* keep the hidden field (value set via useEffect/setValue) */}
           <input type="hidden" {...register("type")} />
-
-          {selectedType === "client" ? (
-            <>
-              <div>
-                <label className="block text-sm text-slate-200">
-                  Id (Client ID)
-                </label>
-                <input
-                  {...register("id", { required: "id is required" })}
-                  className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
-                    errors.id ? "border-rose-500" : "border-slate-700"
-                  } placeholder-slate-400 placeholder:font-normal`}
-                  placeholder="Client user ID"
-                />
-              </div>
-            </>
-          ) : selectedType === "staff" ? (
-            <div>
-              <label className="block text-sm text-slate-200">UID</label>
-              <input
-                {...register("id", { required: "UID is required for staff" })}
-                className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
-                  errors.id ? "border-rose-500" : "border-slate-700"
-                } placeholder-slate-400 placeholder:font-normal`}
-                placeholder="staff uid"
-              />
-            </div>
-          ) : (
-            <div>
-              <label className="block text-sm text-slate-200">
-                Business ID
-              </label>
-              <input
-                {...register("id", { required: "Business ID is required" })}
-                className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
-                  errors.id ? "border-rose-500" : "border-slate-700"
-                } placeholder-slate-400 placeholder:font-normal`}
-                placeholder="Collecto ID"
-              />
-            </div>
-          )}
+          <div>
+            <label className="block text-sm text-slate-200">
+              {selectedType === "client"
+                ? "Client ID"
+                : selectedType === "staff"
+                ? "Staff UID"
+                : "Business ID"}
+            </label>
+            <input
+              {...register("id", { required: "ID is required" })}
+              className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
+                errors.id ? "border-rose-500" : "border-slate-700"
+              } placeholder-slate-400`}
+              placeholder={`Enter your ${selectedType} ID`}
+            />
+          </div>
 
           <div className="flex items-center justify-end">
             <button
@@ -285,6 +245,7 @@ export default function LoginForm(): JSX.Element {
         </form>
       )}
 
+      {/* Step 2: OTP */}
       {step === "otp" && (
         <div className="space-y-4">
           <form onSubmit={handleSubmitOtp(onOtpSubmit)} className="space-y-4">
@@ -294,7 +255,7 @@ export default function LoginForm(): JSX.Element {
                 {...registerOtp("vaultOTP", { required: "OTP is required" })}
                 className={`mt-1 block w-full rounded-md px-3 py-2 bg-slate-900/40 border ${
                   otpErrors.vaultOTP ? "border-rose-500" : "border-slate-700"
-                }  placeholder-slate-400 placeholder:font-normal`}
+                } placeholder-slate-400`}
                 placeholder="123456"
               />
             </div>
@@ -307,7 +268,6 @@ export default function LoginForm(): JSX.Element {
               >
                 Back
               </button>
-
               <button
                 type="submit"
                 disabled={isProcessing}
@@ -333,8 +293,7 @@ export default function LoginForm(): JSX.Element {
                   const r = await authService.startCollectoAuth(
                     pendingPayload as any
                   );
-                  console.log(r);
-                  setServerMessage(r?.message ?? "OTP resent");
+                  setServerMessage(r?.data?.message ?? "OTP resent");
                 } catch (e: any) {
                   setServerMessage(e?.message ?? "Unable to resend OTP");
                 } finally {

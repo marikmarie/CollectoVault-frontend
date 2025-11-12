@@ -1,21 +1,37 @@
+// src/hooks/useSession.ts
 import { useEffect, useState } from "react";
-import { getVaultOtpToken, setVaultOtpToken } from "../api"; 
-import { useNavigate } from "react-router-dom";
-import ROUTES from "../constants/routes";
+import api, { getAuthToken, setAuthToken, setVaultOtpToken } from "../api";
 
 export default function useSession() {
-  const [token, setToken] = useState<string | null>(getVaultOtpToken());
-  const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+  const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
-    if (!token) navigate(ROUTES.LOGIN ?? "/login");
-  }, [token]);
+  async function load() {
+    const token = getAuthToken();
+    if (!token) {
+      setLoaded(true);
+      return;
+    }
 
-  const logout = () => {
-    setVaultOtpToken(null, null);
-    setToken(null);
-    navigate(ROUTES.LOGIN ?? "/login");
-  };
+    try {
+      const resp = await api.get("/api/customer/me");
+      setUser(resp.data);
+    } catch {
+      setAuthToken(null);
+      setVaultOtpToken(null);
+      setUser(null);
+    } finally {
+      setLoaded(true);
+    }
+  }
 
-  return { token, logout };
+  async function logout() {
+    setAuthToken(null);
+    setVaultOtpToken(null);
+    setUser(null);
+  }
+
+  useEffect(() => { load(); }, []);
+
+  return { user, setUser, loaded, logout, refresh: load, reload: load };
 }

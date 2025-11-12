@@ -10,31 +10,30 @@ import PricingPage from "../pages/Pricing";
 import CustomerDashboard from "../features/dashboard/CustomerDashboard";
 
 // CUSTOMER PAGES
-import CustomerLoginPage from "../pages/customer/CustomerLoginPage";
-import CustomerRegisterPage from "../pages/customer/CustomerRegisterPage";
-import CustomerDashboardPage from "../pages/customer/CustomerDashboardPage";
+import LoginForm from "../features/auth/LoginForm";
+// import CustomerRegisterPage from "../pages/customer/CustomerRegisterPage";
 
 // CUSTOMER FEATURES
-import RewardsCatalog from "../features/customer/RewardsCatalog";
-import RedeemReward from "../features/customer/RedeemReward";
+// import RewardsCatalog from "../features/customer/RewardsCatalog";
+// import RedeemReward from "../features/customer/RedeemReward";
 import VendorStorefront from "../features/customer/VendorStorefront";
-import PointsAward from "../features/customer/PointsAward";
-import Checkout from "../features/customer/Checkout";
+//import PointsAward from "../features/customer/PointsAward";
+// import Checkout from "../features/customer/Checkout";
 import BuyPoints from "../features/customer/BuyPoints";
-import TransactionsHistory from "../features/customer/TransactionHistory";
+//import TransactionsHistory from "../features/customer/TransactionHistory";
 
 // VENDOR FEATURES
-import VendorDashboard from "../features/vendor/VendorDashboard";
+//import VendorDashboard from "../features/vendor/VendorDashboard";
 import UploadService from "../features/vendor/UploadService";
 import ServiceList from "../features/vendor/ServiceList";
-import VendorLoginPage from "../pages/vendor/Login";
-import VendorPointRulesPage from "../features/vendor/VendorPointRulesPage";
-import VendorTierRulesPage from "../features/vendor/VendorTierRulesPage";
+// import VendorLoginPage from "../pages/vendor/Login";
+// import VendorPointRulesPage from "../features/vendor/VendorPointRulesPage";
+// import VendorTierRulesPage from "../features/vendor/VendorTierRulesPage";
 
 // SHARED
 import NotFound from "../shared/NotFound";
 import Forbidden from "../shared/Forbidden";
-import VendorRegisterPage from "../pages/vendor/Register";
+// import VendorRegisterPage from "../pages/vendor/Register";
 
 
 const useFakeAuth = () => {
@@ -66,10 +65,10 @@ export const AppRoutes = createBrowserRouter([
   {
     element: <AuthLayout title="Welcome back" subtitle="Sign in to access your CollectoVault account"/>,
     children: [
-      { path: "/login", element: <CustomerLoginPage /> },
-      { path: "/register", element: <CustomerRegisterPage /> },
-      { path: "/vendor/register", element: <VendorRegisterPage /> },
-      { path: "/vendor/login", element: <VendorLoginPage /> },
+      { path: "/login", element: <LoginForm /> },
+      // { path: "/register", element: <CustomerRegisterPage /> },
+      //  { path: "/vendor/register", element: <VendorRegisterPage /> },
+      // { path: "/vendor/login", element: <VendorLoginPage /> },
     ],
   },
 
@@ -82,29 +81,29 @@ export const AppRoutes = createBrowserRouter([
     ),
     children: [
       // CUSTOMER ROUTES
-      { path: "/customer/dashboard", element: <CustomerDashboardPage /> },
-      { path: "/customer/rewards", element: <RewardsCatalog /> },
-      { path: "/customer/redeem", element: <RedeemReward reward={{
-          id: undefined,
-          title: "",
-          description: undefined,
-          pointsPrice: undefined,
-          currencyPrice: undefined,
-          vendorName: undefined
-      }} /> },
+      //{ path: "/customer/dashboard", element: <CustomerDashboardPage /> },
+      // { path: "/customer/rewards", element: <RewardsCatalog /> },
+      // { path: "/customer/redeem", element: <RedeemReward reward={{
+      //     id: undefined,
+      //     title: "",
+      //     description: undefined,
+      //     pointsPrice: undefined,
+      //     currencyPrice: undefined,
+      //     vendorName: undefined
+      // }} /> },
       { path: "/vendor", element: <VendorStorefront /> },
-      { path: "/customer/points-award", element: <PointsAward /> },
-      { path: "/customer/checkout", element: <Checkout /> },
-      { path: "/customer/transactions", element: <TransactionsHistory /> },
+      // { path: "/customer/points-award", element: <PointsAward /> },
+      // { path: "/customer/checkout", element: <Checkout /> },
+      // { path: "/customer/transactions", element: <TransactionsHistory /> },
       { path: "/buy-points", element: <BuyPoints /> },
       { path: "/business", element: <VendorStorefront /> },
 
       // VENDOR ROUTES
-      { path: "/vendor/dashboard", element: <VendorDashboard /> },
+      // { path: "/vendor/dashboard", element: <VendorDashboard /> },
       { path: "/upload-service", element: <UploadService /> },
       { path: "/services", element: <ServiceList /> },
-      { path: "/point-rules", element: <VendorPointRulesPage /> },
-      { path: "/tier-rules", element: <VendorTierRulesPage /> },
+      // { path: "/point-rules", element: <VendorPointRulesPage /> },
+      // { path: "/tier-rules", element: <VendorTierRulesPage /> },
 
       // ADMIN ROUTES
     //   { path: "/admin/dashboard", element: <AdminDashboard /> },

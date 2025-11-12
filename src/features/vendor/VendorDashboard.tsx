@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { vendorService } from "../../api/vendorService";
-import { useSession } from "../../hooks/useSession";
+import useSession  from "../../hooks/useSession";
 import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
 import ROUTES from "../../constants/routes";
@@ -29,7 +29,7 @@ export default function VendorDashboard() {
 
   const [loading, setLoading] = useState(true);
 
-  // 🔐 Redirect if not vendor
+
   useEffect(() => {
     if (sessionLoading) return;
 

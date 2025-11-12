@@ -1,45 +1,80 @@
-// src/features/customer/dashboard/RewardsList.tsx
+// src/features/customer/RewardsList.tsx
 import type { JSX } from "react";
-import { useMemo } from "react";
-import Button from "../../components/common/Button";
+import { useState } from "react";
+import api from "../../api";
 import Card from "../../components/common/Card";
+import Button from "../../components/common/Button";
 
 type Reward = {
-  id: number;
-  points_cost: number;
-  description: string;
-  expiry?: string | null;
+  id: number | string;
+  title: string;
+  description?: string;
+  cost: number;
+  stock?: number;
+  image?: string;
 };
 
 type Props = {
   rewards: Reward[];
-  currentPoints: number;
-  onRedeem: (rewardId: number) => Promise<void> | void;
+  points?: number;
+  onRedeemed?: () => void; // optional callback to refresh
 };
 
-export default function RewardsList({ rewards, currentPoints, onRedeem }: Props): JSX.Element {
-  const sorted = useMemo(() => [...rewards].sort((a, b) => a.points_cost - b.points_cost), [rewards]);
+export default function RewardsList({ rewards, points = 0, onRedeemed }: Props): JSX.Element {
+  const [processingId, setProcessingId] = useState<string | number | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
-  if (!sorted.length) return <div className="text-sm text-slate-400">No rewards available yet.</div>;
+  async function redeem(reward: Reward) {
+    if (points < reward.cost) {
+      setMessage("Not enough points to redeem this reward");
+      return;
+    }
+    setProcessingId(reward.id);
+    setMessage(null);
+    try {
+      // Call Vault endpoint to redeem (backend should handle wallet/ticket creation)
+      await api.post("/api/rewards/redeem", { rewardId: reward.id });
+      setMessage("Reward redeemed — check your inbox for details");
+      if (onRedeemed) onRedeemed();
+    } catch (err: any) {
+      setMessage(err?.message ?? "Unable to redeem reward");
+    } finally {
+      setProcessingId(null);
+    }
+  }
+
+  if (!rewards || rewards.length === 0) {
+    return <div className="text-sm text-slate-400">No rewards available at the moment.</div>;
+  }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {sorted.map((r) => (
-        <Card key={r.id} className="p-4 flex flex-col justify-between">
-          <div>
-            <div className="text-sm text-slate-300">Reward</div>
-            <div className="text-lg font-semibold mt-1">{r.description}</div>
-            {r.expiry && <div className="text-xs text-slate-400 mt-1">Expires: {new Date(r.expiry).toLocaleDateString()}</div>}
+    <div className="space-y-3">
+      {rewards.map((r) => (
+        <Card key={String(r.id)} className="p-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-slate-800 rounded overflow-hidden flex items-center justify-center">
+              {r.image ? <img src={r.image} alt={r.title} className="w-full h-full object-cover" /> : <div className="text-slate-400">{r.title.charAt(0)}</div>}
+            </div>
+            <div>
+              <div className="text-sm font-semibold">{r.title}</div>
+              <div className="text-xs text-slate-400">{r.description}</div>
+            </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between gap-3">
-            <div className="text-sm text-slate-300">{r.points_cost.toLocaleString()} pts</div>
-            <Button onClick={() => onRedeem(r.id)} disabled={currentPoints < r.points_cost}>
-              {currentPoints < r.points_cost ? "Not enough points" : "Redeem"}
+          <div className="flex flex-col items-end gap-2">
+            <div className="text-sm text-slate-300">{r.cost.toLocaleString()} pts</div>
+            <Button
+              disabled={processingId !== null}
+              onClick={() => redeem(r)}
+              className="px-3 py-1 text-sm"
+            >
+              {processingId === r.id ? "Processing..." : (points >= r.cost ? "Redeem" : "Not enough pts")}
             </Button>
           </div>
         </Card>
       ))}
+
+      {message && <div className="text-sm text-amber-300">{message}</div>}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import api from "./index";
 export const vendorService = {
   getMyServices: () => api.get(`/api/vendor/services`),
 
-  getMetrics: (vendorId: string) => api.get(`/api/vendor/${vendorId}/metrics`),
+  getMetrics: (vendorId: string) => api.get(`/api/vendor/${vendorId}`),
 
   createService: (data: any) => api.post("/api/vendor/services", data),
 

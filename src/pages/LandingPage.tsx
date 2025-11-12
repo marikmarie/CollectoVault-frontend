@@ -66,13 +66,12 @@ const LandingPage: React.FC = () => {
     <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-700 text-white">
      <Navbar />
 
-{/* Animated background */}
+
 <div className="absolute inset-0 overflow-hidden -z-10 pointer-events-none">
   <div className="absolute top-0 left-0 w-[200%] h-full opacity-30 bg-[radial-gradient(ellipse_at_center,rgba(0,255,200,0.1),transparent_50%)] animate-[pulse_6s_infinite]" />
   <div className="absolute -top-32 -left-32 w-[160%] h-[160%] bg-[conic-gradient(from_90deg_at_50%_50%,rgba(0,150,255,0.08),transparent_60%)] animate-[spin_60s_linear_infinite]" />
 </div>
-
-      {/* Background decorative SVG */}
+  
       <div className="pointer-events-none absolute inset-0 overflow-hidden -z-10">
         <svg
           className="w-[140%] h-full -translate-x-8 opacity-20"
@@ -166,20 +165,6 @@ const LandingPage: React.FC = () => {
                 Sign in
               </Link>
             </motion.div>
-
-            {/* <motion.div
-              className="mt-2 text-sm text-slate-400"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              Trusted by partners like{" "}
-              <span className="font-semibold text-slate-100">
-                Forest Park Resort
-              </span>{" "}
-              and{" "}
-              <span className="font-semibold text-slate-100">Forest Mall</span>.
-            </motion.div> */}
 
             <motion.div
               className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3"

@@ -1,62 +1,53 @@
-// src/features/customer/dashboard/TierProgress.tsx
+// src/features/customer/TierProgress.tsx
 import type { JSX } from "react";
-import { useMemo } from "react";
 
-/**
- * Props:
- * - tiers: [{ id, name, min_points }]
- * - currentPoints: number
- */
+type Tier = { name: string; min: number };
 
-type Tier = { id: number; name: string; min_points: number; benefits?: any };
-type Props = { tiers: Tier[]; currentPoints: number };
+type Props = {
+  currentPoints: number;
+  tiers: Tier[]; // ascending by min
+};
 
-export default function TierProgress({ tiers, currentPoints }: Props): JSX.Element {
-  // sort tiers by min_points asc
-  const sorted = useMemo(() => [...tiers].sort((a, b) => a.min_points - b.min_points), [tiers]);
-
-  if (!sorted.length) {
-    return (
-      <div className="text-sm text-slate-400">No tiers configured yet for this business.</div>
-    );
-  }
-
-  // find current tier index
-  let currentIdx = 0;
+export default function TierProgress({ currentPoints, tiers }: Props): JSX.Element {
+  // find current and next tier
+  const sorted = [...tiers].sort((a, b) => a.min - b.min);
+  let current = sorted[0];
+  let next: Tier | null = null;
   for (let i = 0; i < sorted.length; i++) {
-    if (currentPoints >= sorted[i].min_points) currentIdx = i;
+    if (currentPoints >= sorted[i].min) current = sorted[i];
+    if (sorted[i].min > currentPoints) { next = sorted[i]; break; }
   }
-  const currentTier = sorted[currentIdx];
-  const nextTier = sorted[currentIdx + 1] ?? null;
-  const progress = nextTier ? Math.min(100, Math.round(((currentPoints - currentTier.min_points) / (nextTier.min_points - currentTier.min_points)) * 100)) : 100;
+
+  //const nextMin = next?.min ?? current.min;
+  const progress = next ? Math.min(1, (currentPoints - current.min) / (next.min - current.min)) : 1;
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-3">
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
         <div>
-          <div className="text-sm text-slate-300">Current tier</div>
-          <div className="text-lg font-semibold">{currentTier.name}</div>
+          <div className="text-sm text-slate-300">Tier</div>
+          <div className="text-lg font-semibold">{current?.name ?? "Member"}</div>
         </div>
         <div className="text-right">
           <div className="text-sm text-slate-400">Points</div>
-          <div className="font-medium">{currentPoints.toLocaleString()}</div>
+          <div className="text-lg font-medium">{currentPoints.toLocaleString()}</div>
         </div>
       </div>
 
-      <div className="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
-        <div className="h-3 rounded-full bg-emerald-400 transition-all" style={{ width: `${progress}%` }} />
+      <div className="w-full bg-slate-800/40 rounded-full h-3 overflow-hidden">
+        <div style={{ width: `${progress * 100}%` }} className="h-3 bg-emerald-400 rounded-full transition-all" />
       </div>
 
-      <div className="flex items-center justify-between text-xs text-slate-400 mt-2">
-        <div>{currentTier.min_points.toLocaleString()} pts</div>
-        <div>{nextTier ? `${nextTier.min_points.toLocaleString()} pts` : "Max"}</div>
-      </div>
-
-      {nextTier && (
-        <div className="mt-3 text-sm text-slate-300">
-          You need <span className="font-medium">{(nextTier.min_points - currentPoints).toLocaleString()}</span> more points to reach <span className="font-semibold">{nextTier.name}</span>.
-        </div>
+      {next ? (
+        <div className="text-sm text-slate-400">Only <span className="font-medium text-white">{Math.max(0, next.min - currentPoints).toLocaleString()}</span> points to reach <span className="font-semibold">{next.name}</span>.</div>
+      ) : (
+        <div className="text-sm text-slate-400">You've reached the highest tier — enjoy the benefits!</div>
       )}
+
+      <div className="flex items-center gap-2">
+        <button className="px-3 py-1 rounded bg-emerald-500 text-sm text-white">View benefits</button>
+        <button className="px-3 py-1 rounded bg-slate-700 text-sm">Tier history</button>
+      </div>
     </div>
   );
 }

@@ -1,100 +1,182 @@
-import { useState, useEffect } from "react";
-import Navbar from "../../components/layout/Navbar";
-import { useVaultSession } from "../../hooks/useVaultSession";
+import type { JSX } from "react";
+import { useEffect, useState } from "react";
+import useSession from "../../hooks/useSession";
 import api from "../../api";
-
+import NavBar from "../../components/layout/Navbar";
 import PointsCard from "./PointsCard";
 import TierProgress from "./TierProgress";
 import RewardsList from "./RewardsList";
 import BuyPointsModal from "./BuyPointsModal";
 import CreateUsernameModal from "./CreateUsernameModal";
 
-export default function CustomerDashboard() {
-  const { token } = useVaultSession();
+export default function CustomerDashboard(): JSX.Element {
+  const { user, loaded, logout, reload, setUser } = useSession();
+
   const [loading, setLoading] = useState(true);
-  const [points, setPoints] = useState(0);
-  const [tier, setTier] = useState(null);
-  const [rewards, setRewards] = useState([]);
-  const [invoices, setInvoices] = useState([]);
-  const [hasUsername, setHasUsername] = useState(false);
 
-  const [openBuy, setOpenBuy] = useState(false);
-  const [openUsername, setOpenUsername] = useState(false);
+  const [points, setPoints] = useState<number | null>(null);
+  const [tier, setTier] = useState<any>(null);
+  const [tiers, setTiers] = useState<any[]>([]);
+  const [rewards, setRewards] = useState<any[]>([]);
+  const [invoices, setInvoices] = useState<any[]>([]);
 
-  async function loadDashboard() {
+  const [buyOpen, setBuyOpen] = useState(false);
+  const [usernameModal, setUsernameModal] = useState(false);
+
+  async function loadData() {
     setLoading(true);
     try {
-      const resp = await api.get("/vault/dashboard", {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      
+      const meResp = await api.get("/api/customer/me");
+      setUser(meResp.data);
+      setPoints(meResp.data?.points ?? null);
+      try {
+        const tierResp = await api.get("/api/customer/tier");
+        setTier(tierResp.data?.currentTier ?? null);
+        setTiers(tierResp.data?.tiers ?? []);
+      } catch {
+        setTier(null);
+        setTiers([]);
+      }
 
-      setPoints(resp.data.points);
-      setTier(resp.data.tier);
-      setRewards(resp.data.rewards);
-      setInvoices(resp.data.invoices);
-      setHasUsername(resp.data.hasUsername);
+      try {
+        const rewardResp = await api.get("/api/customer/rewards");
+        setRewards(rewardResp.data ?? []);
+      } catch {
+        setRewards([]);
+      }
+
+      try {
+        const invResp = await api.get("/api/customer/invoices");
+        setInvoices(invResp.data ?? []);
+      } catch {
+        setInvoices([]);
+      }
+
     } catch (err) {
-      console.error("Dashboard load failed", err);
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
-  useEffect(() => { if (token) loadDashboard(); }, [token]);
+  useEffect(() => {
+    if (loaded) loadData();
+  }, [loaded]);
+
+  if (!loaded) return <div className="text-white p-6">Loading session...</div>;
+  if (!user) return <div className="text-white p-6">Not logged in</div>;
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
-      <VaultNavbar />
+      <NavBar />
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-        
-        <PointsCard points={points} onBuy={() => setOpenBuy(true)} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-          <div className="lg:col-span-2 space-y-6">
+        {/* Balance Top Section */}
+        <PointsCard
+          points={points ?? 0}
+          onBuy={() => setBuyOpen(true)}
+        />
 
-            {/* Recent invoices */}
-            <div className="p-4 bg-slate-800/40 rounded-lg">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-8">
+
+            {/* Recent Activity */}
+            <section className="bg-slate-800/40 rounded-lg p-5">
               <h3 className="text-lg font-semibold mb-3">Recent Activity</h3>
-              {loading && <div className="text-sm text-slate-400">Loading...</div>}
-              {!loading && invoices.length === 0 && (
-                <div className="text-sm text-slate-400">No activity yet</div>
-              )}
-              {!loading && invoices.length > 0 && (
-                <ul className="space-y-2">
-                  {invoices.map(inv => (
-                    <li key={inv.id} className="flex justify-between text-sm bg-slate-800/20 p-3 rounded">
-                      <div>{inv.description}</div>
-                      <div className="text-right text-emerald-300">{inv.points} pts</div>
+
+              {loading ? (
+                <div className="text-sm text-slate-400">Loading...</div>
+              ) : invoices.length === 0 ? (
+                <div className="text-sm text-slate-500">No activity yet</div>
+              ) : (
+                <ul className="space-y-3">
+                  {invoices.map((inv: any, idx: number) => (
+                    <li key={idx} className="flex items-center justify-between bg-slate-800/30 p-4 rounded-lg">
+                      <div>
+                        <div className="text-sm text-slate-300">{inv.description || inv.ref || "Transaction"}</div>
+                        <div className="text-xs text-slate-500">
+                          {inv.date || inv.created_at ? new Date(inv.date ?? inv.created_at).toLocaleString() : ""}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        {inv.points != null && (
+                          <div className="text-sm font-semibold">{Number(inv.points).toLocaleString()} pts</div>
+                        )}
+                        {inv.amount != null && (
+                          <div className="text-xs text-slate-400">UGX {Number(inv.amount).toLocaleString()}</div>
+                        )}
+                      </div>
                     </li>
                   ))}
                 </ul>
               )}
-            </div>
+            </section>
+
           </div>
 
-          {/* Side Panel */}
-          <aside className="space-y-6">
-            <TierProgress currentPoints={points} tier={tier} />
+          {/* Right Column */}
+          <div className="space-y-8">
 
-            <div className="bg-slate-800/40 p-4 rounded-lg">
-              <h3 className="text-lg mb-2 font-semibold">Available Rewards</h3>
-              <RewardsList rewards={rewards} />
-            </div>
+            {/* Tier */}
+            <section className="bg-slate-800/40 p-5 rounded-lg">
+              <h3 className="text-lg font-semibold mb-3">Tier</h3>
+              {loading ? (
+                <div className="text-sm text-slate-400">Loading...</div>
+              ) : !tier || tiers.length === 0 ? (
+                <div className="text-sm text-slate-500">No tier information available</div>
+              ) : (
+                <TierProgress currentPoints={points ?? 0} tiers={tiers} />
+              )}
+            </section>
 
-            {!hasUsername && (
+            {/* Rewards */}
+            <section className="bg-slate-800/40 p-5 rounded-lg">
+              <h3 className="text-lg font-semibold mb-3">Available Rewards</h3>
+              <RewardsList rewards={rewards} points={points ?? 0} onRedeemed={loadData} />
+            </section>
+
+            {/* Account */}
+            <section className="bg-slate-800/40 p-5 rounded-lg">
+              <h3 className="text-lg font-semibold mb-3">Account</h3>
+
+              {!user.username && (
+                <button
+                  onClick={() => setUsernameModal(true)}
+                  className="w-full px-4 py-2 rounded bg-emerald-500 text-white font-medium mb-2"
+                >
+                  Create username
+                </button>
+              )}
+
               <button
-                onClick={() => setOpenUsername(true)}
-                className="w-full px-4 py-3 rounded bg-emerald-600 hover:bg-emerald-700 font-semibold"
+                onClick={logout}
+                className="w-full px-4 py-2 rounded bg-slate-700 text-white font-medium"
               >
-                Create Username
+                Logout
               </button>
-            )}
-          </aside>
+            </section>
+
+          </div>
         </div>
       </main>
 
-      <BuyPointsModal open={openBuy} onClose={() => setOpenBuy(false)} onSuccess={loadDashboard} />
-      <CreateUsernameModal open={openUsername} onClose={() => setOpenUsername(false)} onCreated={loadDashboard} />
+      {/* Modals */}
+      <BuyPointsModal
+        open={buyOpen}
+        onClose={() => setBuyOpen(false)}
+        onSuccess={loadData}
+      />
+
+      <CreateUsernameModal
+        open={usernameModal}
+        onClose={() => setUsernameModal(false)}
+        onCreated={reload}
+      />
+
     </div>
   );
 }

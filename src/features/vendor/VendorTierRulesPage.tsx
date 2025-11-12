@@ -3,7 +3,7 @@ import Card from "../../components/common/Card";
 import Button from "../../components/common/Button";
 import Toast from "../../components/common/Toast";
 import api from "../../api";
-import { useSession } from "../../hooks/useSession";
+import useSession  from "../../hooks/useSession";
 
 type Tier = {
   id: number;
@@ -149,8 +149,6 @@ export default function VendorTierRulesPage(): JSX.Element {
     </div>
   );
 }
-
-/* ===== NEW REDESIGNED TIER FORM ===== */
 
 function TierForm({
   initial,

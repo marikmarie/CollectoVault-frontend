@@ -1,93 +1,95 @@
-// src/features/customer/dashboard/BuyPointsModal.tsx
+// src/features/customer/BuyPointsModal.tsx
 import type { JSX } from "react";
 import { useEffect, useState } from "react";
 import Modal from "../../components/common/Modal";
-import Button from "../../components/common/Button";
 import Card from "../../components/common/Card";
+import Button from "../../components/common/Button";
 import api from "../../api";
+
+type Package = {
+  id: number | string;
+  points: number;
+  price: number;
+  label?: string;
+};
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  onBought?: () => void;
+  onSuccess?: () => void; 
 };
 
-type Package = { id: number; points: number; price: number; title?: string };
+const FALLBACK_PACKAGES: Package[] = [
+  { id: "p1", points: 100, price: 5000 },
+  { id: "p2", points: 500, price: 10000 },
+  { id: "p3", points: 2500, price: 25000 },
+];
 
-export default function BuyPointsModal({ open, onClose, onBought }: Props): JSX.Element {
-  const [packages, setPackages] = useState<Package[]>([]);
-  const [selected, setSelected] = useState<number | null>(null);
+export default function BuyPointsModal({ open, onClose, onSuccess }: Props): JSX.Element {
+  const [packages, setPackages] = useState<Package[]>(FALLBACK_PACKAGES);
+  const [selected, setSelected] = useState<string | number | null>(null);
+  //const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
-    // load packages from backend; fallback to static if none
     (async () => {
       try {
-        const resp = await api.get("/api/points/packages");
-        const pkgs = resp.data ?? [
-          { id: 1, points: 100, price: 5000 },
-          { id: 2, points: 500, price: 10000 },
-          { id: 3, points: 2500, price: 25000 },
-        ];
-        setPackages(pkgs);
-      } catch (err) {
-        setPackages([
-          { id: 1, points: 100, price: 5000 },
-          { id: 2, points: 500, price: 10000 },
-          { id: 3, points: 2500, price: 25000 },
-        ]);
+        const resp = await api.get("/api/point-packages");
+        if (Array.isArray(resp.data)) setPackages(resp.data);
+      } catch (e) {
+        // ignore — fallback packages will be used
       }
     })();
   }, [open]);
 
   const handleBuy = async () => {
     if (!selected) {
-      setMessage("Please select a package");
+      setMessage("Select a package first");
       return;
     }
     setProcessing(true);
     setMessage(null);
     try {
-      // Ask backend to create a payment / Collecto request
-      const resp = await api.post("/api/points/buy", { packageId: selected });
-      // server should return { ok:true, paymentUrl? , paymentRequestId? }
+      // Backend should start payment via Collecto and return a payment page/url or success
+      const resp = await api.post("/api/buy-points", { packageId: selected });
+      // expected: { ok: true, paymentUrl?: "...", transactionId?: "..."}
       if (resp.data?.paymentUrl) {
-        // redirect to payment or open popup
-        window.open(resp.data.paymentUrl, "_blank");
-        setMessage("Opened payment page. Complete payment to receive points.");
-        if (onBought) onBought();
-      } else if (resp.data?.ok) {
-        setMessage("Purchase queued. Points will reflect after confirmation.");
-        if (onBought) onBought();
+        // redirect user to paymentUrl (if needed)
+        window.location.href = resp.data.paymentUrl;
+        return;
+      }
+      if (resp.data?.ok) {
+        setMessage("Purchase initiated");
+        if (onSuccess) onSuccess();
+        onClose();
       } else {
-        setMessage(resp.data?.message ?? "Unable to start purchase");
+        setMessage(resp.data?.message ?? "Failed to start purchase");
       }
     } catch (err: any) {
-      setMessage(err?.message ?? "Payment initiation failed");
+      setMessage(err?.message ?? "Payment failed");
     } finally {
       setProcessing(false);
     }
   };
 
   return (
-    <Modal open={open} onClose={() => !processing && onClose()}>
-      <div className="p-4 w-full max-w-2xl">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold">Buy points</h3>
-          <div className="text-sm text-slate-400">Secure checkout via CollectoPay</div>
-        </div>
+    <Modal open={open} onClose={() => { if (!processing) onClose(); }}>
+      <div className="p-4 max-w-md w-full">
+        <h3 className="text-lg font-semibold mb-3">Buy points</h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           {packages.map((p) => {
-            const isSel = selected === p.id;
+            const isSel = String(selected) === String(p.id);
             return (
-              <div key={p.id} className={`cursor-pointer ${isSel ? "ring-2 ring-emerald-400 border-emerald-400/30" : ""}`} onClick={() => setSelected(p.id)}>
-                <Card className="p-4">
-                  <div className="text-sm text-slate-300">Package</div>
-                  <div className="text-xl font-bold">{p.points.toLocaleString()} pts</div>
-                  <div className="text-sm text-slate-400 mt-1">UGX {p.price.toLocaleString()}</div>
+              <div key={String(p.id)} onClick={() => setSelected(p.id)} className="cursor-pointer">
+                <Card className={`p-3 ${isSel ? "ring-2 ring-emerald-400 border-emerald-400/30 shadow-lg" : ""}`}>
+                  <div>
+                    <div className="text-sm text-slate-300">{p.label ?? "Package"}</div>
+                    <div className="text-xl font-bold">{p.points.toLocaleString()} pts</div>
+                    <div className="text-sm text-slate-400">UGX {p.price.toLocaleString()}</div>
+                  </div>
                 </Card>
               </div>
             );
@@ -96,10 +98,10 @@ export default function BuyPointsModal({ open, onClose, onBought }: Props): JSX.
 
         {message && <div className="text-sm text-amber-300 mb-3">{message}</div>}
 
-        <div className="flex items-center justify-end gap-3">
-          <Button variant="ghost" onClick={() => onClose()} disabled={processing}>Cancel</Button>
+        <div className="flex items-center gap-3 justify-end">
+          <Button variant="ghost" onClick={onClose} disabled={processing}>Cancel</Button>
           <Button onClick={handleBuy} disabled={processing}>
-            {processing ? "Processing..." : "Proceed to pay"}
+            {processing ? "Processing..." : "Proceed to payment"}
           </Button>
         </div>
       </div>

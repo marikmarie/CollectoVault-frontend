@@ -6,7 +6,7 @@ import Toast from "../../components/common/Toast";
 import type { ToastType } from "../../components/common/Toast";
 import Spinner from "../../components/common/Spinner";
 import api from "../../api";
-import { useSession } from "../../hooks/useSession";
+import useSession from "../../hooks/useSession";
 
 type TriggerType =
   | "purchase"

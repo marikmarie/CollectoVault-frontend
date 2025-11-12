@@ -23,12 +23,12 @@ import BuyPoints from "../features/customer/BuyPoints";
 //import TransactionsHistory from "../features/customer/TransactionHistory";
 
 // VENDOR FEATURES
-//import VendorDashboard from "../features/vendor/VendorDashboard";
+import VendorDashboard from "../features/vendor/VendorDashboard";
 import UploadService from "../features/vendor/UploadService";
 import ServiceList from "../features/vendor/ServiceList";
 // import VendorLoginPage from "../pages/vendor/Login";
-// import VendorPointRulesPage from "../features/vendor/VendorPointRulesPage";
-// import VendorTierRulesPage from "../features/vendor/VendorTierRulesPage";
+import VendorPointRulesPage from "../features/vendor/VendorPointRulesPage";
+import VendorTierRulesPage from "../features/vendor/VendorTierRulesPage";
 
 // SHARED
 import NotFound from "../shared/NotFound";
@@ -99,11 +99,11 @@ export const AppRoutes = createBrowserRouter([
       { path: "/business", element: <VendorStorefront /> },
 
       // VENDOR ROUTES
-      // { path: "/vendor/dashboard", element: <VendorDashboard /> },
+       { path: "/vendor/dashboard", element: <VendorDashboard /> },
       { path: "/upload-service", element: <UploadService /> },
       { path: "/services", element: <ServiceList /> },
-      // { path: "/point-rules", element: <VendorPointRulesPage /> },
-      // { path: "/tier-rules", element: <VendorTierRulesPage /> },
+      { path: "/point-rules", element: <VendorPointRulesPage /> },
+      { path: "/tier-rules", element: <VendorTierRulesPage /> },
 
       // ADMIN ROUTES
     //   { path: "/admin/dashboard", element: <AdminDashboard /> },

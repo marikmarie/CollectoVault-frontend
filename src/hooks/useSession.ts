@@ -1,37 +1,42 @@
 // src/hooks/useSession.ts
-import { useEffect, useState } from "react";
-import api, { getAuthToken, setAuthToken, setVaultOtpToken } from "../api";
+import { useEffect, useState, useCallback } from "react";
+import api, { getVaultOtpToken, setAuthToken, setVaultOtpToken } from "../api";
 
 export default function useSession() {
   const [user, setUser] = useState<any>(null);
   const [loaded, setLoaded] = useState(false);
 
-  async function load() {
-    const token = getAuthToken();
-    if (!token) {
+  const load = useCallback(async () => {
+    setLoaded(false);
+    const vaultToken = getVaultOtpToken();
+    if (!vaultToken) {
+      // no vault token — not logged in
+      setUser(null);
       setLoaded(true);
       return;
     }
 
     try {
+      // api interceptor will attach Authorization: Bearer <vaultToken>
       const resp = await api.get("/api/customer/me");
       setUser(resp.data);
-    } catch {
+    } catch (err) {
+      // failed to fetch profile => clear tokens
       setAuthToken(null);
-      setVaultOtpToken(null);
+      setVaultOtpToken(null, null);
       setUser(null);
     } finally {
       setLoaded(true);
     }
-  }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
 
   async function logout() {
     setAuthToken(null);
-    setVaultOtpToken(null);
+    setVaultOtpToken(null, null);
     setUser(null);
   }
-
-  useEffect(() => { load(); }, []);
 
   return { user, setUser, loaded, logout, refresh: load, reload: load };
 }

@@ -89,7 +89,7 @@ export default function VendorDashboard() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <Button onClick={() => navigate("/vendor/create-package")}>Create Package</Button>
+          <Button onClick={() => navigate("/create-package")}>Create Package</Button>
           <Button variant="secondary" onClick={() => navigate("/point-rules")}>Point Rules</Button>
           <Button variant="secondary" onClick={() => navigate("/tier-rules")}>Tier Rules</Button>
         </div>

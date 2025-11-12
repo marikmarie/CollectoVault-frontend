@@ -159,7 +159,7 @@ export default function LoginForm(): JSX.Element {
       }
 
       if (userType === "client") {
-        return navigate("/customer/dashboard");
+        return navigate("/dashboard");
       }
 
       if (userType === "staff") {

@@ -36,7 +36,7 @@ export default function UploadService(): JSX.Element {
     },
   });
 
-const [successMessage, setSuccessMessage] = useState<string | null>(null);
+const [, setSuccessMessage] = useState<string | null>(null);
 
   const [serverError, setServerError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);

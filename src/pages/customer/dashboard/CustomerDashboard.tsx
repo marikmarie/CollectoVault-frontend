@@ -1,8 +1,8 @@
 import type { JSX } from "react";
 import { useEffect, useState } from "react";
-import useSession from "../../hooks/useSession";
-import api from "../../api";
-import NavBar from "../../components/layout/Navbar";
+import useSession from "../../../hooks/useSession";
+import api from "../../../api";
+import NavBar from "../../../components/layout/Navbar";
 import PointsCard from "./PointsCard";
 import TierProgress from "./TierProgress";
 import RewardsList from "./RewardsList";

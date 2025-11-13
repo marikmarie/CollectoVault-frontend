@@ -1,9 +1,9 @@
 // src/features/customer/CreateUsernameModal.tsx
 import type { JSX } from "react";
 import { useState } from "react";
-import Modal from "../../components/common/Modal";
-import Button from "../../components/common/Button";
-import api from "../../api";
+import Modal from "../../../components/common/Modal";
+import Button from "../../../components/common/Button";
+import api from "../../../api";
 
 type Props = {
   open: boolean;

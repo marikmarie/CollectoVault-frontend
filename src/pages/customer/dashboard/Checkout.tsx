@@ -1,10 +1,10 @@
 /* src/features/customer/Checkout.tsx */
 import { useMemo, useState, type JSX } from "react";
-import Button from "../../components/common/Button";
-import Card from "../../components/common/Card";
-import Spinner from "../../components/common/Spinner";
-import api from "../../api";
-import useSession from "../../hooks/useSession";
+import Button from "../../../components/common/Button";
+import Card from "../../../components/common/Card";
+import Spinner from "../../../components/common/Spinner";
+import api from "../../../api";
+import useSession from "../../../hooks/useSession";
 
 type CartItem = {
   id: string;

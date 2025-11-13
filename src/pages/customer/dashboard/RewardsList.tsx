@@ -1,9 +1,9 @@
 // src/features/customer/RewardsList.tsx
 import type { JSX } from "react";
 import { useState } from "react";
-import api from "../../api";
-import Card from "../../components/common/Card";
-import Button from "../../components/common/Button";
+import api from "../../../api";
+import Card from "../../../components/common/Card";
+import Button from "../../../components/common/Button";
 
 type Reward = {
   id: number | string;

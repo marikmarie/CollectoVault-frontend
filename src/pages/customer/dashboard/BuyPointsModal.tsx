@@ -1,11 +1,11 @@
 // src/features/customer/BuyPointsModal.tsx
 import type { JSX } from "react";
 import { useEffect, useState } from "react";
-import Modal from "../../components/common/Modal";
-import Card from "../../components/common/Card";
-import Button from "../../components/common/Button";
-import api from "../../api";
-import useSession from "../../hooks/useSession";
+import Modal from "../../../components/common/Modal";
+import Card from "../../../components/common/Card";
+import Button from "../../../components/common/Button";
+import api from "../../../api";
+import useSession from "../../../hooks/useSession";
 
 type Package = {
   id: number | string;

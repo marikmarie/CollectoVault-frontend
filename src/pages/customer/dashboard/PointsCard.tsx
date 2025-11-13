@@ -1,8 +1,8 @@
 // src/features/customer/PointsCard.tsx
 import type { JSX } from "react";
 import { useMemo } from "react";
-import Button from "../../components/common/Button";
-import Card from "../../components/common/Card";
+import Button from "../../../components/common/Button";
+import Card from "../../../components/common/Card";
 import { Coins } from "lucide-react";
 
 type Props = {

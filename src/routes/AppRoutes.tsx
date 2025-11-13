@@ -7,7 +7,7 @@ import AuthLayout from "../components/layout/AuthLayout";
 import Spinner from "../components/common/Spinner";
 import LandingPage from "../pages/LandingPage";
 import PricingPage from "../pages/Pricing";
-import CustomerDashboard from "../features/dashboard/CustomerDashboard";
+import CustomerDashboard from "../pages/customer/dashboard/CustomerDashboard";
 
 // CUSTOMER PAGES
 import LoginForm from "../pages/LoginForm";

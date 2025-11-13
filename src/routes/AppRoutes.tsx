@@ -16,14 +16,13 @@ import LoginForm from "../pages/LoginForm";
 // CUSTOMER FEATURES
 // import RewardsCatalog from "../features/customer/RewardsCatalog";
 // import RedeemReward from "../features/customer/RedeemReward";
-import VendorStorefront from "../features/customer/VendorStorefront";
+import VendorStorefront from "../pages/customer/VendorStorefront";
 //import PointsAward from "../features/customer/PointsAward";
 // import Checkout from "../features/customer/Checkout";
 //import TransactionsHistory from "../features/customer/TransactionHistory";
 
 // VENDOR FEATURES
 import VendorDashboard from "../features/vendor/VendorDashboard";
-import UploadService from "../features/vendor/UploadService";
 import ServiceList from "../features/vendor/ServiceList";
 // import VendorLoginPage from "../pages/vendor/Login";
 import VendorPointRulesPage from "../features/vendor/VendorPointRulesPage";
@@ -88,8 +87,7 @@ export const AppRoutes = createBrowserRouter([
        { path: "/business", element: <VendorStorefront /> },
 
       // VENDOR ROUTES
-       { path: "/vendor/dashboard", element: <VendorDashboard /> },
-      { path: "/upload-service", element: <UploadService /> },
+      { path: "/vendor/dashboard", element: <VendorDashboard /> },
       { path: "/services", element: <ServiceList /> },
       { path: "/point-rules", element: <VendorPointRulesPage /> },
       { path: "/tier-rules", element: <VendorTierRulesPage /> },

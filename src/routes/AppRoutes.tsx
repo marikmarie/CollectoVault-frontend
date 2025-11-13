@@ -10,7 +10,7 @@ import PricingPage from "../pages/Pricing";
 import CustomerDashboard from "../features/dashboard/CustomerDashboard";
 
 // CUSTOMER PAGES
-import LoginForm from "../features/auth/LoginForm";
+import LoginForm from "../pages/LoginForm";
 // import CustomerRegisterPage from "../pages/customer/CustomerRegisterPage";
 
 // CUSTOMER FEATURES

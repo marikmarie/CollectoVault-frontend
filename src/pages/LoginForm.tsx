@@ -2,8 +2,8 @@ import type { JSX } from "react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { authService } from "../../api/authService";
-import { setVaultOtpToken, getVaultOtpToken } from "../../api";
+import { authService } from "../api/authService";
+import { setVaultOtpToken, getVaultOtpToken } from "../api";
 
 type FormValues = {
   type: "business" | "client" | "staff";

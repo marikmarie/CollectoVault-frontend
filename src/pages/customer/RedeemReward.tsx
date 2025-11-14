@@ -38,9 +38,8 @@ export default function RedeemReward({
     setError(null);
 
     try {
-      // backend expects authenticated user (token sent by api instance)
       const payload = { rewardId: String(reward.id), method: "points" };
-      const { data } = await api.post("/rewards/redeem", payload);
+      const { data } = await api.post("/api/rewards/redeem", payload);
 
       // refresh session so points balance updates across the app
       if (refresh) await refresh();

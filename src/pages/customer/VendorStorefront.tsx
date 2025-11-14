@@ -1,6 +1,5 @@
 /* src/features/customer/VendorStorefront.tsx */
 import  { useEffect, useState, type JSX } from "react";
-// import MainLayout from "../../components/layout/MainLayout";
 import { useParams, Link } from "react-router-dom";
 import {vendorService} from "../../api/vendorService";
 import RewardCard from "../../components/common/RewardCard";
@@ -57,7 +56,6 @@ export default function VendorStorefront(): JSX.Element {
   }, [vendorId]);
 
   return (
-    //<MainLayout title={vendorName} subtitle="Browse services and redeem with points">
     <div>
       <div className="mb-6 flex items-center justify-between">
         <div className="text-sm text-slate-300">Vendor: {vendorName}</div>
@@ -84,6 +82,5 @@ export default function VendorStorefront(): JSX.Element {
         </div>
       )}
       </div>
-    //</MainLayout>
   );
 }

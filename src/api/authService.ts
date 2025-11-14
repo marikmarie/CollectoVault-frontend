@@ -31,11 +31,7 @@ export const authService = {
     return data;
   },
 
-  //   login: async (data: any) => {
-//     const resp = await api.post("/api/auth/login", data);
-//     if (resp?.data?.token) setAuthToken(resp.data.token);
-//     return resp.data;
-//   },
+
 
 //   logout: async () => {
 //     try {

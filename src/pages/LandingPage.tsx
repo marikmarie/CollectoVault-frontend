@@ -213,13 +213,7 @@ const LandingPage: React.FC = () => {
               </div>
             </div>
 
-            {/* <div className="w-full h-48 rounded-md overflow-hidden bg-slate-900/30 flex items-center justify-center">
-              {/* Video or screenshot preview */}
-            {/* <div className="text-center text-slate-400">
-                <div className="mb-2">Dashboard preview</div>
-                <div className="text-xs">Interactive, mobile-friendly UI</div>
-              </div>
-            </div> */}
+       
             <div className="w-full h-48 rounded-md overflow-hidden bg-slate-900/30 flex items-center justify-center shadow-lg border border-slate-700/50">
               <iframe
                 className="w-full h-full"

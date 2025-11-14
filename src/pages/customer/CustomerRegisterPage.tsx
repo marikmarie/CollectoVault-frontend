@@ -1,33 +1,35 @@
-// // src/pages/Customer/Register.tsx
-// import { useEffect, type JSX } from "react";
-// import { useNavigate } from "react-router-dom";
-// import RegisterForm from "../../features/auth/RegisterForm";
-// import { useSession } from "../../hooks/useSession";
+// src/pages/Customer/Register.tsx
+import { useEffect, type JSX } from "react";
+import { useNavigate } from "react-router-dom";
+import useSession  from "../../hooks/useSession";
 
-// export default function CustomerRegisterPage(): JSX.Element {
-//   const { user, loading } = useSession();
-//   const navigate = useNavigate();
+export default function CustomerRegisterPage(): JSX.Element {
+  const { user, loaded } = useSession();
+  const navigate = useNavigate();
 
-//   useEffect(() => {
-//     if (loading) return;
+  useEffect(() => {
+    if (!loaded) return;
+    // If already logged in → redirect based on role
+    if (user) {
+      switch (user.role) {
+        case "vendor":
+          navigate("/vendor/dashboard");
+          break;
+        case "admin":
+          navigate("/admin");
+          break;
+        default:
+          navigate("/customer/dashboard");
+      }
+    }
+  }, [loaded, user, navigate]);
 
-//     // If already logged in → redirect based on role
-//     if (user) {
-//       switch (user.role) {
-//         case "vendor":
-//           navigate("/vendor/dashboard");
-//           break;
-//         case "admin":
-//           navigate("/admin");
-//           break;
-//         default:
-//           navigate("/customer/dashboard");
-//       }
-//     }
-//   }, [loading, user, navigate]);
+  // Avoid showing form until we know session state
+  if (!loaded) return <div className="p-6 text-center text-slate-300">Checking session...</div>;
 
-//   // Avoid showing form until we know session state
-//   if (loading) return <div className="p-6 text-center text-slate-300">Checking session...</div>;
-
-//   return <RegisterForm />;
-// }
+  return (
+    <div className="p-6 text-center text-slate-300">
+      Customer Registration Page (form goes here)
+    </div>
+  );
+}

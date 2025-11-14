@@ -212,8 +212,7 @@ const LandingPage: React.FC = () => {
                 </div>
               </div>
             </div>
-
-       
+    
             <div className="w-full h-48 rounded-md overflow-hidden bg-slate-900/30 flex items-center justify-center shadow-lg border border-slate-700/50">
               <iframe
                 className="w-full h-full"

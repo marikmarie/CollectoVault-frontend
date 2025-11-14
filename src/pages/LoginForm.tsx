@@ -120,9 +120,7 @@ export default function LoginForm(): JSX.Element {
     formState: { errors: otpErrors },
   } = useForm<OtpValues>();
 
-  /**
-   * STEP 2 - Verify OTP
-   */
+//  Verify OTP submit handler
   const onOtpSubmit = async (data: OtpValues) => {
     if (!pendingPayload?.vaultOTPToken) {
       setServerMessage("No active authentication session. Start again.");
@@ -198,7 +196,6 @@ export default function LoginForm(): JSX.Element {
         </p>
       </div>
 
-      {/* Step 1: Identifier */}
       {step === "identifiers" && (
         <form
           onSubmit={handleSubmit(onIdentifiersSubmit)}

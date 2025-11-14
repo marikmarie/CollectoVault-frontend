@@ -24,10 +24,10 @@ export default function Pricing() {
     },
     {
       name: "Business",
-      price: "UGX 50000/mo",
+      price: "3% per transaction",
       description: "Ideal for small to mid-size businesses that need branded loyalty features.",
       features: [
-        "Unlimited customers",
+        "Money collection",
         "Advanced analytics",
         "Custom branding",
         "Vendor storefront & listings",
@@ -45,7 +45,7 @@ export default function Pricing() {
         "Unlimited vendors",
         "Dedicated Collecto API integration",
         "Onboarding & training",
-        "Account manager",
+        "Experiencing other addons",
         "24/7 priority support",
       ],
       cta: "Contact Sales",

@@ -15,19 +15,19 @@ import LoginForm from "../pages/LoginForm";
 
 // CUSTOMER FEATURES
 // import RewardsCatalog from "../features/customer/RewardsCatalog";
-// import RedeemReward from "../features/customer/RedeemReward";
+ import RedeemReward  from "./../pages/customer/RedeemReward"
 import VendorStorefront from "../pages/customer/VendorStorefront";
 //import PointsAward from "../features/customer/PointsAward";
 // import Checkout from "../features/customer/Checkout";
 //import TransactionsHistory from "../features/customer/TransactionHistory";
 
 // VENDOR FEATURES
-import VendorDashboard from "../features/vendor/VendorDashboard";
-import ServiceList from "../features/vendor/ServiceList";
+import VendorDashboard from "../pages/vendor/VendorDashboard";
+import ServiceList from "../pages/vendor/ServiceList";
 // import VendorLoginPage from "../pages/vendor/Login";
-import VendorPointRulesPage from "../features/vendor/VendorPointRulesPage";
-import VendorTierRulesPage from "../features/vendor/VendorTierRulesPage";
-import VendorCreatePackagePage from "../features/vendor/CreatePackagePage";
+import VendorPointRulesPage from "../pages/vendor/VendorPointRulesPage";
+import VendorTierRulesPage from "../pages/vendor/VendorTierRulesPage";
+import VendorCreatePackagePage from "../pages/vendor/CreatePackagePage";
 
 // SHARED
 import NotFound from "../shared/NotFound";
@@ -72,14 +72,14 @@ export const AppRoutes = createBrowserRouter([
       // CUSTOMER ROUTES
       //{ path: "/customer/dashboard", element: <CustomerDashboardPage /> },
       // { path: "/customer/rewards", element: <RewardsCatalog /> },
-      // { path: "/customer/redeem", element: <RedeemReward reward={{
-      //     id: undefined,
-      //     title: "",
-      //     description: undefined,
-      //     pointsPrice: undefined,
-      //     currencyPrice: undefined,
-      //     vendorName: undefined
-      // }} /> },
+      { path: "/customer/redeem", element: <RedeemReward reward={{
+          id: undefined,
+          title: "",
+          description: undefined,
+          pointsPrice: undefined,
+          currencyPrice: undefined,
+          vendorName: undefined
+      }} /> },
       { path: "/vendor", element: <VendorStorefront /> },
       // { path: "/customer/points-award", element: <PointsAward /> },
       // { path: "/customer/checkout", element: <Checkout /> },
@@ -96,7 +96,7 @@ export const AppRoutes = createBrowserRouter([
       // ADMIN ROUTES
     //   { path: "/admin/dashboard", element: <AdminDashboard /> },
     //   { path: "/admin/vendors", element: <ManageVendors /> },
-    //   { path: "/admin/customers", element: <ManageCustomers /> },
+    //   { path: "/admin/customewrs", element: <ManageCustomers /> },
     //   { path: "/admin/reports", element: <Reports /> },
     ],
   },

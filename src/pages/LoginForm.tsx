@@ -50,7 +50,7 @@ export default function LoginForm(): JSX.Element {
       }
       const payload = { type: data.type, id: data.id };
       const res = await authService.startCollectoAuth(payload);
-      console.log("🔐 startCollectoAuth response:", res);
+      //console.log("startCollectoAuth response:", res);
 
       const root = res?.data;
       const inner = root?.data ?? null;
@@ -71,8 +71,8 @@ export default function LoginForm(): JSX.Element {
       if (returnedToken) {
         const expiryIso =new Date(Date.now() + 15 * 60 * 1000).toISOString();
         setVaultOtpToken(returnedToken, expiryIso);
-        console.log("🔐 OTP sent:", returnedToken);
-        console.log("🔐 OTP sent:", expiryIso);
+        // console.log(" OTP sent:", returnedToken);
+        // console.log("OTP sent:", expiryIso);
         setPendingPayload({ ...payload, vaultOTPToken: returnedToken });
         setStep("otp");
         setServerMessage(
@@ -107,7 +107,7 @@ export default function LoginForm(): JSX.Element {
         inner?.message ?? root?.message ?? "Unexpected server response"
       );
     } catch (err: any) {
-      console.error("❌ startCollectoAuth error:", err);
+      console.error("startCollectoAuth error:", err);
       setServerMessage(err?.message ?? "Authorization failed");
     } finally {
       setIsProcessing(false);
@@ -120,7 +120,7 @@ export default function LoginForm(): JSX.Element {
     formState: { errors: otpErrors },
   } = useForm<OtpValues>();
 
-//  Verify OTP submit handler
+
   const onOtpSubmit = async (data: OtpValues) => {
     if (!pendingPayload?.vaultOTPToken) {
       setServerMessage("No active authentication session. Start again.");

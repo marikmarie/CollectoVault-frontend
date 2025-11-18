@@ -9,7 +9,6 @@ export default function CustomerRegisterPage(): JSX.Element {
 
   useEffect(() => {
     if (!loaded) return;
-    // If already logged in → redirect based on role
     if (user) {
       switch (user.role) {
         case "vendor":
@@ -24,7 +23,6 @@ export default function CustomerRegisterPage(): JSX.Element {
     }
   }, [loaded, user, navigate]);
 
-  // Avoid showing form until we know session state
   if (!loaded) return <div className="p-6 text-center text-slate-300">Checking session...</div>;
 
   return (

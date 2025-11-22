@@ -8,10 +8,7 @@ const api = axios.create({
   timeout: 15000,
 });
 
-/**
- * Set a vault OTP token. token must be a non-empty string.
- * expiresAt, if provided, must be a valid date-string (ISO recommended).
- */
+
 export function setVaultOtpToken(token: string, expiresAt?: string) {
   if (!token || typeof token !== "string" || token.trim() === "") {
     throw new Error("setVaultOtpToken: token must be a non-empty string");

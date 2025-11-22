@@ -66,13 +66,10 @@ export default function LoginForm(): JSX.Element {
         inner?.data?.vaultOTPToken ??
         inner?.vaultOTPToken ??
         null;
-      //const returnedExpiry = inner?.data?.expiresAt ?? inner?.expiresAt ?? null;
-
+      
       if (returnedToken) {
         const expiryIso =new Date(Date.now() + 15 * 60 * 1000).toISOString();
         setVaultOtpToken(returnedToken, expiryIso);
-        // console.log(" OTP sent:", returnedToken);
-        // console.log("OTP sent:", expiryIso);
         setPendingPayload({ ...payload, vaultOTPToken: returnedToken });
         setStep("otp");
         setServerMessage(

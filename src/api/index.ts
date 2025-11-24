@@ -1,7 +1,7 @@
 // src/api/index.ts
 import axios from "axios";
 
-const API_BASE = (import.meta.env?.VITE_API_BASE_URL as string) || "http://localhost:5000";
+const API_BASE = (import.meta.env?.VITE_API_BASE_URL as string) ;
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -70,7 +70,7 @@ export function getVaultOtpToken(): string {
 api.interceptors.request.use(
   (config) => {
     try {
-       console.log("🪪 hasVaultOtpToken:", hasVaultOtpToken());
+       //console.log("🪪 hasVaultOtpToken:", hasVaultOtpToken());
       if (hasVaultOtpToken() && config.headers) {
          const vaultOtp = getVaultOtpToken();
         config.headers.Authorization = `Bearer ${vaultOtp}`;

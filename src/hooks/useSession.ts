@@ -2,7 +2,6 @@
 import { useEffect, useState, useCallback } from "react";
 import api, { getVaultOtpToken, setVaultOtpToken } from "../api";
 
-
 export default function useSession() {
   const [user, setUser] = useState<any>(null);
   const [loaded, setLoaded] = useState(false);
@@ -14,7 +13,7 @@ export default function useSession() {
 
     const vaultToken = getVaultOtpToken();
 if (!vaultToken) {
-      console.warn("🔒 No vault token found in sessionStorage");
+      console.warn("No vault token found in sessionStorage");
       setError("Token is missing");
       setUser(null);
       setLoaded(true);

@@ -1,9 +1,7 @@
 import { useEffect, useState, type JSX } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
-
 import useSession from "../../hooks/useSession";
-import { a } from "framer-motion/client";
 import api from "../../api";
 
 export default function InviteMembers() {
@@ -21,7 +19,7 @@ export default function InviteMembers() {
   }, [user, sessionLoading, navigate]);
 
   const [group, setGroup] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoading] = useState(true);
 
   useEffect(() => { 
     if (user && !sessionLoading) {

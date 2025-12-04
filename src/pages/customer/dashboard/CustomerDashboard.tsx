@@ -73,7 +73,6 @@ export default function CustomerDashboard(): JSX.Element {
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
 
-        {/* Balance Top Section */}
         <PointsCard
           points={points ?? 0}
           onBuy={() => setBuyOpen(true)}

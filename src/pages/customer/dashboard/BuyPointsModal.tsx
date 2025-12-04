@@ -27,7 +27,7 @@ const FALLBACK_PACKAGES: Package[] = [
 ];
 
 export default function BuyPointsModal({ open, onClose, onSuccess }: Props): JSX.Element {
-  const { user } = useSession() as any; // user may be null until loaded
+  const { user } = useSession() as any; 
   const [packages, setPackages] = useState<Package[]>(FALLBACK_PACKAGES);
   const [selected, setSelected] = useState<string | number | null>(null);
   const [processing, setProcessing] = useState(false);
@@ -70,7 +70,7 @@ export default function BuyPointsModal({ open, onClose, onSuccess }: Props): JSX
     }
 
     if (paymentMode === "momo") {
-      if (!phone || phone.trim().length < 6) {
+      if (!phone || phone.trim().length < 10) {
         setMessage("Please enter a valid phone number for mobile money (MOMO).");
         return;
       }
@@ -78,7 +78,6 @@ export default function BuyPointsModal({ open, onClose, onSuccess }: Props): JSX
 
     setProcessing(true);
     try {
-      // Build payload. Include customerId from session when available.
       const payload: any = {
         packageId: selected,
         paymentMode,
@@ -86,13 +85,11 @@ export default function BuyPointsModal({ open, onClose, onSuccess }: Props): JSX
       };
 
       if (user?.id) payload.customerId = user.id;
-      if (user?.businessId) payload.businessId = user.businessId; // optional, if session has it
+      if (user?.businessId) payload.businessId = user.businessId; 
 
       const resp = await api.post("/api/buy-points", payload);
 
-      // If backend returns paymentUrl (hosted payment page), redirect the browser.
-      if (resp.data?.paymentUrl) {
-        // Optionally show a message then redirect
+     if (resp.data?.paymentUrl) {
         window.location.href = resp.data.paymentUrl;
         return;
       }

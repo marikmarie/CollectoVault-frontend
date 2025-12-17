@@ -19,4 +19,6 @@ export const vendorService = {
 
   getTierRules: (vendorId: string) => api.get(`/api/vendor/${vendorId}/tier-rules`),
   saveTierRule: (vendorId: string, data: any) => api.post(`/api/vendor/${vendorId}/tier-rules`, data),
+
+  
 };
